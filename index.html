@@ -18,7 +18,7 @@
     /* ★青固定 */
     --blue:#0080ff;
 
-    /* ★練習生のサイズは固定（小さくしない） */
+    /* ★練習生サイズは固定（小さくしない） */
     --slot: 86px;
     --gap:  14px;
   }
@@ -92,7 +92,7 @@
     white-space: nowrap;
   }
 
-  /* 画面：空き枠バッジ（右下） */
+  /* 画面：空き枠バッジ */
   .slotBadge{
     position:absolute;
     right: 12px;
@@ -116,22 +116,20 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-  }
-  .picksRows{
-    display:flex;
-    flex-direction:column;
-    gap: 10px;
-    padding: 12px 0 8px;
+
+    /* ★見切れ対策：最低でも“複数段”表示できる高さを確保（固定じゃないので増える） */
+    min-height: calc(var(--slot) * 3 + var(--gap) * 3 + 80px);
   }
 
-  /* ★自動で段を増やして見切れ防止（サイズは変えない） */
+  /* ★ここが“絶対に見切れない”核：折り返しで増段する */
   .picksRow{
     display:flex;
     justify-content:center;
     gap: var(--gap);
-    flex-wrap: wrap;   /* ←これが最重要 */
+    flex-wrap: wrap;
     width: 100%;
-    row-gap: 14px;     /* 折り返し時の縦間隔 */
+    row-gap: 14px;
+    padding: 12px 0 10px;
   }
 
   .slot{
@@ -139,7 +137,7 @@
     text-align:center;
   }
 
-  /* ★枠色を #0080ff に（青枠） */
+  /* ★青枠 */
   .avatar{
     width: var(--slot);
     height: var(--slot);
@@ -359,9 +357,11 @@
     -webkit-overflow-scrolling: touch;
     border-top:1px solid #f1f1f1;
     padding-top: 6px;
+
+    /* ★一覧操作で画面が引っ張られて戻る系の保険 */
+    overscroll-behavior: contain;
   }
 
-  /* 2列カード */
   .membersGrid{
     display:grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -426,10 +426,6 @@
     line-height:1;
   }
   .memberCardProfile:active{ transform: scale(.98); }
-
-  @media (max-width: 360px){
-    .membersGrid{ gap:10px; }
-  }
 
   .toast{
     position: fixed;
@@ -552,7 +548,6 @@
     padding: 18px 56px 120px;
   }
 
-  /* ヘッダー下：投票して欲しいメンバー */
   .exportSubtitle{
     text-align: center;
     font-size: 22px;
@@ -563,17 +558,20 @@
     text-shadow: 0 1px 0 rgba(255,255,255,.55);
   }
 
-  /* 保存：選択メンバー（選択分だけ中央に） */
-  .exportPicksRow{
-    display:flex;
-    justify-content:center;
-    gap: 44px;
-    margin-top: 26px;
-    flex-wrap: nowrap;
-    min-height: 210px;
+  /* ★保存：必ず2列（絶対見切れない） */
+  .exportPicksGrid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+    column-gap: 60px;
+    row-gap: 40px;
+    max-width: 760px;
+    margin: 26px auto 0;
+    min-height: 320px; /* 2段分の安全確保 */
   }
+
   .exportSlot{
-    width: 130px;
+    width: 260px;
     text-align:center;
   }
   .exportAvatar{
@@ -624,7 +622,7 @@
 
   /* 青枠：空き枠 */
   .exportSlotsText{
-    margin-top: 20px;
+    margin-top: 10px;
     text-align: center;
     font-size: 26px;
     font-weight: 1000;
@@ -672,7 +670,6 @@
     box-shadow: 0 10px 22px rgba(0,0,0,.12);
   }
 
-  /* ★読みやすく：少しだけ大きく（大きすぎない） */
   .exportSlotsSentence{
     margin-top: 12px;
     text-align: center;
@@ -701,14 +698,14 @@
 
     <!-- 上：選択枠（ここに練習生が入っていく） -->
     <div class="picksWrap" id="picksWrap">
-      <div class="picksRows" id="picksRows"></div>
+      <div class="picksRow" id="picksRow"></div>
     </div>
 
     <div class="actions">
-      <button class="primary" onclick="saveImage()">画像として保存</button>
-      <button onclick="undo()">1人戻す</button>
-      <button class="danger" onclick="resetAll()">リセット</button>
-      <button class="mode" id="reorderBtn" onclick="toggleReorder()">並び替えモード：OFF</button>
+      <button class="primary" type="button" onclick="saveImage()">画像として保存</button>
+      <button type="button" onclick="undo()">1人戻す</button>
+      <button class="danger" type="button" onclick="resetAll()">リセット</button>
+      <button class="mode" type="button" id="reorderBtn" onclick="toggleReorder()">並び替えモード：OFF</button>
 
       <!-- TikTok誘導：並び替えの下 -->
       <div class="tiktokWrap">
@@ -718,7 +715,7 @@
         <div class="tiktokHint">↑ここをクリック</div>
       </div>
 
-      <!-- 選択枠数切替：6〜11（7追加済み） -->
+      <!-- 選択枠数切替：6〜11（7含む） -->
       <div class="frameControl">
         <div class="frameLabel">選択枠</div>
         <div class="frameBtns" id="frameBtns">
@@ -745,7 +742,7 @@
     </div>
   </div>
 
-  <!-- ★「選択したメンバー（最大◯人）」ブロックは削除済み -->
+  <!-- ★「選択したメンバー（最大◯人）」ブロックは完全削除 -->
 
   <div class="listCard">
     <div class="sectionTitle">一覧（押して追加）</div>
@@ -779,7 +776,7 @@
     <div class="exportBody">
       <div class="exportSubtitle">投票して欲しいメンバー</div>
 
-      <div class="exportPicksRow" id="exportPicksRow"></div>
+      <div class="exportPicksGrid" id="exportPicksGrid"></div>
 
       <div class="exportSlotsText" id="exportSlotsText">空き 0 枠</div>
       <div class="exportMissingRow" id="exportMissingRow"></div>
@@ -797,29 +794,33 @@
 const HEADER_IMAGE_URL = "https://i.imgur.com/nYBRUdd.png";
 const FALLBACK_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 
-/* ★枠数：6〜11のみ（7含む） */
 let MAX_PICK = 11;
 const MAX_PICK_KEY = "oshivote_max_pick_v3";
 const STORAGE_KEY  = "oshivote_selected_v5";
 
-/* 練習生/候補切替 */
 let showingCandidates = false;
-
-/* 空き枠（手動） */
 let freeSlots = 0;
 
-/* プロフィールURL */
 function profileUrlById(id){
   if(!id) return "https://produce101.jp/profile/detail/?lang=ja";
   return "https://produce101.jp/profile/detail/?id=" + encodeURIComponent(id) + "&lang=ja";
 }
-
 function displayName(full){
   return (full || "").replace(/\s*\([^)]*\)\s*/g, "").trim();
 }
 function alphaPart(full){
   const m = (full||"").match(/\(([^)]*)\)/);
   return m ? "(" + m[1] + ")" : "";
+}
+
+/* ★一覧スクロールが上に戻るのを止める（描画前後でスクロール位置維持） */
+function withMembersScrollLock(fn){
+  const wrap = document.getElementById("membersWrap");
+  const prev = wrap ? wrap.scrollTop : 0;
+  fn();
+  requestAnimationFrame(() => {
+    if(wrap) wrap.scrollTop = prev;
+  });
 }
 
 /* ====== 練習生データ（練習生＋候補） ====== */
@@ -953,7 +954,6 @@ const candidates = [
 const trainees = traineesOnly.concat(candidates);
 const TRAINEES_COUNT = traineesOnly.length;
 
-/* 選択 */
 let selected = loadSelected();
 
 /* バナー画像反映 */
@@ -967,7 +967,7 @@ let selected = loadSelected();
   }
 })();
 
-/* ★枠数ロード（localStorage） */
+/* 枠数ロード */
 (function loadMaxPick(){
   try{
     const v = parseInt(localStorage.getItem(MAX_PICK_KEY), 10);
@@ -975,7 +975,6 @@ let selected = loadSelected();
   }catch(e){}
 })();
 
-/* 枠数ボタンの見た目更新 */
 function updateFrameButtons(){
   const btns = document.querySelectorAll(".frameBtn");
   btns.forEach(b=>{
@@ -983,8 +982,6 @@ function updateFrameButtons(){
     b.classList.toggle("frameBtnActive", n === MAX_PICK);
   });
 }
-
-/* 枠数変更 */
 function setMaxPick(n){
   if(![6,7,8,9,10,11].includes(n)) return;
 
@@ -994,14 +991,15 @@ function setMaxPick(n){
     selected = selected.slice(0, MAX_PICK);
     saveSelected();
   }
-
   try{ localStorage.setItem(MAX_PICK_KEY, String(MAX_PICK)); }catch(e){}
 
-  updateFrameButtons();
-  drawPicks();
-  drawMembers();
-  drawExportPicks();
-  renderFreeSlots();
+  withMembersScrollLock(() => {
+    updateFrameButtons();
+    drawPicks();
+    drawMembers();
+    drawExportPicks();
+    renderFreeSlots();
+  });
 }
 
 /* 練習生/候補 切替（スクロール位置維持） */
@@ -1025,7 +1023,7 @@ function toggleCandidates(e){
   });
 }
 
-/* 空き枠表示（画面＋保存画像の文言も更新） */
+/* 空き枠 */
 function renderFreeSlots(){
   const t = `空き ${freeSlots} 枠`;
 
@@ -1051,34 +1049,15 @@ function setSlotsFromInput(){
   renderFreeSlots();
 }
 
-/* ★表示側：自動で段を増やす（見切れない） */
-function getMaxPerRow(){
-  const wrap = document.getElementById("picksWrap");
-  if(!wrap) return 3;
-
-  const wrapWidth = wrap.clientWidth;
-  const slot = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--slot"), 10) || 86;
-  const gap  = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--gap"), 10) || 14;
-
-  return Math.max(1, Math.floor((wrapWidth + gap) / (slot + gap)));
-}
-
+/* 上：選択枠（折り返しで“絶対に見切れない”） */
 function drawPicks(){
-  const container = document.getElementById("picksRows");
-  if(!container) return;
-  container.innerHTML = "";
-
-  const maxPerRow = getMaxPerRow();
-  let row = null;
+  const row = document.getElementById("picksRow");
+  if(!row) return;
+  row.innerHTML = "";
 
   for(let i = 0; i < MAX_PICK; i++){
-    if(i % maxPerRow === 0){
-      row = document.createElement("div");
-      row.className = "picksRow";
-      container.appendChild(row);
-    }
-
     const slot = document.createElement("div");
+
     if(i < selected.length){
       const m = trainees[selected[i]];
       slot.className = "slot";
@@ -1089,14 +1068,15 @@ function drawPicks(){
         </div>
         <div class="name">${displayName(m.name)}</div>
         <div class="reorder">
-          <button onclick="moveLeft(${i})" aria-label="left">←</button>
-          <button onclick="moveRight(${i})" aria-label="right">→</button>
+          <button type="button" onclick="moveLeft(${i})" aria-label="left">←</button>
+          <button type="button" onclick="moveRight(${i})" aria-label="right">→</button>
         </div>
       `;
     }else{
       slot.className = "slot empty";
       slot.innerHTML = `<div class="avatar">+</div>`;
     }
+
     row.appendChild(slot);
   }
 }
@@ -1140,7 +1120,7 @@ function drawMembers(){
   }
 }
 
-/* 追加 */
+/* 追加（一覧スクロール維持） */
 function add(i){
   if(selected.length >= MAX_PICK){
     alert(MAX_PICK + "人まで！");
@@ -1148,30 +1128,35 @@ function add(i){
   }
   if(selected.indexOf(i) !== -1) return;
 
-  selected.push(i);
-  saveSelected();
-
-  drawPicks();
-  drawMembers();
-  drawExportPicks();
+  withMembersScrollLock(() => {
+    selected.push(i);
+    saveSelected();
+    drawPicks();
+    drawMembers();
+    drawExportPicks();
+  });
 }
 
 /* 戻す */
 function undo(){
-  selected.pop();
-  saveSelected();
-  drawPicks();
-  drawMembers();
-  drawExportPicks();
+  withMembersScrollLock(() => {
+    selected.pop();
+    saveSelected();
+    drawPicks();
+    drawMembers();
+    drawExportPicks();
+  });
 }
 
 /* リセット */
 function resetAll(){
-  selected = [];
-  saveSelected();
-  drawPicks();
-  drawMembers();
-  drawExportPicks();
+  withMembersScrollLock(() => {
+    selected = [];
+    saveSelected();
+    drawPicks();
+    drawMembers();
+    drawExportPicks();
+  });
 }
 
 /* 並び替え */
@@ -1184,13 +1169,16 @@ function toggleReorder(){
 function swap(posA, posB){
   if(posA < 0 || posB < 0) return;
   if(posA >= selected.length || posB >= selected.length) return;
-  var tmp = selected[posA];
-  selected[posA] = selected[posB];
-  selected[posB] = tmp;
-  saveSelected();
-  drawPicks();
-  drawMembers();
-  drawExportPicks();
+
+  withMembersScrollLock(() => {
+    var tmp = selected[posA];
+    selected[posA] = selected[posB];
+    selected[posB] = tmp;
+    saveSelected();
+    drawPicks();
+    drawMembers();
+    drawExportPicks();
+  });
 }
 function moveLeft(pos){ swap(pos, pos-1); }
 function moveRight(pos){ swap(pos, pos+1); }
@@ -1208,23 +1196,23 @@ function loadSelected(){
   }catch(e){ return []; }
 }
 
-/* 保存画像：選択した人数だけ表示（＋は出さない） */
+/* 保存画像：選択分だけ表示（＋は出さない）／2列グリッドで“絶対見切れない” */
 function drawExportPicks(){
-  var wrap = document.getElementById("exportPicksRow");
-  wrap.innerHTML = "";
+  const grid = document.getElementById("exportPicksGrid");
+  grid.innerHTML = "";
 
-  for(var idx=0; idx<selected.length; idx++){
-    var m = trainees[selected[idx]];
-    var slot = document.createElement("div");
+  for(let i=0; i<selected.length; i++){
+    const m = trainees[selected[i]];
+    const slot = document.createElement("div");
     slot.className = "exportSlot";
     slot.innerHTML = `
       <div class="exportAvatar">
         <div class="exportPhoto" style="background-image:url('${m.img || FALLBACK_IMG}')"></div>
-        <div class="exportRank">${idx+1}</div>
+        <div class="exportRank">${i+1}</div>
       </div>
       <div class="exportName">${displayName(m.name)}</div>
     `;
-    wrap.appendChild(slot);
+    grid.appendChild(slot);
   }
 
   renderMissingSlots();
@@ -1233,8 +1221,6 @@ function drawExportPicks(){
 /* 保存画像：未選択枠アイコン（MAX_PICK - selected.length） */
 function renderMissingSlots(){
   var row = document.getElementById("exportMissingRow");
-  if(!row) return;
-
   row.innerHTML = "";
   var missing = Math.max(0, MAX_PICK - selected.length);
 
@@ -1285,8 +1271,9 @@ drawPicks();
 drawMembers();
 drawExportPicks();
 
+/* 画面回転/リサイズでも“見切れ”が起きないよう再描画（サイズは変えない） */
 window.addEventListener("resize", function(){
-  drawPicks(); /* 画面幅が変わっても見切れないように再配置 */
+  drawPicks();
 });
 </script>
 </body>
