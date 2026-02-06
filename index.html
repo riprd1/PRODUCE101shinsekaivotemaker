@@ -16,7 +16,7 @@
     --radius:14px;
     --blue:#0080ff;
 
-    /* 画面側（ここは基本そのまま） */
+    /* 画面側（基本そのまま） */
     --slot: 86px;
     --gap:  14px;
 
@@ -139,6 +139,11 @@
     object-fit: cover;
     object-position: 50% 35%;
     display:block;
+
+    /* ★高画質寄りに見せるヒント */
+    image-rendering: auto;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   .rank{
     position:absolute;
@@ -309,6 +314,11 @@
     object-fit: cover;
     object-position: 50% 20%;
     display:block;
+
+    /* ★高画質寄り */
+    image-rendering: auto;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   .memberCardName{ margin-top:10px; font-weight:900; font-size:14px; line-height:1.2; }
   .memberCardSub{ margin-top:4px; font-size:12px; color: var(--muted); }
@@ -441,7 +451,7 @@
     z-index: 120;
   }
 
-  /* ★保存ボディは “上(選択)” と “下(空き枠)” を固定で分割 */
+  /* ボディ */
   .exportBody{
     height: calc(1040px - 150px);
     padding: 18px 56px 0;
@@ -453,9 +463,9 @@
     margin-top: 10px;
   }
 
-  /* 上：選択枠エリア（ここが自動調整対象） */
+  /* ★保存ボディは “上(選択)” と “下(空き枠)” を固定で分割 */
   .exportTop{
-    height: 470px; /* ★ここを固定にするので下が消えない */
+    height: 470px; /* 下が消えないよう固定 */
     display:flex;
     flex-direction:column;
     justify-content:flex-start;
@@ -499,6 +509,11 @@
     background-size: cover;
     background-position: 50% 35%;
     background-repeat: no-repeat;
+
+    /* ★高画質寄り */
+    image-rendering: auto;
+    transform: translateZ(0);
+    backface-visibility: hidden;
   }
   .exportRank{
     position:absolute;
@@ -583,7 +598,7 @@
   .exportSlotsSentence{
     margin-top: 12px;
     text-align:center;
-    font-size: 20px; /* ★少し読みやすく */
+    font-size: 20px;
     font-weight: 900;
     color: #000;
     letter-spacing: .04em;
@@ -675,7 +690,7 @@
     <div class="exportBody">
       <div class="exportSubtitle">投票して欲しいメンバー</div>
 
-      <!-- ★上：選択枠（人数ルールで並ぶ / サイズは“少し”自動調整） -->
+      <!-- 上：選択枠（人数ルールで並ぶ / サイズは“少し”自動調整） -->
       <div class="exportTop">
         <div class="exportRows">
           <div class="exportRow" id="exportRow1"></div>
@@ -683,7 +698,7 @@
         </div>
       </div>
 
-      <!-- ★下：空き枠（必ず表示） -->
+      <!-- 下：空き枠（必ず表示） -->
       <div class="exportBottom">
         <div class="exportSlotsText" id="exportSlotsText">空き 0 枠</div>
         <div class="exportMissingRow" id="exportMissingRow"></div>
@@ -1060,10 +1075,19 @@ function loadSelected(){
   }catch(e){ return []; }
 }
 
-/* ======= ここが本題：保存画像の並びルール（選択人数基準） ======= */
+/* ======= 保存画像の並びルール（選択人数基準） =======
+  ★変更：5人のときは 上2 / 下3
+  6 -> 3/3
+  7 -> 3/4
+  8 -> 4/4
+  9 -> 4/5
+  10 -> 5/5
+  11 -> 5/6
+*/
 function exportPlanBySelectedCount(count){
   if(count <= 0) return [0,0];
-  if(count <= 5) return [count, 0];
+  if(count <= 4) return [count, 0];
+  if(count === 5) return [2,3];
   if(count === 6) return [3,3];
   if(count === 7) return [3,4];
   if(count === 8) return [4,4];
@@ -1074,12 +1098,12 @@ function exportPlanBySelectedCount(count){
 }
 
 /* ★“少し小さく” 自動調整（極端にしない）
-   - 1004幅で最大6列でも、下が消えないようにする
-   - avatarは 112 を基準に、必要なら 2pxずつ下げる（下限は 96）
+   - 1004幅で最大6列でも下が消えないようにする
+   - avatarは112を基準に必要なら2pxずつ下げる（下限96）
 */
 function fitExportAvatar(count){
-  const [a,b] = exportPlanBySelectedCount(count);
-  const maxCols = Math.max(a,b);
+  const plan = exportPlanBySelectedCount(count);
+  const maxCols = Math.max(plan[0], plan[1]);
 
   const availableW = 1004 - 56*2; // exportBody左右padding
   const minAvatar = 96;
@@ -1091,24 +1115,20 @@ function fitExportAvatar(count){
     return;
   }
 
-  // 収まるまで少しずつ縮める
   while(true){
     const needW = avatar*maxCols + gapX*(maxCols-1);
     if(needW <= availableW) break;
     if(avatar <= minAvatar) break;
     avatar -= 2;
-    gapX = Math.max(32, gapX - 2); // gapも少し詰める（極端にしない）
+    gapX = Math.max(32, gapX - 2);
   }
 
-  // borderは見た目維持で比例
   const border = Math.max(6, Math.round(avatar/14));
   document.documentElement.style.setProperty("--exBorder", border + "px");
 
-  // 名前も少しだけ追従
   const name = Math.max(13, Math.min(15, Math.round(avatar/7.5)));
   setExportVars(avatar, gapX, 28, name);
 }
-
 function setExportVars(avatar, gapX, gapY, nameSize){
   document.documentElement.style.setProperty("--exAvatar", avatar + "px");
   document.documentElement.style.setProperty("--exGapX", gapX + "px");
@@ -1124,7 +1144,8 @@ function drawExportPicks(){
   row2.innerHTML = "";
 
   const count = selected.length;
-  const [r1, r2] = exportPlanBySelectedCount(count);
+  const plan = exportPlanBySelectedCount(count);
+  const r1 = plan[0], r2 = plan[1];
 
   fitExportAvatar(count);
 
@@ -1141,7 +1162,7 @@ function drawExportPicks(){
     row2.style.display = "none";
   }
 
-  renderMissingSlots(); // ★未選択ぶんは必ず下
+  renderMissingSlots(); // 未選択ぶんは必ず下
 }
 
 function makeExportSlot(m, orderIndex){
@@ -1162,16 +1183,11 @@ function renderMissingSlots(){
   row.innerHTML = "";
 
   const missing = Math.max(0, MAX_PICK - selected.length);
-
-  // ★未選択がある限り、必ず表示
   for(let i=0;i<missing;i++){
     const d = document.createElement("div");
     d.className = "missingIcon";
     row.appendChild(d);
   }
-
-  // missing 0 のときは空でもOK（消してもいいなら）
-  // row.style.display = missing ? "flex" : "none";
 }
 
 /* 保存 */
@@ -1193,7 +1209,7 @@ async function saveImage(){
       backgroundColor:"#ffffff",
       useCORS:true,
       allowTaint:false,
-      scale: 4
+      scale: 5   /* ★高画質化：4→5 */
     });
     const link = document.createElement("a");
     link.download = "oshivote_1004x1040.png";
