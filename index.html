@@ -17,7 +17,7 @@
 
     --blue:#0080ff;
 
-    /* 画面側（横5枠が必ず収まるようにJSで調整） */
+    /* 画面側（枠が増えてもサイズは変えない。JSでギャップだけ調整する） */
     --slot: 86px;
     --gap:  14px;
   }
@@ -121,7 +121,7 @@
     justify-content:center;
     gap: var(--gap);
     padding: 12px 0 8px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap; /* ★枠が増えたら自動で折り返し（サイズは変えない） */
   }
   .slot{
     width: var(--slot);
@@ -272,6 +272,30 @@
     font-weight: 900;
     color: #666;
     letter-spacing: .02em;
+  }
+
+  /* ★追加：枠数切替 */
+  .frameControl{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+  }
+  .frameLabel{
+    font-size:12px;
+    font-weight:900;
+    color:#666;
+  }
+  .frameBtns{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .frameBtnActive{
+    border-color:#cfe2ff;
+    background: #eef6ff;
+    font-weight: 1000;
   }
 
   /* ===== 下部：一覧カード ===== */
@@ -464,7 +488,7 @@
     z-index:999;
   }
 
-  /* ===== 保存専用エリア（1004×1040固定） ===== */
+  /* ===== 保存専用エリア（現状維持） ===== */
   #exportArea{
     position: fixed;
     left: -10000px;
@@ -481,14 +505,12 @@
     background:#fff;
     overflow:hidden;
 
-    /* 背景画像は今まで通り */
     background-image: url("https://i.imgur.com/lFGbXfI.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
   }
 
-  /* 保存画像：右上クレジット */
   .exportCredit{
     position: absolute;
     top: 18px;
@@ -506,7 +528,6 @@
     pointer-events: none;
   }
 
-  /* 保存画像：下部 TikTok表記 */
   .exportTikTok{
     position: absolute;
     left: 50%;
@@ -526,7 +547,6 @@
     white-space: nowrap;
   }
 
-  /* 保存画像：ハッシュタグ（いちばん下） */
   .exportHashtag{
     position: absolute;
     left: 50%;
@@ -571,10 +591,9 @@
   }
 
   .exportBody{
-    padding: 18px 56px 120px; /* 下のTikTok/タグと被らない */
+    padding: 18px 56px 120px;
   }
 
-  /* 保存画像：ヘッダーの下 真ん中 */
   .exportSubtitle{
     text-align: center;
     font-size: 22px;
@@ -585,7 +604,6 @@
     text-shadow: 0 1px 0 rgba(255,255,255,.55);
   }
 
-  /* 保存画像：選択した人数だけ表示（中央寄せ） */
   .exportPicksRow{
     display:flex;
     justify-content:center;
@@ -644,7 +662,6 @@
     text-overflow: ellipsis;
   }
 
-  /* 保存画像：空き枠（青い枠で囲む） */
   .exportSlotsText{
     margin-top: 20px;
     text-align: center;
@@ -666,7 +683,6 @@
     box-shadow: 0 8px 18px rgba(0,128,255,.25);
   }
 
-  /* 保存画像：未選択枠アイコン（大きく） */
   .exportMissingRow{
     margin-top: 18px;
     display:flex;
@@ -674,17 +690,19 @@
     gap: 32px;
     min-height: 140px;
   }
+
+  /* ★未選択アイコン：指定画像に変更（nAiYU1V） */
   .missingIcon{
     width: 120px;
     height: 120px;
     background: #82cded;
 
-    -webkit-mask-image: url("https://i.imgur.com/V3OTDUr.png");
+    -webkit-mask-image: url("https://i.imgur.com/nAiYU1V.png");
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-position: center;
     -webkit-mask-size: contain;
 
-    mask-image: url("https://i.imgur.com/V3OTDUr.png");
+    mask-image: url("https://i.imgur.com/nAiYU1V.png");
     mask-repeat: no-repeat;
     mask-position: center;
     mask-size: contain;
@@ -693,7 +711,6 @@
     box-shadow: 0 10px 22px rgba(0,0,0,.12);
   }
 
-  /* 保存画像：空き枠の文章（黒） */
   .exportSlotsSentence{
     margin-top: 12px;
     text-align: center;
@@ -738,6 +755,19 @@
         <div class="tiktokHint">↑ここをクリック</div>
       </div>
 
+      <!-- ★追加：選択枠数切替 -->
+      <div class="frameControl">
+        <div class="frameLabel">選択枠</div>
+        <div class="frameBtns" id="frameBtns">
+          <button type="button" class="mode frameBtn" data-n="5" onclick="setMaxPick(5)">5</button>
+          <button type="button" class="mode frameBtn" data-n="6" onclick="setMaxPick(6)">6</button>
+          <button type="button" class="mode frameBtn" data-n="8" onclick="setMaxPick(8)">8</button>
+          <button type="button" class="mode frameBtn" data-n="9" onclick="setMaxPick(9)">9</button>
+          <button type="button" class="mode frameBtn" data-n="10" onclick="setMaxPick(10)">10</button>
+          <button type="button" class="mode frameBtn" data-n="11" onclick="setMaxPick(11)">11</button>
+        </div>
+      </div>
+
       <!-- 空き枠操作（＋－の説明つき） -->
       <div class="slotsControl">
         <div class="slotsRow">
@@ -753,7 +783,7 @@
   </div>
 
   <div class="listCard">
-    <div class="sectionTitle">選択したメンバー（最大5人）</div>
+    <div class="sectionTitle" id="selectedTitle">選択したメンバー（最大5人）</div>
     <div id="selectedGrid" class="selectedGrid"></div>
 
     <div class="sectionTitle" style="margin-top:14px;">一覧（押して追加）</div>
@@ -805,7 +835,10 @@
 const HEADER_IMAGE_URL = "https://i.imgur.com/nYBRUdd.png";
 const FALLBACK_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 
-const MAX_PICK = 5;
+/* ★枠数：可変（5/6/8/9/10/11） */
+let MAX_PICK = 5;
+const MAX_PICK_KEY = "oshivote_max_pick_v1";
+
 const STORAGE_KEY = "oshivote_selected_v3";
 
 /* プロフィールURL */
@@ -821,6 +854,7 @@ const traineesOnly = [
   {name:"オム・スアンカワーテン(AOM)", img:"https://i.imgur.com/dDIFJSc.png", id:"aomsuungkavathin"},
   {name:"アーチャー・ウイ(ARCHER)", img:"https://i.imgur.com/5iIerqN.png", id:"archeruy"},
   {name:"篠ヶ谷 歩夢(S.AYUMU)", img:"https://i.imgur.com/YJAdh8q.png", id:"shinogayaayumu"},
+
   {name:"小林 千悟(CHISATO)", img:"https://i.imgur.com/Iu0hNBO.png", id:"kobayashichisato"},
   {name:"加藤 大樹 (K.DAIKI)", img:"https://i.imgur.com/4fRk2EB.png", id:"katodaiki"},
   {name:"カク・ドンミン(DONGMIN)", img:"https://i.imgur.com/xZSQqMh.png", id:"kwakdongmin"},
@@ -828,6 +862,7 @@ const traineesOnly = [
   {name:"保里 瑛都(H.EITO)", img:"https://i.imgur.com/IAhs4ZA.png", id:"horieito"},
   {name:"金田 栄都(K.EITO)", img:"https://i.imgur.com/tF7i1du.png", id:"kanedaeito"},
   {name:"櫻井 楓真(FUMA)", img:"https://i.imgur.com/WIWI8Sx.png", id:"sakuraifuma"},
+
   {name:"小笠原ジュゼッペ慧(GIUSEPPE)", img:"https://i.imgur.com/2oKn3Ma.jpeg", id:"ogasawaragiuseppekei"},
   {name:"倉橋 吾槙(GOTEN)", img:"https://i.imgur.com/hlEjYqR.png", id:"kurahashigoten"},
   {name:"堀尾 聖(HIJIRI)", img:"https://i.imgur.com/5Qb5dRJ.png", id:"horiohijiri"},
@@ -839,6 +874,7 @@ const traineesOnly = [
   {name:"ジュアン・ジェイ(JAY)", img:"https://i.imgur.com/41jKNZX.png", id:"chuangjay"},
   {name:"丸尾 尋一郎(JINICHIRO)", img:"https://i.imgur.com/83azYjx.png", id:"maruojinichiro"},
   {name:"河邊 晟(JOE)", img:"https://i.imgur.com/DqUS1o6.png", id:"kawabejoe"},
+
   {name:"シン・ジョンウク(JUNGUK)", img:"https://i.imgur.com/6cwEusK.jpeg", id:"shinjunguk"},
   {name:"金安 純正(JUNSEI)", img:"https://i.imgur.com/juPhMDR.png", id:"kaneyasujunsei"},
   {name:"宇野 海夢(KAIMU)", img:"https://i.imgur.com/QVliSyD.png", id:"unokaimu"},
@@ -858,6 +894,7 @@ const traineesOnly = [
   {name:"堀野 蓮(H.REN)", img:"https://i.imgur.com/FQEx0JM.png", id:"horinoren"},
   {name:"小清水 蓮(KO.REN)", img:"https://i.imgur.com/S8Ij9OZ.png", id:"koshimizuren"},
   {name:"チェン・リッキー(RICKEY)", img:"https://i.imgur.com/DnnZVAT.png", id:"chenrickey"},
+
   {name:"神元 理丘(RIKU)", img:"https://i.imgur.com/jwJ9CLd.png", id:"kamimotoriku"},
   {name:"鳩場 陸人(H.RIKUTO)", img:"https://i.imgur.com/JdCFbCb.png", id:"hatobarikuto"},
   {name:"今江 陸斗(I.RIKUTO)", img:"https://i.imgur.com/jiZZwJu.png", id:"imaerikuto"},
@@ -877,6 +914,7 @@ const traineesOnly = [
   {name:"山下 柊(Y.SHU)", img:"https://i.imgur.com/642IX8o.png", id:"yamashitashu"},
   {name:"パク・シヨン(SIYOUNG)", img:"https://i.imgur.com/wSokxJh.png", id:"parksiyoung"},
   {name:"佐藤 碧空 (S.SORA)", img:"https://i.imgur.com/yF4WJJB.png", id:"satosora"},
+
   {name:"東野 蒼汰(SOTA)", img:"https://i.imgur.com/GvLpwfo.png", id:"tonosota"},
   {name:"藤牧 大雅(F.TAIGA)", img:"https://i.imgur.com/4G2hBRy.png", id:"fujimakitaiga"},
   {name:"松田 太雅(M.TAIGA)", img:"https://i.imgur.com/tICsJFs.png", id:"matsudataiga"},
@@ -901,7 +939,7 @@ const traineesOnly = [
   {name:"板倉 悠太(YUTA)", img:"https://i.imgur.com/j6IlxeD.png", id:"itakurayuta"}
 ];
 
-/* ====== 練習生候補（最新版フル） ====== */
+/* ====== 練習生候補 ====== */
 const candidates = [
   {name:"本荘 晃(AKIRA)", img:"https://i.imgur.com/p976l8j.jpeg", id:"honjoakira"},
   {name:"児島 歩夢(K.AYUMU)", img:"https://i.imgur.com/1jtcgbB.png", id:"kojimaayumu"},
@@ -952,6 +990,14 @@ let showingCandidates = false;
 /* 空き枠（手動） */
 let freeSlots = 0;
 
+/* ★枠数ロード（selectedより先に） */
+(function loadMaxPick(){
+  try{
+    const v = parseInt(localStorage.getItem(MAX_PICK_KEY), 10);
+    if([5,6,8,9,10,11].includes(v)) MAX_PICK = v;
+  }catch(e){}
+})();
+
 /* 選択 */
 let selected = loadSelected();
 
@@ -972,6 +1018,40 @@ function displayName(full){
 function alphaPart(full){
   const m = (full||"").match(/\(([^)]*)\)/);
   return m ? "(" + m[1] + ")" : "";
+}
+
+/* ★枠数ボタンの見た目更新 */
+function updateFrameButtons(){
+  const btns = document.querySelectorAll(".frameBtn");
+  btns.forEach(b=>{
+    const n = parseInt(b.getAttribute("data-n"), 10);
+    b.classList.toggle("frameBtnActive", n === MAX_PICK);
+  });
+
+  const title = document.getElementById("selectedTitle");
+  if(title) title.textContent = `選択したメンバー（最大${MAX_PICK}人）`;
+}
+
+/* ★枠数を変更 */
+function setMaxPick(n){
+  if(![5,6,8,9,10,11].includes(n)) return;
+
+  MAX_PICK = n;
+
+  if(selected.length > MAX_PICK){
+    selected = selected.slice(0, MAX_PICK);
+    saveSelected();
+  }
+
+  try{ localStorage.setItem(MAX_PICK_KEY, String(MAX_PICK)); }catch(e){}
+
+  updateFrameButtons();
+  drawMembers();
+  drawSelectedGrid();
+  drawPicks();
+  drawExportPicks();
+  renderFreeSlots();
+  fitPicksToViewport();
 }
 
 /* 練習生/候補 切替（スクロール位置維持） */
@@ -1022,7 +1102,7 @@ function setSlotsFromInput(){
   renderFreeSlots();
 }
 
-/* 画面の幅/高さに収まるようにslot/gap調整（横5枠版） */
+/* 画面の幅/高さに収まるようにslot/gap調整（枠数可変） */
 function fitPicksToViewport(){
   var headerEl = document.querySelector("header");
   var headerH = headerEl ? headerEl.getBoundingClientRect().height : 60;
@@ -1035,7 +1115,7 @@ function fitPicksToViewport(){
   var availableH = window.innerHeight - headerH - 12 - 12;
 
   var bannerH = 110;
-  var actionsH = 140;
+  var actionsH = 180;
   var wrapPad = 12+8+10;
 
   var nameH = 18;
@@ -1132,7 +1212,7 @@ function drawSelectedGrid(){
   }
 }
 
-/* 画面：横並び5枠（空きは＋表示） */
+/* 画面：枠数分だけ表示（空きは＋表示） */
 function drawPicks(){
   var wrap = document.getElementById("picksRow");
   wrap.innerHTML = "";
@@ -1184,7 +1264,7 @@ function drawExportPicks(){
   renderMissingSlots();
 }
 
-/* 保存画像：未選択枠アイコン（選択されなかった枠数 = MAX_PICK - selected.length） */
+/* 保存画像：未選択枠アイコン（MAX_PICK - selected.length） */
 function renderMissingSlots(){
   var row = document.getElementById("exportMissingRow");
   if(!row) return;
@@ -1305,6 +1385,7 @@ async function saveImage(){
 }
 
 /* 初期描画 */
+updateFrameButtons();
 renderFreeSlots();
 drawMembers();
 drawSelectedGrid();
