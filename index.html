@@ -15,9 +15,10 @@
     --shadow: 0 4px 14px rgba(0,0,0,.06);
     --radius:14px;
 
+    /* ★青固定 */
     --blue:#0080ff;
 
-    /* 画面側：練習生サイズは固定（小さくしない） */
+    /* ★練習生のサイズは固定（小さくしない） */
     --slot: 86px;
     --gap:  14px;
   }
@@ -108,17 +109,13 @@
     pointer-events:none;
   }
 
-  /* ===== 画面：選択枠表示（背景画像は今まで通り） ===== */
+  /* ===== 上：選択枠（背景画像は今まで通り） ===== */
   .picksWrap{
     padding: 12px 14px 8px;
     background-image: url("https://i.imgur.com/lFGbXfI.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-
-    /* ★重要：サイズを小さくしないため、11の2列目が横に収まらない時は横スクロールで逃がす */
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
   }
   .picksRows{
     display:flex;
@@ -126,11 +123,15 @@
     gap: 10px;
     padding: 12px 0 8px;
   }
+
+  /* ★自動で段を増やして見切れ防止（サイズは変えない） */
   .picksRow{
     display:flex;
     justify-content:center;
     gap: var(--gap);
-    flex-wrap: nowrap; /* ★折り返しはしない（2段はJSで分ける） */
+    flex-wrap: wrap;   /* ←これが最重要 */
+    width: 100%;
+    row-gap: 14px;     /* 折り返し時の縦間隔 */
   }
 
   .slot{
@@ -138,7 +139,7 @@
     text-align:center;
   }
 
-  /* 青枠（固定） */
+  /* ★枠色を #0080ff に（青枠） */
   .avatar{
     width: var(--slot);
     height: var(--slot);
@@ -173,7 +174,7 @@
     line-height:1;
     min-width: 2.0em;
     text-align:center;
-    z-index: 9999;
+    z-index: 2;
     box-shadow: 0 6px 14px rgba(0,0,0,.18);
     pointer-events:none;
   }
@@ -204,6 +205,8 @@
     gap:10px;
     justify-content:center;
     margin-top: 8px;
+    position:relative;
+    z-index:3;
   }
   body.reorder-on .reorder{ display:flex; }
   .reorder button{
@@ -285,7 +288,7 @@
     letter-spacing: .02em;
   }
 
-  /* ★枠数切替 */
+  /* 枠数切替 */
   .frameControl{
     display:flex;
     flex-direction:column;
@@ -309,7 +312,7 @@
     font-weight: 1000;
   }
 
-  /* ===== 下部：一覧カード ===== */
+  /* ===== 下部：一覧カード（2列ボタン表示） ===== */
   .listCard{
     margin-top: 12px;
     padding: 10px;
@@ -358,7 +361,7 @@
     padding-top: 6px;
   }
 
-  /* 2列カード（一覧） */
+  /* 2列カード */
   .membersGrid{
     display:grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -424,62 +427,6 @@
   }
   .memberCardProfile:active{ transform: scale(.98); }
 
-  /* 上：選択済み表示（固定サイズ・列は端末に合わせて可変） */
-  .selectedGrid{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
-    padding: 6px 2px 2px;
-  }
-  .selectedCard{
-    border: 1px solid #e8e8e8;
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 4px 14px rgba(0,0,0,.06);
-    padding: 10px;
-    text-align:center;
-    position: relative;
-  }
-  .selectedBadge{
-    position:absolute;
-    left: 10px;
-    top: 10px;
-    width: 28px;
-    height: 28px;
-    border-radius: 999px;
-    background: rgba(0,0,0,.82);
-    color: #fff;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight: 900;
-    font-size: 13px;
-  }
-  .selectedThumb{
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 14px;
-    overflow:hidden;
-    background:#f7f7f7;
-    border: 1px solid #f0f0f0;
-  }
-  .selectedThumb img{
-    width:100%;
-    height:100%;
-    object-fit: cover;
-    object-position: 50% 20%;
-    display:block;
-  }
-  .selectedName{
-    margin-top: 10px;
-    font-weight: 900;
-    font-size: 13px;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow:hidden;
-    text-overflow: ellipsis;
-  }
-
   @media (max-width: 360px){
     .membersGrid{ gap:10px; }
   }
@@ -498,7 +445,7 @@
     z-index:999;
   }
 
-  /* ===== 保存専用エリア（現状維持：サイズ変更しない） ===== */
+  /* ===== 保存専用エリア（1004×1040固定） ===== */
   #exportArea{
     position: fixed;
     left: -10000px;
@@ -705,7 +652,7 @@
     min-height: 140px;
   }
 
-  /* 未選択アイコン：指定画像に変更（nAiYU1V）/ 色 #82cded */
+  /* 未選択アイコン：指定画像 / 色 #82cded */
   .missingIcon{
     width: 120px;
     height: 120px;
@@ -719,7 +666,6 @@
     mask-image: url("https://i.imgur.com/nAiYU1V.png");
     mask-repeat: no-repeat;
     mask-position: center;
-    mask-position: center;
     mask-size: contain;
 
     border-radius: 12px;
@@ -730,7 +676,7 @@
   .exportSlotsSentence{
     margin-top: 12px;
     text-align: center;
-    font-size: 20px; /* ← 18→20 */
+    font-size: 20px;
     font-weight: 900;
     color: #000;
     letter-spacing: .04em;
@@ -753,11 +699,9 @@
       <div class="slotBadge" id="slotBadge">空き 0 枠</div>
     </div>
 
+    <!-- 上：選択枠（ここに練習生が入っていく） -->
     <div class="picksWrap" id="picksWrap">
-      <div class="picksRows" id="picksRows">
-        <div class="picksRow" id="picksRow1"></div>
-        <div class="picksRow" id="picksRow2"></div>
-      </div>
+      <div class="picksRows" id="picksRows"></div>
     </div>
 
     <div class="actions">
@@ -801,11 +745,10 @@
     </div>
   </div>
 
-  <div class="listCard">
-    <div class="sectionTitle" id="selectedTitle">選択したメンバー（最大6人）</div>
-    <div id="selectedGrid" class="selectedGrid"></div>
+  <!-- ★「選択したメンバー（最大◯人）」ブロックは削除済み -->
 
-    <div class="sectionTitle" style="margin-top:14px;">一覧（押して追加）</div>
+  <div class="listCard">
+    <div class="sectionTitle">一覧（押して追加）</div>
 
     <div class="searchRow">
       <div class="search">
@@ -852,14 +795,18 @@
 
 <script>
 const HEADER_IMAGE_URL = "https://i.imgur.com/nYBRUdd.png";
-/* 画像URLが未指定でも壊れない */
 const FALLBACK_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 
 /* ★枠数：6〜11のみ（7含む） */
-let MAX_PICK = 6;
-const MAX_PICK_KEY = "oshivote_max_pick_v2";
+let MAX_PICK = 11;
+const MAX_PICK_KEY = "oshivote_max_pick_v3";
+const STORAGE_KEY  = "oshivote_selected_v5";
 
-const STORAGE_KEY = "oshivote_selected_v4";
+/* 練習生/候補切替 */
+let showingCandidates = false;
+
+/* 空き枠（手動） */
+let freeSlots = 0;
 
 /* プロフィールURL */
 function profileUrlById(id){
@@ -867,7 +814,15 @@ function profileUrlById(id){
   return "https://produce101.jp/profile/detail/?id=" + encodeURIComponent(id) + "&lang=ja";
 }
 
-/* ====== 練習生 ====== */
+function displayName(full){
+  return (full || "").replace(/\s*\([^)]*\)\s*/g, "").trim();
+}
+function alphaPart(full){
+  const m = (full||"").match(/\(([^)]*)\)/);
+  return m ? "(" + m[1] + ")" : "";
+}
+
+/* ====== 練習生データ（練習生＋候補） ====== */
 const traineesOnly = [
   {name:"アダム・ナガイ(ADAM)", img:"https://i.imgur.com/6QGzvRx.png", id:"adamnagai"},
   {name:"中丸 晏寿(AJU)", img:"https://i.imgur.com/KiZCKos.png", id:"nakamaruaju"},
@@ -954,7 +909,6 @@ const traineesOnly = [
   {name:"板倉 悠太(YUTA)", img:"https://i.imgur.com/j6IlxeD.png", id:"itakurayuta"}
 ];
 
-/* ★練習生候補（フル） */
 const candidates = [
   {name:"本荘 晃(AKIRA)", img:"https://i.imgur.com/p976l8j.jpeg", id:"honjoakira"},
   {name:"児島 歩夢(K.AYUMU)", img:"https://i.imgur.com/1jtcgbB.png", id:"kojimaayumu"},
@@ -999,20 +953,6 @@ const candidates = [
 const trainees = traineesOnly.concat(candidates);
 const TRAINEES_COUNT = traineesOnly.length;
 
-let reorderMode = false;
-let showingCandidates = false;
-
-/* 空き枠（手動） */
-let freeSlots = 0;
-
-/* ★枠数ロード（localStorage） */
-(function loadMaxPick(){
-  try{
-    const v = parseInt(localStorage.getItem(MAX_PICK_KEY), 10);
-    if([6,7,8,9,10,11].includes(v)) MAX_PICK = v;
-  }catch(e){}
-})();
-
 /* 選択 */
 let selected = loadSelected();
 
@@ -1027,13 +967,13 @@ let selected = loadSelected();
   }
 })();
 
-function displayName(full){
-  return (full || "").replace(/\s*\([^)]*\)\s*/g, "").trim();
-}
-function alphaPart(full){
-  const m = (full||"").match(/\(([^)]*)\)/);
-  return m ? "(" + m[1] + ")" : "";
-}
+/* ★枠数ロード（localStorage） */
+(function loadMaxPick(){
+  try{
+    const v = parseInt(localStorage.getItem(MAX_PICK_KEY), 10);
+    if([6,7,8,9,10,11].includes(v)) MAX_PICK = v;
+  }catch(e){}
+})();
 
 /* 枠数ボタンの見た目更新 */
 function updateFrameButtons(){
@@ -1042,12 +982,9 @@ function updateFrameButtons(){
     const n = parseInt(b.getAttribute("data-n"), 10);
     b.classList.toggle("frameBtnActive", n === MAX_PICK);
   });
-
-  const title = document.getElementById("selectedTitle");
-  if(title) title.textContent = `選択したメンバー（最大${MAX_PICK}人）`;
 }
 
-/* ★枠数を変更 */
+/* 枠数変更 */
 function setMaxPick(n){
   if(![6,7,8,9,10,11].includes(n)) return;
 
@@ -1061,26 +998,10 @@ function setMaxPick(n){
   try{ localStorage.setItem(MAX_PICK_KEY, String(MAX_PICK)); }catch(e){}
 
   updateFrameButtons();
-  drawMembers();
-  drawSelectedGrid();
   drawPicks();
+  drawMembers();
   drawExportPicks();
   renderFreeSlots();
-}
-
-/* ★2段分割のルール
-   - 6以上は2段
-   - 11のみ：1段目5 / 2段目6（要望通り）
-   - それ以外：6:3+3 / 7:4+3 / 8:4+4 / 9:5+4 / 10:5+5 */
-function getRow1Count(){
-  if(MAX_PICK <= 5) return MAX_PICK;
-  if(MAX_PICK === 11) return 5;
-  if(MAX_PICK === 6) return 3;
-  if(MAX_PICK === 7) return 4;
-  if(MAX_PICK === 8) return 4;
-  if(MAX_PICK === 9) return 5;
-  if(MAX_PICK === 10) return 5;
-  return Math.min(5, Math.ceil(MAX_PICK/2));
 }
 
 /* 練習生/候補 切替（スクロール位置維持） */
@@ -1120,7 +1041,6 @@ function renderFreeSlots(){
   const input = document.getElementById("slotsInput");
   if(input && String(input.value) !== String(freeSlots)) input.value = freeSlots;
 }
-
 function incSlots(){ freeSlots = Math.min(99, freeSlots + 1); renderFreeSlots(); }
 function decSlots(){ freeSlots = Math.max(0, freeSlots - 1); renderFreeSlots(); }
 function setSlotsFromInput(){
@@ -1131,12 +1051,57 @@ function setSlotsFromInput(){
   renderFreeSlots();
 }
 
-/* ★重要：サイズは絶対にいじらない（小さくしない） */
-function fitPicksToViewport(){
-  document.documentElement.style.setProperty("--gap", "14px");
+/* ★表示側：自動で段を増やす（見切れない） */
+function getMaxPerRow(){
+  const wrap = document.getElementById("picksWrap");
+  if(!wrap) return 3;
+
+  const wrapWidth = wrap.clientWidth;
+  const slot = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--slot"), 10) || 86;
+  const gap  = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--gap"), 10) || 14;
+
+  return Math.max(1, Math.floor((wrapWidth + gap) / (slot + gap)));
 }
 
-/* 一覧（2列カード＋profileボタン） */
+function drawPicks(){
+  const container = document.getElementById("picksRows");
+  if(!container) return;
+  container.innerHTML = "";
+
+  const maxPerRow = getMaxPerRow();
+  let row = null;
+
+  for(let i = 0; i < MAX_PICK; i++){
+    if(i % maxPerRow === 0){
+      row = document.createElement("div");
+      row.className = "picksRow";
+      container.appendChild(row);
+    }
+
+    const slot = document.createElement("div");
+    if(i < selected.length){
+      const m = trainees[selected[i]];
+      slot.className = "slot";
+      slot.innerHTML = `
+        <div class="avatar">
+          <img src="${m.img || FALLBACK_IMG}" alt="">
+          <div class="rank">${i + 1}</div>
+        </div>
+        <div class="name">${displayName(m.name)}</div>
+        <div class="reorder">
+          <button onclick="moveLeft(${i})" aria-label="left">←</button>
+          <button onclick="moveRight(${i})" aria-label="right">→</button>
+        </div>
+      `;
+    }else{
+      slot.className = "slot empty";
+      slot.innerHTML = `<div class="avatar">+</div>`;
+    }
+    row.appendChild(slot);
+  }
+}
+
+/* 一覧（2列カード＋profile） */
 function drawMembers(){
   var qEl = document.getElementById("search");
   var q = (qEl ? qEl.value : "").trim().toLowerCase();
@@ -1175,71 +1140,72 @@ function drawMembers(){
   }
 }
 
-/* 上：選択済み表示 */
-function drawSelectedGrid(){
-  var el = document.getElementById("selectedGrid");
-  if(!el) return;
-
-  el.innerHTML = "";
-
-  if(selected.length === 0){
-    el.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:6px 2px;">まだ選択されていません（最大${MAX_PICK}人）</div>`;
+/* 追加 */
+function add(i){
+  if(selected.length >= MAX_PICK){
+    alert(MAX_PICK + "人まで！");
     return;
   }
+  if(selected.indexOf(i) !== -1) return;
 
-  for(var k=0; k<selected.length; k++){
-    var m = trainees[selected[k]];
-    var card = document.createElement("div");
-    card.className = "selectedCard";
-    card.innerHTML = `
-      <div class="selectedBadge">${k+1}</div>
-      <div class="selectedThumb"><img src="${m.img || FALLBACK_IMG}" alt=""></div>
-      <div class="selectedName">${displayName(m.name)}</div>
-    `;
-    el.appendChild(card);
-  }
+  selected.push(i);
+  saveSelected();
+
+  drawPicks();
+  drawMembers();
+  drawExportPicks();
 }
 
-/* 画面：枠数分だけ表示（2段表示 / サイズ固定） */
-function drawPicks(){
-  var row1 = document.getElementById("picksRow1");
-  var row2 = document.getElementById("picksRow2");
-  if(!row1 || !row2) return;
+/* 戻す */
+function undo(){
+  selected.pop();
+  saveSelected();
+  drawPicks();
+  drawMembers();
+  drawExportPicks();
+}
 
-  row1.innerHTML = "";
-  row2.innerHTML = "";
+/* リセット */
+function resetAll(){
+  selected = [];
+  saveSelected();
+  drawPicks();
+  drawMembers();
+  drawExportPicks();
+}
 
-  var row1Count = getRow1Count();
+/* 並び替え */
+let reorderMode = false;
+function toggleReorder(){
+  reorderMode = !reorderMode;
+  document.body.classList.toggle("reorder-on", reorderMode);
+  document.getElementById("reorderBtn").textContent = "並び替えモード：" + (reorderMode ? "ON" : "OFF");
+}
+function swap(posA, posB){
+  if(posA < 0 || posB < 0) return;
+  if(posA >= selected.length || posB >= selected.length) return;
+  var tmp = selected[posA];
+  selected[posA] = selected[posB];
+  selected[posB] = tmp;
+  saveSelected();
+  drawPicks();
+  drawMembers();
+  drawExportPicks();
+}
+function moveLeft(pos){ swap(pos, pos-1); }
+function moveRight(pos){ swap(pos, pos+1); }
 
-  for(var idx=0; idx<MAX_PICK; idx++){
-    var targetRow = (idx < row1Count) ? row1 : row2;
-
-    var slot = document.createElement("div");
-    if(idx < selected.length){
-      var m = trainees[selected[idx]];
-      slot.className = "slot";
-      slot.innerHTML = `
-        <div class="avatar">
-          <img src="${m.img || FALLBACK_IMG}" alt="">
-          <div class="rank">${idx+1}</div>
-        </div>
-        <div class="name">${displayName(m.name)}</div>
-        <div class="reorder">
-          <button onclick="moveLeft(${idx})" aria-label="left">←</button>
-          <button onclick="moveRight(${idx})" aria-label="right">→</button>
-        </div>
-      `;
-    }else{
-      slot.className = "slot empty";
-      slot.innerHTML = `<div class="avatar">+</div>`;
-    }
-    targetRow.appendChild(slot);
-  }
-
-  /* 6以上は2段。念のため MAX_PICK<=5 の場合は2段目空に */
-  if(MAX_PICK <= 5){
-    row2.innerHTML = "";
-  }
+/* 保存（localStorage） */
+function saveSelected(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(selected)); }catch(e){}
+}
+function loadSelected(){
+  try{
+    var raw = localStorage.getItem(STORAGE_KEY);
+    var arr = raw ? JSON.parse(raw) : [];
+    if(!Array.isArray(arr)) return [];
+    return arr.filter(function(n){ return Number.isInteger(n); });
+  }catch(e){ return []; }
 }
 
 /* 保存画像：選択した人数だけ表示（＋は出さない） */
@@ -1271,84 +1237,12 @@ function renderMissingSlots(){
 
   row.innerHTML = "";
   var missing = Math.max(0, MAX_PICK - selected.length);
+
   for(var i=0; i<missing; i++){
     var d = document.createElement("div");
     d.className = "missingIcon";
     row.appendChild(d);
   }
-}
-
-/* 追加 */
-function add(i){
-  /* 上限は MAX_PICK（最大11） */
-  if(selected.length >= MAX_PICK){
-    alert(MAX_PICK + "人まで！");
-    return;
-  }
-  if(selected.indexOf(i) !== -1) return;
-
-  selected.push(i);
-  saveSelected();
-
-  drawMembers();
-  drawSelectedGrid();
-  drawPicks();
-  drawExportPicks();
-}
-
-/* 戻す */
-function undo(){
-  selected.pop();
-  saveSelected();
-  drawMembers();
-  drawSelectedGrid();
-  drawPicks();
-  drawExportPicks();
-}
-
-/* リセット */
-function resetAll(){
-  selected = [];
-  saveSelected();
-  drawMembers();
-  drawSelectedGrid();
-  drawPicks();
-  drawExportPicks();
-}
-
-/* 並び替え */
-function toggleReorder(){
-  reorderMode = !reorderMode;
-  document.body.classList.toggle("reorder-on", reorderMode);
-  document.getElementById("reorderBtn").textContent = "並び替えモード：" + (reorderMode ? "ON" : "OFF");
-}
-function swap(posA, posB){
-  if(posA < 0 || posB < 0) return;
-  if(posA >= selected.length || posB >= selected.length) return;
-  var tmp = selected[posA];
-  selected[posA] = selected[posB];
-  selected[posB] = tmp;
-  saveSelected();
-  drawMembers();
-  drawSelectedGrid();
-  drawPicks();
-  drawExportPicks();
-}
-function moveLeft(pos){ swap(pos, pos-1); }
-function moveRight(pos){ swap(pos, pos+1); }
-
-/* 保存（localStorage） */
-function saveSelected(){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(selected)); }catch(e){}
-}
-function loadSelected(){
-  try{
-    var raw = localStorage.getItem(STORAGE_KEY);
-    var arr = raw ? JSON.parse(raw) : [];
-    if(!Array.isArray(arr)) return [];
-    arr = arr.filter(function(n){ return Number.isInteger(n); }).slice(0, MAX_PICK);
-    return arr;
-  }catch(e){ return []; }
 }
 
 /* 画像保存 */
@@ -1387,12 +1281,13 @@ async function saveImage(){
 /* 初期描画 */
 updateFrameButtons();
 renderFreeSlots();
-drawMembers();
-drawSelectedGrid();
 drawPicks();
+drawMembers();
 drawExportPicks();
-fitPicksToViewport();
-window.addEventListener("resize", function(){ fitPicksToViewport(); });
+
+window.addEventListener("resize", function(){
+  drawPicks(); /* 画面幅が変わっても見切れないように再配置 */
+});
 </script>
 </body>
 </html>
