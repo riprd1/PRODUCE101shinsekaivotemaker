@@ -225,7 +225,7 @@
   .danger{border-color:#ffd6d6;}
   .mode{border-color:#e7e7e7;}
 
-  /* TikTok誘導（サイト上だけ） */
+  /* TikTok誘導（サイト上） */
   .tiktokBtn{
     display:inline-flex;
     align-items:center;
@@ -254,8 +254,24 @@
     flex-direction:column;
     align-items:center;
   }
-  @media (max-width: 420px){
-    .tiktokBtn{ width:100%; }
+
+  /* 空き枠操作ブロック＋説明 */
+  .slotsControl{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+  }
+  .slotsRow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .slotsHint{
+    font-size: 12px;
+    font-weight: 900;
+    color: #666;
+    letter-spacing: .02em;
   }
 
   /* ===== 下部：一覧カード ===== */
@@ -373,7 +389,7 @@
   }
   .memberCardProfile:active{ transform: scale(.98); }
 
-  /* 選択済み（上に表示） */
+  /* 上：選択済み表示 */
   .selectedGrid{
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -576,7 +592,7 @@
     gap: 44px;
     margin-top: 26px;
     flex-wrap: nowrap;
-    min-height: 210px; /* 0人でも高さ確保 */
+    min-height: 210px;
   }
   .exportSlot{
     width: 130px;
@@ -628,47 +644,53 @@
     text-overflow: ellipsis;
   }
 
-  /* 保存画像：空き枠（大きめ・中央） */
+  /* 保存画像：空き枠（青い枠で囲む） */
   .exportSlotsText{
     margin-top: 20px;
     text-align: center;
     font-size: 26px;
     font-weight: 1000;
-    color: rgba(0,0,0,.75);
-    letter-spacing: .04em;
+    color: var(--blue);
 
     display: inline-block;
     margin-left: 50%;
     transform: translateX(-50%);
-    background: rgba(255,255,255,.75);
-    border: 1px solid rgba(255,255,255,.9);
+
+    background: rgba(255,255,255,.95);
+    border: 4px solid var(--blue);
     border-radius: 999px;
-    padding: 10px 18px;
-    backdrop-filter: blur(6px);
+    padding: 10px 22px;
+
+    letter-spacing: .04em;
     white-space: nowrap;
+    box-shadow: 0 8px 18px rgba(0,128,255,.25);
   }
 
-  /* 保存画像：未選択枠（アイコン） */
+  /* 保存画像：未選択枠アイコン（大きく） */
   .exportMissingRow{
-    margin-top: 14px;
+    margin-top: 18px;
     display:flex;
     justify-content:center;
-    gap: 12px;
-    min-height: 36px;
+    gap: 32px;
+    min-height: 140px;
   }
   .missingIcon{
-    width: 34px;
-    height: 34px;
+    width: 120px;
+    height: 120px;
     background: #82cded;
+
     -webkit-mask-image: url("https://i.imgur.com/V3OTDUr.png");
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-position: center;
     -webkit-mask-size: contain;
+
     mask-image: url("https://i.imgur.com/V3OTDUr.png");
     mask-repeat: no-repeat;
     mask-position: center;
     mask-size: contain;
-    border-radius: 2px;
+
+    border-radius: 12px;
+    box-shadow: 0 10px 22px rgba(0,0,0,.12);
   }
 
   /* 保存画像：空き枠の文章（黒） */
@@ -708,19 +730,24 @@
       <button class="danger" onclick="resetAll()">リセット</button>
       <button class="mode" id="reorderBtn" onclick="toggleReorder()">並び替えモード：OFF</button>
 
-      <!-- 空き枠入力 -->
-      <button type="button" class="mode" onclick="decSlots()">－</button>
-      <button type="button" class="mode" onclick="incSlots()">＋</button>
-      <input id="slotsInput" type="number" min="0" max="99" value="0"
-             style="width:76px;padding:10px;border-radius:12px;border:1px solid #ddd;"
-             oninput="setSlotsFromInput()" />
-
-      <!-- TikTok誘導（サイト上だけ） -->
+      <!-- TikTok誘導：並び替えの下 -->
       <div class="tiktokWrap">
         <a class="tiktokBtn" href="https://www.tiktok.com/@12agassi" target="_blank" rel="noopener">
           TikTokフォローお願い🥹
         </a>
         <div class="tiktokHint">↑ここをクリック</div>
+      </div>
+
+      <!-- 空き枠操作（＋－の説明つき） -->
+      <div class="slotsControl">
+        <div class="slotsRow">
+          <button type="button" class="mode" onclick="decSlots()">－</button>
+          <button type="button" class="mode" onclick="incSlots()">＋</button>
+          <input id="slotsInput" type="number" min="0" max="99" value="0"
+                 style="width:76px;padding:10px;border-radius:12px;border:1px solid #ddd;"
+                 oninput="setSlotsFromInput()" />
+        </div>
+        <div class="slotsHint">投票枠の空き数を選んで</div>
       </div>
     </div>
   </div>
@@ -779,7 +806,7 @@ const HEADER_IMAGE_URL = "https://i.imgur.com/nYBRUdd.png";
 const FALLBACK_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 
 const MAX_PICK = 5;
-const STORAGE_KEY = "oshivote_selected_v2";
+const STORAGE_KEY = "oshivote_selected_v3";
 
 /* プロフィールURL */
 function profileUrlById(id){
@@ -787,7 +814,7 @@ function profileUrlById(id){
   return "https://produce101.jp/profile/detail/?id=" + encodeURIComponent(id) + "&lang=ja";
 }
 
-/* ====== 練習生（全員） ====== */
+/* ====== 練習生 ====== */
 const traineesOnly = [
   {name:"アダム・ナガイ(ADAM)", img:"https://i.imgur.com/6QGzvRx.png", id:"adamnagai"},
   {name:"中丸 晏寿(AJU)", img:"https://i.imgur.com/KiZCKos.png", id:"nakamaruaju"},
@@ -916,7 +943,6 @@ const candidates = [
   {name:"岡本 佑斗(YUTO)", img:"https://i.imgur.com/lzv8Vu5.png", id:"okamotoyuto"}
 ];
 
-/* 結合（互換維持） */
 const trainees = traineesOnly.concat(candidates);
 const TRAINEES_COUNT = traineesOnly.length;
 
@@ -1009,7 +1035,7 @@ function fitPicksToViewport(){
   var availableH = window.innerHeight - headerH - 12 - 12;
 
   var bannerH = 110;
-  var actionsH = 120;
+  var actionsH = 140;
   var wrapPad = 12+8+10;
 
   var nameH = 18;
