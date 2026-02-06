@@ -17,7 +17,7 @@
 
     --blue:#0080ff;
 
-    /* 画面側（枠が増えてもサイズは変えない。JSでギャップだけ調整する） */
+    /* 画面側：練習生サイズは固定（小さくしない） */
     --slot: 86px;
     --gap:  14px;
   }
@@ -115,19 +115,30 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+
+    /* ★重要：サイズを小さくしないため、11の2列目が横に収まらない時は横スクロールで逃がす */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .picksRows{
+    display:flex;
+    flex-direction:column;
+    gap: 10px;
+    padding: 12px 0 8px;
   }
   .picksRow{
     display:flex;
     justify-content:center;
     gap: var(--gap);
-    padding: 12px 0 8px;
-    flex-wrap: wrap; /* ★枠が増えたら自動で折り返し（サイズは変えない） */
+    flex-wrap: nowrap; /* ★折り返しはしない（2段はJSで分ける） */
   }
+
   .slot{
     width: var(--slot);
     text-align:center;
   }
 
+  /* 青枠（固定） */
   .avatar{
     width: var(--slot);
     height: var(--slot);
@@ -274,7 +285,7 @@
     letter-spacing: .02em;
   }
 
-  /* ★追加：枠数切替 */
+  /* ★枠数切替 */
   .frameControl{
     display:flex;
     flex-direction:column;
@@ -413,10 +424,10 @@
   }
   .memberCardProfile:active{ transform: scale(.98); }
 
-  /* 上：選択済み表示 */
+  /* 上：選択済み表示（固定サイズ・列は端末に合わせて可変） */
   .selectedGrid{
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 12px;
     padding: 6px 2px 2px;
   }
@@ -471,7 +482,6 @@
 
   @media (max-width: 360px){
     .membersGrid{ gap:10px; }
-    .selectedGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
 
   .toast{
@@ -488,7 +498,7 @@
     z-index:999;
   }
 
-  /* ===== 保存専用エリア（現状維持） ===== */
+  /* ===== 保存専用エリア（現状維持：サイズ変更しない） ===== */
   #exportArea{
     position: fixed;
     left: -10000px;
@@ -511,6 +521,7 @@
     background-repeat: no-repeat;
   }
 
+  /* 右上：created by */
   .exportCredit{
     position: absolute;
     top: 18px;
@@ -528,6 +539,7 @@
     pointer-events: none;
   }
 
+  /* 下：TikTok & hashtag */
   .exportTikTok{
     position: absolute;
     left: 50%;
@@ -546,7 +558,6 @@
     pointer-events: none;
     white-space: nowrap;
   }
-
   .exportHashtag{
     position: absolute;
     left: 50%;
@@ -594,6 +605,7 @@
     padding: 18px 56px 120px;
   }
 
+  /* ヘッダー下：投票して欲しいメンバー */
   .exportSubtitle{
     text-align: center;
     font-size: 22px;
@@ -604,6 +616,7 @@
     text-shadow: 0 1px 0 rgba(255,255,255,.55);
   }
 
+  /* 保存：選択メンバー（選択分だけ中央に） */
   .exportPicksRow{
     display:flex;
     justify-content:center;
@@ -662,6 +675,7 @@
     text-overflow: ellipsis;
   }
 
+  /* 青枠：空き枠 */
   .exportSlotsText{
     margin-top: 20px;
     text-align: center;
@@ -691,7 +705,7 @@
     min-height: 140px;
   }
 
-  /* ★未選択アイコン：指定画像に変更（nAiYU1V） */
+  /* 未選択アイコン：指定画像に変更（nAiYU1V）/ 色 #82cded */
   .missingIcon{
     width: 120px;
     height: 120px;
@@ -705,19 +719,21 @@
     mask-image: url("https://i.imgur.com/nAiYU1V.png");
     mask-repeat: no-repeat;
     mask-position: center;
+    mask-position: center;
     mask-size: contain;
 
     border-radius: 12px;
     box-shadow: 0 10px 22px rgba(0,0,0,.12);
   }
 
+  /* ★読みやすく：少しだけ大きく（大きすぎない） */
   .exportSlotsSentence{
     margin-top: 12px;
     text-align: center;
-    font-size: 18px;
+    font-size: 20px; /* ← 18→20 */
     font-weight: 900;
     color: #000;
-    letter-spacing: .03em;
+    letter-spacing: .04em;
     white-space: nowrap;
   }
 </style>
@@ -738,7 +754,10 @@
     </div>
 
     <div class="picksWrap" id="picksWrap">
-      <div class="picksRow" id="picksRow"></div>
+      <div class="picksRows" id="picksRows">
+        <div class="picksRow" id="picksRow1"></div>
+        <div class="picksRow" id="picksRow2"></div>
+      </div>
     </div>
 
     <div class="actions">
@@ -755,12 +774,12 @@
         <div class="tiktokHint">↑ここをクリック</div>
       </div>
 
-      <!-- ★追加：選択枠数切替 -->
+      <!-- 選択枠数切替：6〜11（7追加済み） -->
       <div class="frameControl">
         <div class="frameLabel">選択枠</div>
         <div class="frameBtns" id="frameBtns">
-          <button type="button" class="mode frameBtn" data-n="5" onclick="setMaxPick(5)">5</button>
           <button type="button" class="mode frameBtn" data-n="6" onclick="setMaxPick(6)">6</button>
+          <button type="button" class="mode frameBtn" data-n="7" onclick="setMaxPick(7)">7</button>
           <button type="button" class="mode frameBtn" data-n="8" onclick="setMaxPick(8)">8</button>
           <button type="button" class="mode frameBtn" data-n="9" onclick="setMaxPick(9)">9</button>
           <button type="button" class="mode frameBtn" data-n="10" onclick="setMaxPick(10)">10</button>
@@ -783,7 +802,7 @@
   </div>
 
   <div class="listCard">
-    <div class="sectionTitle" id="selectedTitle">選択したメンバー（最大5人）</div>
+    <div class="sectionTitle" id="selectedTitle">選択したメンバー（最大6人）</div>
     <div id="selectedGrid" class="selectedGrid"></div>
 
     <div class="sectionTitle" style="margin-top:14px;">一覧（押して追加）</div>
@@ -833,13 +852,14 @@
 
 <script>
 const HEADER_IMAGE_URL = "https://i.imgur.com/nYBRUdd.png";
+/* 画像URLが未指定でも壊れない */
 const FALLBACK_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 
-/* ★枠数：可変（5/6/8/9/10/11） */
-let MAX_PICK = 5;
-const MAX_PICK_KEY = "oshivote_max_pick_v1";
+/* ★枠数：6〜11のみ（7含む） */
+let MAX_PICK = 6;
+const MAX_PICK_KEY = "oshivote_max_pick_v2";
 
-const STORAGE_KEY = "oshivote_selected_v3";
+const STORAGE_KEY = "oshivote_selected_v4";
 
 /* プロフィールURL */
 function profileUrlById(id){
@@ -854,7 +874,6 @@ const traineesOnly = [
   {name:"オム・スアンカワーテン(AOM)", img:"https://i.imgur.com/dDIFJSc.png", id:"aomsuungkavathin"},
   {name:"アーチャー・ウイ(ARCHER)", img:"https://i.imgur.com/5iIerqN.png", id:"archeruy"},
   {name:"篠ヶ谷 歩夢(S.AYUMU)", img:"https://i.imgur.com/YJAdh8q.png", id:"shinogayaayumu"},
-
   {name:"小林 千悟(CHISATO)", img:"https://i.imgur.com/Iu0hNBO.png", id:"kobayashichisato"},
   {name:"加藤 大樹 (K.DAIKI)", img:"https://i.imgur.com/4fRk2EB.png", id:"katodaiki"},
   {name:"カク・ドンミン(DONGMIN)", img:"https://i.imgur.com/xZSQqMh.png", id:"kwakdongmin"},
@@ -862,7 +881,6 @@ const traineesOnly = [
   {name:"保里 瑛都(H.EITO)", img:"https://i.imgur.com/IAhs4ZA.png", id:"horieito"},
   {name:"金田 栄都(K.EITO)", img:"https://i.imgur.com/tF7i1du.png", id:"kanedaeito"},
   {name:"櫻井 楓真(FUMA)", img:"https://i.imgur.com/WIWI8Sx.png", id:"sakuraifuma"},
-
   {name:"小笠原ジュゼッペ慧(GIUSEPPE)", img:"https://i.imgur.com/2oKn3Ma.jpeg", id:"ogasawaragiuseppekei"},
   {name:"倉橋 吾槙(GOTEN)", img:"https://i.imgur.com/hlEjYqR.png", id:"kurahashigoten"},
   {name:"堀尾 聖(HIJIRI)", img:"https://i.imgur.com/5Qb5dRJ.png", id:"horiohijiri"},
@@ -874,7 +892,6 @@ const traineesOnly = [
   {name:"ジュアン・ジェイ(JAY)", img:"https://i.imgur.com/41jKNZX.png", id:"chuangjay"},
   {name:"丸尾 尋一郎(JINICHIRO)", img:"https://i.imgur.com/83azYjx.png", id:"maruojinichiro"},
   {name:"河邊 晟(JOE)", img:"https://i.imgur.com/DqUS1o6.png", id:"kawabejoe"},
-
   {name:"シン・ジョンウク(JUNGUK)", img:"https://i.imgur.com/6cwEusK.jpeg", id:"shinjunguk"},
   {name:"金安 純正(JUNSEI)", img:"https://i.imgur.com/juPhMDR.png", id:"kaneyasujunsei"},
   {name:"宇野 海夢(KAIMU)", img:"https://i.imgur.com/QVliSyD.png", id:"unokaimu"},
@@ -894,7 +911,6 @@ const traineesOnly = [
   {name:"堀野 蓮(H.REN)", img:"https://i.imgur.com/FQEx0JM.png", id:"horinoren"},
   {name:"小清水 蓮(KO.REN)", img:"https://i.imgur.com/S8Ij9OZ.png", id:"koshimizuren"},
   {name:"チェン・リッキー(RICKEY)", img:"https://i.imgur.com/DnnZVAT.png", id:"chenrickey"},
-
   {name:"神元 理丘(RIKU)", img:"https://i.imgur.com/jwJ9CLd.png", id:"kamimotoriku"},
   {name:"鳩場 陸人(H.RIKUTO)", img:"https://i.imgur.com/JdCFbCb.png", id:"hatobarikuto"},
   {name:"今江 陸斗(I.RIKUTO)", img:"https://i.imgur.com/jiZZwJu.png", id:"imaerikuto"},
@@ -914,7 +930,6 @@ const traineesOnly = [
   {name:"山下 柊(Y.SHU)", img:"https://i.imgur.com/642IX8o.png", id:"yamashitashu"},
   {name:"パク・シヨン(SIYOUNG)", img:"https://i.imgur.com/wSokxJh.png", id:"parksiyoung"},
   {name:"佐藤 碧空 (S.SORA)", img:"https://i.imgur.com/yF4WJJB.png", id:"satosora"},
-
   {name:"東野 蒼汰(SOTA)", img:"https://i.imgur.com/GvLpwfo.png", id:"tonosota"},
   {name:"藤牧 大雅(F.TAIGA)", img:"https://i.imgur.com/4G2hBRy.png", id:"fujimakitaiga"},
   {name:"松田 太雅(M.TAIGA)", img:"https://i.imgur.com/tICsJFs.png", id:"matsudataiga"},
@@ -939,7 +954,7 @@ const traineesOnly = [
   {name:"板倉 悠太(YUTA)", img:"https://i.imgur.com/j6IlxeD.png", id:"itakurayuta"}
 ];
 
-/* ====== 練習生候補 ====== */
+/* ★練習生候補（フル） */
 const candidates = [
   {name:"本荘 晃(AKIRA)", img:"https://i.imgur.com/p976l8j.jpeg", id:"honjoakira"},
   {name:"児島 歩夢(K.AYUMU)", img:"https://i.imgur.com/1jtcgbB.png", id:"kojimaayumu"},
@@ -990,11 +1005,11 @@ let showingCandidates = false;
 /* 空き枠（手動） */
 let freeSlots = 0;
 
-/* ★枠数ロード（selectedより先に） */
+/* ★枠数ロード（localStorage） */
 (function loadMaxPick(){
   try{
     const v = parseInt(localStorage.getItem(MAX_PICK_KEY), 10);
-    if([5,6,8,9,10,11].includes(v)) MAX_PICK = v;
+    if([6,7,8,9,10,11].includes(v)) MAX_PICK = v;
   }catch(e){}
 })();
 
@@ -1020,7 +1035,7 @@ function alphaPart(full){
   return m ? "(" + m[1] + ")" : "";
 }
 
-/* ★枠数ボタンの見た目更新 */
+/* 枠数ボタンの見た目更新 */
 function updateFrameButtons(){
   const btns = document.querySelectorAll(".frameBtn");
   btns.forEach(b=>{
@@ -1034,7 +1049,7 @@ function updateFrameButtons(){
 
 /* ★枠数を変更 */
 function setMaxPick(n){
-  if(![5,6,8,9,10,11].includes(n)) return;
+  if(![6,7,8,9,10,11].includes(n)) return;
 
   MAX_PICK = n;
 
@@ -1051,7 +1066,21 @@ function setMaxPick(n){
   drawPicks();
   drawExportPicks();
   renderFreeSlots();
-  fitPicksToViewport();
+}
+
+/* ★2段分割のルール
+   - 6以上は2段
+   - 11のみ：1段目5 / 2段目6（要望通り）
+   - それ以外：6:3+3 / 7:4+3 / 8:4+4 / 9:5+4 / 10:5+5 */
+function getRow1Count(){
+  if(MAX_PICK <= 5) return MAX_PICK;
+  if(MAX_PICK === 11) return 5;
+  if(MAX_PICK === 6) return 3;
+  if(MAX_PICK === 7) return 4;
+  if(MAX_PICK === 8) return 4;
+  if(MAX_PICK === 9) return 5;
+  if(MAX_PICK === 10) return 5;
+  return Math.min(5, Math.ceil(MAX_PICK/2));
 }
 
 /* 練習生/候補 切替（スクロール位置維持） */
@@ -1102,48 +1131,9 @@ function setSlotsFromInput(){
   renderFreeSlots();
 }
 
-/* 画面の幅/高さに収まるようにslot/gap調整（枠数可変） */
+/* ★重要：サイズは絶対にいじらない（小さくしない） */
 function fitPicksToViewport(){
-  var headerEl = document.querySelector("header");
-  var headerH = headerEl ? headerEl.getBoundingClientRect().height : 60;
-
-  var card = document.getElementById("picksCard");
-  if(!card) return;
-
-  var cardRect = card.getBoundingClientRect();
-  var availableW = cardRect.width - 28;
-  var availableH = window.innerHeight - headerH - 12 - 12;
-
-  var bannerH = 110;
-  var actionsH = 180;
-  var wrapPad = 12+8+10;
-
-  var nameH = 18;
-  var badgeOut = 22;
-
-  var maxRow = MAX_PICK;
-
-  var slot = 92;
-  var gap  = 14;
-
-  function needHeight(s,g){
-    return bannerH + actionsH + wrapPad + s + nameH + badgeOut + 30;
-  }
-  function needSlotByWidth(g){
-    return Math.floor((availableW - g*(maxRow-1)) / maxRow);
-  }
-
-  slot = Math.min(slot, needSlotByWidth(gap));
-
-  while((needHeight(slot,gap) > availableH || slot*maxRow + gap*(maxRow-1) > availableW) && slot > 56){
-    slot -= 2;
-    gap  -= 1;
-    if(gap < 10) gap = 10;
-    slot = Math.min(slot, needSlotByWidth(gap));
-  }
-
-  document.documentElement.style.setProperty("--slot", slot + "px");
-  document.documentElement.style.setProperty("--gap", gap + "px");
+  document.documentElement.style.setProperty("--gap", "14px");
 }
 
 /* 一覧（2列カード＋profileボタン） */
@@ -1183,8 +1173,6 @@ function drawMembers(){
 
     membersEl.appendChild(card);
   }
-
-  drawSelectedGrid();
 }
 
 /* 上：選択済み表示 */
@@ -1212,14 +1200,21 @@ function drawSelectedGrid(){
   }
 }
 
-/* 画面：枠数分だけ表示（空きは＋表示） */
+/* 画面：枠数分だけ表示（2段表示 / サイズ固定） */
 function drawPicks(){
-  var wrap = document.getElementById("picksRow");
-  wrap.innerHTML = "";
+  var row1 = document.getElementById("picksRow1");
+  var row2 = document.getElementById("picksRow2");
+  if(!row1 || !row2) return;
+
+  row1.innerHTML = "";
+  row2.innerHTML = "";
+
+  var row1Count = getRow1Count();
 
   for(var idx=0; idx<MAX_PICK; idx++){
-    var slot = document.createElement("div");
+    var targetRow = (idx < row1Count) ? row1 : row2;
 
+    var slot = document.createElement("div");
     if(idx < selected.length){
       var m = trainees[selected[idx]];
       slot.className = "slot";
@@ -1238,7 +1233,12 @@ function drawPicks(){
       slot.className = "slot empty";
       slot.innerHTML = `<div class="avatar">+</div>`;
     }
-    wrap.appendChild(slot);
+    targetRow.appendChild(slot);
+  }
+
+  /* 6以上は2段。念のため MAX_PICK<=5 の場合は2段目空に */
+  if(MAX_PICK <= 5){
+    row2.innerHTML = "";
   }
 }
 
@@ -1270,7 +1270,6 @@ function renderMissingSlots(){
   if(!row) return;
 
   row.innerHTML = "";
-
   var missing = Math.max(0, MAX_PICK - selected.length);
   for(var i=0; i<missing; i++){
     var d = document.createElement("div");
@@ -1281,17 +1280,20 @@ function renderMissingSlots(){
 
 /* 追加 */
 function add(i){
-  if(selected.length >= MAX_PICK){ alert(MAX_PICK + "人まで！"); return; }
+  /* 上限は MAX_PICK（最大11） */
+  if(selected.length >= MAX_PICK){
+    alert(MAX_PICK + "人まで！");
+    return;
+  }
   if(selected.indexOf(i) !== -1) return;
 
   selected.push(i);
   saveSelected();
 
   drawMembers();
+  drawSelectedGrid();
   drawPicks();
   drawExportPicks();
-  drawSelectedGrid();
-  fitPicksToViewport();
 }
 
 /* 戻す */
@@ -1299,10 +1301,9 @@ function undo(){
   selected.pop();
   saveSelected();
   drawMembers();
+  drawSelectedGrid();
   drawPicks();
   drawExportPicks();
-  drawSelectedGrid();
-  fitPicksToViewport();
 }
 
 /* リセット */
@@ -1310,10 +1311,9 @@ function resetAll(){
   selected = [];
   saveSelected();
   drawMembers();
+  drawSelectedGrid();
   drawPicks();
   drawExportPicks();
-  drawSelectedGrid();
-  fitPicksToViewport();
 }
 
 /* 並び替え */
@@ -1330,9 +1330,9 @@ function swap(posA, posB){
   selected[posB] = tmp;
   saveSelected();
   drawMembers();
+  drawSelectedGrid();
   drawPicks();
   drawExportPicks();
-  drawSelectedGrid();
 }
 function moveLeft(pos){ swap(pos, pos-1); }
 function moveRight(pos){ swap(pos, pos+1); }
