@@ -27,9 +27,11 @@
     --exGapY: 30px;
     --exName: 15px;
 
-    /* ★追加：保存画像の上下レイアウト自動調整用 */
-    --exTopH: 470px;       /* 上(選択)エリアの高さ */
-    --exBottomPad: 120px;  /* 下のTikTok/ハッシュタグと被らない余白 */
+    /* ★追加：保存レイアウト自動調整用 */
+    --exTopH: 470px;
+    --exBottomPadTop: 16px;
+    --exBottomPadBottom: 150px; /* TikTok/ハッシュタグ安全地帯（被り防止） */
+    --exMissTop: 18px;
   }
 
   *{ box-sizing:border-box; }
@@ -473,9 +475,9 @@
     margin-top: 10px;
   }
 
-  /* ★保存ボディは “上(選択)” と “下(空き枠)” を自動で分割（ここが要望反映） */
+  /* ★保存ボディは “上(選択)” と “下(空き枠)” を固定で分割 */
   .exportTop{
-    height: var(--exTopH);
+    height: var(--exTopH); /* ★自動調整 */
     display:flex;
     flex-direction:column;
     justify-content:flex-start;
@@ -558,13 +560,8 @@
     flex-direction:column;
     align-items:center;
     justify-content:flex-start;
-    padding-top: 16px;
-    padding-bottom: var(--exBottomPad);
-  }
-
-  /* ★上が1列のとき、空き枠を少し上に（詰めすぎない） */
-  .exportBottom.compact{
-    padding-top: 8px;
+    padding-top: var(--exBottomPadTop);       /* ★自動調整 */
+    padding-bottom: var(--exBottomPadBottom); /* ★安全地帯 */
   }
 
   .exportSlotsText{
@@ -583,7 +580,7 @@
 
   /* ★空き枠を2段にするためのラッパー */
   .exportMissingRows{
-    margin-top: 18px;
+    margin-top: var(--exMissTop); /* ★自動調整 */
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -670,7 +667,7 @@
         </div>
       </div>
 
-      <!-- ★投票枠の空き数UIは削除（＋／－／入力／説明文） -->
+      <!-- 投票枠の空き数UIは削除 -->
     </div>
   </div>
 
@@ -710,7 +707,7 @@
         </div>
       </div>
 
-      <!-- ★空き枠は2段表示 -->
+      <!-- 空き枠は2段表示 -->
       <div class="exportBottom" id="exportBottom">
         <div class="exportSlotsText" id="exportSlotsText">空き 0 枠</div>
 
@@ -739,7 +736,7 @@ const MAX_PICK_KEY = "oshivote_max_pick_v3";
 const STORAGE_KEY  = "oshivote_selected_v5";
 
 let showingCandidates = false;
-let freeSlots = 0; // ★自動計算で使う（MAX_PICK - selected.length）
+let freeSlots = 0; // 自動計算（MAX_PICK - selected.length）
 
 function profileUrlById(id){
   if(!id) return "https://produce101.jp/profile/detail/?lang=ja";
@@ -933,7 +930,7 @@ function setMaxPick(n){
     drawPicks();
     drawMembers();
     drawExportPicks();
-    renderFreeSlots(); // ★空き枠更新
+    renderFreeSlots();
   });
 }
 
@@ -964,48 +961,7 @@ function renderFreeSlots(){
   document.getElementById("exportSlotsText").textContent = t;
   document.getElementById("exportSlotsSentence").textContent = `${freeSlots} 投票枠 空いています`;
 
-  // ★保存画像側の水色ブロックも更新
   renderMissingSlots();
-}
-
-/* ★保存画像：空白を減らしつつ、TikTok文字に被らない自動調整 */
-function adjustExportLayout(selectedCount, r2Count){
-  const n = freeSlots; // renderFreeSlots()で更新済み
-
-  // 目標：練習生(上)と空き枠(下)を近づける。ただし近づけ過ぎない。
-  // さらに、空き枠が多い時はTikTokに被らないよう下余白を増やす。
-  let topH = 470;
-
-  // 上が1列（r2無し）なら上エリアを縮めて空き枠を上に上げる
-  if(r2Count === 0){
-    if(selectedCount <= 2) topH = 330;
-    else if(selectedCount <= 4) topH = 360;
-    else topH = 420; // 5〜6で1列になることは基本ないが保険
-  }else{
-    // 2列ある時は基本470、ただし空き枠が多いほど少しだけ縮める
-    topH = 470;
-    if(n >= 8) topH -= 18;
-    if(n >= 10) topH -= 10;
-  }
-
-  // TikTok/ハッシュタグの被り回避：空き枠が多いほど下余白を増やす
-  let bottomPad = 120;
-  if(n >= 7) bottomPad = 135;
-  if(n >= 9) bottomPad = 150;
-  if(n >= 11) bottomPad = 162;
-
-  // ガード
-  topH = Math.max(320, Math.min(470, topH));
-  bottomPad = Math.max(110, Math.min(170, bottomPad));
-
-  document.documentElement.style.setProperty("--exTopH", topH + "px");
-  document.documentElement.style.setProperty("--exBottomPad", bottomPad + "px");
-
-  // compactクラス（1列時だけ少し詰める）
-  const bottom = document.getElementById("exportBottom");
-  if(bottom){
-    bottom.classList.toggle("compact", r2Count === 0);
-  }
 }
 
 /* 画面：選択枠（＋表示あり） */
@@ -1076,7 +1032,7 @@ function add(i){
     drawPicks();
     drawMembers();
     drawExportPicks();
-    renderFreeSlots(); // ★空き枠更新
+    renderFreeSlots();
   });
 }
 function undo(){
@@ -1086,7 +1042,7 @@ function undo(){
     drawPicks();
     drawMembers();
     drawExportPicks();
-    renderFreeSlots(); // ★空き枠更新
+    renderFreeSlots();
   });
 }
 function resetAll(){
@@ -1096,7 +1052,7 @@ function resetAll(){
     drawPicks();
     drawMembers();
     drawExportPicks();
-    renderFreeSlots(); // ★空き枠更新
+    renderFreeSlots();
   });
 }
 
@@ -1113,7 +1069,7 @@ function swap(a,b){
     const t = selected[a]; selected[a]=selected[b]; selected[b]=t;
     saveSelected();
     drawPicks(); drawMembers(); drawExportPicks();
-    renderFreeSlots(); // ★空き枠更新
+    renderFreeSlots();
   });
 }
 function moveLeft(pos){ swap(pos, pos-1); }
@@ -1180,6 +1136,40 @@ function setExportVars(avatar, gapX, gapY, nameSize){
   document.documentElement.style.setProperty("--exName", nameSize + "px");
 }
 
+/* ★保存画像：空白を減らして、下のTikTok/ハッシュタグと被らないように自動調整 */
+function adjustExportLayout(count, r2){
+  // 1) 上(選択メンバー)の高さを人数で縮めて空白を減らす
+  let topH = 470;
+  if(r2 === 0){
+    if(count <= 2) topH = 320;
+    else if(count <= 4) topH = 360;
+    else topH = 400;
+  }else{
+    // 2段あるときは少しだけ縮める（空白は残しすぎない）
+    if(count <= 7) topH = 440;
+    else topH = 470;
+  }
+  document.documentElement.style.setProperty("--exTopH", topH + "px");
+
+  // 2) 下(空き枠)開始位置：上げすぎない範囲で調整
+  let padTop = 16;
+  if(count <= 2) padTop = 0;
+  else if(count <= 4) padTop = 6;
+  else if(count <= 7) padTop = 12;
+  else padTop = 16;
+  document.documentElement.style.setProperty("--exBottomPadTop", padTop + "px");
+
+  // 3) 下部の安全地帯（TikTok/ハッシュタグと被らない）
+  document.documentElement.style.setProperty("--exBottomPadBottom", "150px");
+
+  // 4) 水色ブロック上の余白も人数に合わせる
+  let missTop = 18;
+  if(count <= 2) missTop = 8;
+  else if(count <= 4) missTop = 12;
+  else missTop = 18;
+  document.documentElement.style.setProperty("--exMissTop", missTop + "px");
+}
+
 /* 保存：上に選択だけ（＋は出さない）／ 下に空き枠を2段で必ず出す */
 function drawExportPicks(){
   const row1 = document.getElementById("exportRow1");
@@ -1206,11 +1196,9 @@ function drawExportPicks(){
     row2.style.display = "none";
   }
 
-  // ★空き枠は自動計算＆水色も更新（ここで確定）
-  renderFreeSlots();
-
-  // ★要望：空き枠を自動で少し上げる＋TikTok被り回避（選択数＆空き枠数で調整）
-  adjustExportLayout(count, r2);
+  renderFreeSlots();      // 空き枠 自動計算＆表示更新
+  renderMissingSlots();   // 水色アイコン更新
+  adjustExportLayout(count, r2); // ★空白/被り 自動調整
 }
 
 function makeExportSlot(m, orderIndex){
@@ -1268,7 +1256,6 @@ async function saveImage(){
     return;
   }
 
-  // ★保存直前に最新状態へ（空き枠計算＋レイアウト調整まで含む）
   drawExportPicks();
 
   const toast = document.getElementById("toast");
@@ -1298,7 +1285,8 @@ async function saveImage(){
   updateFrameButtons();
   drawPicks();
   drawMembers();
-  drawExportPicks();  // ★ここで renderFreeSlots/adjustExportLayout まで走る
+  drawExportPicks();
+  renderFreeSlots();
 })();
 </script>
 </body>
