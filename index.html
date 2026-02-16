@@ -1211,14 +1211,34 @@ function makeExportSlot(m, orderIndex){
 }
 
 function renderMissingSlots(){
-  const row = document.getElementById("exportMissingRow");
-  row.innerHTML = "";
+  const rows = document.querySelectorAll(".exportMissingRow");
+rows.forEach(r => r.innerHTML = "");
 
-  const missing = Math.max(0, MAX_PICK - selected.length);
-  for(let i=0;i<missing;i++){
+const missing = Math.max(0, MAX_PICK - selected.length);
+
+if(missing === 0) return;
+
+/*
+並びルール
+5 → 3 / 2
+8 → 4 / 4
+9 → 4 / 5
+10 → 5 / 5
+*/
+let firstRowCount = Math.ceil(missing / 2);
+let secondRowCount = missing - firstRowCount;
+
+for(let i=0;i<firstRowCount;i++){
+  const d = document.createElement("div");
+  d.className = "missingIcon";
+  rows[0].appendChild(d);
+}
+
+if(rows[1]){
+  for(let i=0;i<secondRowCount;i++){
     const d = document.createElement("div");
     d.className = "missingIcon";
-    row.appendChild(d);
+    rows[1].appendChild(d);
   }
 }
 
