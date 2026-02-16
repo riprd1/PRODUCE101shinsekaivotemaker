@@ -582,13 +582,20 @@
     box-shadow: 0 8px 18px rgba(0,128,255,.25);
   }
 
-  .exportMissingRow{
-    margin-top: 18px;
-    display:flex;
-    justify-content:center;
-    gap: 28px;
-    min-height: 130px;
-  }
+  .exportMissingRows{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+}
+
+.exportMissingRow{
+  margin-top: 18px;
+  display:flex;
+  justify-content:center;
+  gap: 28px;
+  min-height: 130px;
+}
 
   /* 未選択アイコン：指定画像 / 色 #82cded */
   .missingIcon{
