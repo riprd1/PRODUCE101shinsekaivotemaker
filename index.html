@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>日プ新世界投票枠交換メーカー</title>
+<title>日プ新世界 投票枠交換メーカー</title>
 
 <style>
   :root{
@@ -554,19 +554,22 @@
 
   /* 下：空き枠エリア（必ず表示） */
   .exportBottom{
-  height: calc(1040px - 150px - 470px);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-start;
-  padding-top: 16px;
-  padding-bottom: 90px;
-}
+    height: calc(1040px - 150px - 470px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding-top: 16px;
+    padding-bottom: 90px;
+  }
 
-/* 上が1列のとき空き枠を上に詰める */
-.exportBottom.compact{
-  padding-top: 0px;
-}
+  /* ★上が1列のとき空き枠を上に詰める */
+  .exportBottom.compact{
+    padding-top: 0px;
+  }
+  .exportBottom.compact .exportMissingRows{
+    margin-top: 10px;
+  }
 
   .exportSlotsText{
     text-align:center;
@@ -582,20 +585,21 @@
     box-shadow: 0 8px 18px rgba(0,128,255,.25);
   }
 
+  /* ★空き枠を2段にするためのラッパー */
   .exportMissingRows{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:12px;
-}
+    margin-top: 18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 12px;
+  }
 
-.exportMissingRow{
-  margin-top: 18px;
-  display:flex;
-  justify-content:center;
-  gap: 28px;
-  min-height: 130px;
-}
+  .exportMissingRow{
+    display:flex;
+    justify-content:center;
+    gap: 28px;
+    min-height: 130px;
+  }
 
   /* 未選択アイコン：指定画像 / 色 #82cded */
   .missingIcon{
@@ -706,7 +710,7 @@
     <div class="exportCredit">created by @12agassi</div>
 
     <div id="exportBanner" class="exportBanner">
-      <div class="exportTitlePill">日プ新世界 投票枠交換メーカー</div>
+      <div class="exportTitlePill">日プ新世界 推し投票メーカー</div>
     </div>
 
     <div class="exportBody">
@@ -719,20 +723,21 @@
         </div>
       </div>
 
-      <div class="exportBottom">
-  <div class="exportSlotsText" id="exportSlotsText">空き 0 枠</div>
+      <!-- ★ここを2段用に変更（exportMissingRow1 / exportMissingRow2） -->
+      <div class="exportBottom" id="exportBottom">
+        <div class="exportSlotsText" id="exportSlotsText">空き 0 枠</div>
 
-  <div class="exportMissingRows">
-    <div class="exportMissingRow" id="exportMissingRow1"></div>
-    <div class="exportMissingRow" id="exportMissingRow2"></div>
-  </div>
+        <div class="exportMissingRows">
+          <div class="exportMissingRow" id="exportMissingRow1"></div>
+          <div class="exportMissingRow" id="exportMissingRow2"></div>
+        </div>
 
-  <div class="exportSlotsSentence" id="exportSlotsSentence">0 投票枠 空いています</div>
-</div>
+        <div class="exportSlotsSentence" id="exportSlotsSentence">0 投票枠 空いています</div>
+      </div>
     </div>
 
     <div class="exportTikTok">TikTok:@12agassi</div>
-    <div class="exportHashtag">#日プ新世界推し投票メーカー</div>
+    <div class="exportHashtag">#日プ新世界 投票枠交換メーカー</div>
   </div>
 </div>
 
@@ -971,6 +976,9 @@ function renderFreeSlots(){
 
   const input = document.getElementById("slotsInput");
   if(String(input.value) !== String(freeSlots)) input.value = freeSlots;
+
+  // ★空き枠の水色ブロックも更新
+  renderMissingSlots();
 }
 function incSlots(){ freeSlots = Math.min(99, freeSlots + 1); renderFreeSlots(); }
 function decSlots(){ freeSlots = Math.max(0, freeSlots - 1); renderFreeSlots(); }
@@ -1158,7 +1166,7 @@ function setExportVars(avatar, gapX, gapY, nameSize){
   document.documentElement.style.setProperty("--exName", nameSize + "px");
 }
 
-/* 保存：上に選択だけ（＋は出さない）／ 下に未選択ぶんを必ず出す */
+/* 保存：上に選択だけ（＋は出さない）／ 下に空き枠を2段で必ず出す */
 function drawExportPicks(){
   const row1 = document.getElementById("exportRow1");
   const row2 = document.getElementById("exportRow2");
@@ -1166,17 +1174,7 @@ function drawExportPicks(){
   row2.innerHTML = "";
 
   const count = selected.length;
-
-const bottom = document.querySelector(".exportBottom");
-if(bottom){
-  if(count <= 4){
-    bottom.classList.add("compact");
-  }else{
-    bottom.classList.remove("compact");
-  }
-}
-
-const plan = exportPlanBySelectedCount(count);
+  const plan = exportPlanBySelectedCount(count);
   const r1 = plan[0], r2 = plan[1];
 
   fitExportAvatar(count);
@@ -1192,6 +1190,13 @@ const plan = exportPlanBySelectedCount(count);
     }
   }else{
     row2.style.display = "none";
+  }
+
+  // ★上が1列なら空き枠エリアを詰める
+  const bottom = document.getElementById("exportBottom");
+  if(bottom){
+    if(r2 === 0) bottom.classList.add("compact");
+    else bottom.classList.remove("compact");
   }
 
   renderMissingSlots();
@@ -1210,35 +1215,39 @@ function makeExportSlot(m, orderIndex){
   return d;
 }
 
+/* ★空き枠（freeSlots）を2段に割って描画 */
 function renderMissingSlots(){
-  const rows = document.querySelectorAll(".exportMissingRow");
-rows.forEach(r => r.innerHTML = "");
+  const row1 = document.getElementById("exportMissingRow1");
+  const row2 = document.getElementById("exportMissingRow2");
+  if(!row1) return;
 
-const missing = Math.max(0, MAX_PICK - selected.length);
+  row1.innerHTML = "";
+  if(row2) row2.innerHTML = "";
 
-if(missing === 0) return;
+  const n = Math.max(0, freeSlots);
 
-/*
-並びルール
-5 → 3 / 2
-8 → 4 / 4
-9 → 4 / 5
-10 → 5 / 5
-*/
-let firstRowCount = Math.ceil(missing / 2);
-let secondRowCount = missing - firstRowCount;
+  if(n === 0){
+    if(row2) row2.style.display = "none";
+    return;
+  }
 
-for(let i=0;i<firstRowCount;i++){
-  const d = document.createElement("div");
-  d.className = "missingIcon";
-  rows[0].appendChild(d);
-}
+  // 例: 10 -> 5/5, 9 -> 4/5, 8 -> 4/4, 6 -> 3/3, 7 -> 3/4
+  const first = Math.floor(n / 2);
+  const second = n - first;
 
-if(rows[1]){
-  for(let i=0;i<secondRowCount;i++){
+  for(let i=0;i<first;i++){
     const d = document.createElement("div");
     d.className = "missingIcon";
-    rows[1].appendChild(d);
+    row1.appendChild(d);
+  }
+
+  if(row2){
+    row2.style.display = (second > 0) ? "flex" : "none";
+    for(let i=0;i<second;i++){
+      const d = document.createElement("div");
+      d.className = "missingIcon";
+      row2.appendChild(d);
+    }
   }
 }
 
