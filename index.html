@@ -1156,10 +1156,12 @@ function drawExportPicks(){
   const count = selected.length;
 
 const bottom = document.querySelector(".exportBottom");
-if(count <= 4){
-  bottom.classList.add("compact");
-}else{
-  bottom.classList.remove("compact");
+if(bottom){
+  if(count <= 4){
+    bottom.classList.add("compact");
+  }else{
+    bottom.classList.remove("compact");
+  }
 }
 
 const plan = exportPlanBySelectedCount(count);
