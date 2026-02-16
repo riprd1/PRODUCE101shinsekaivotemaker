@@ -247,11 +247,6 @@
   .frameBtns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
   .frameBtnActive{ border-color:#cfe2ff; background:#eef6ff; font-weight: 1000; }
 
-  /* 投票枠空き数コントロール */
-  .slotsControl{ display:flex; flex-direction:column; align-items:center; gap:6px; }
-  .slotsRow{ display:flex; align-items:center; gap:10px; }
-  .slotsHint{ font-size: 12px; font-weight: 900; color:#666; letter-spacing:.02em; }
-
   /* ===== 一覧：2列ボタン ===== */
   .listCard{
     margin-top: 12px;
@@ -674,16 +669,7 @@
         </div>
       </div>
 
-      <div class="slotsControl">
-        <div class="slotsRow">
-          <button type="button" class="mode" onclick="decSlots()">－</button>
-          <button type="button" class="mode" onclick="incSlots()">＋</button>
-          <input id="slotsInput" type="number" min="0" max="99" value="0"
-                 style="width:76px;padding:10px;border-radius:12px;border:1px solid #ddd;"
-                 oninput="setSlotsFromInput()" />
-        </div>
-        <div class="slotsHint">投票枠の空き数を選んで</div>
-      </div>
+      <!-- ★投票枠の空き数UIは削除（＋／－／入力／説明文） -->
     </div>
   </div>
 
@@ -710,7 +696,7 @@
     <div class="exportCredit">created by @12agassi</div>
 
     <div id="exportBanner" class="exportBanner">
-      <div class="exportTitlePill">日プ新世界 推し投票メーカー</div>
+      <div class="exportTitlePill">日プ新世界 投票枠交換メーカー</div>
     </div>
 
     <div class="exportBody">
@@ -723,7 +709,7 @@
         </div>
       </div>
 
-      <!-- ★ここを2段用に変更（exportMissingRow1 / exportMissingRow2） -->
+      <!-- ★空き枠は2段表示 -->
       <div class="exportBottom" id="exportBottom">
         <div class="exportSlotsText" id="exportSlotsText">空き 0 枠</div>
 
@@ -752,7 +738,7 @@ const MAX_PICK_KEY = "oshivote_max_pick_v3";
 const STORAGE_KEY  = "oshivote_selected_v5";
 
 let showingCandidates = false;
-let freeSlots = 0;
+let freeSlots = 0; // ★自動計算で使う（MAX_PICK - selected.length）
 
 function profileUrlById(id){
   if(!id) return "https://produce101.jp/profile/detail/?lang=ja";
@@ -930,6 +916,7 @@ function updateFrameButtons(){
     b.classList.toggle("frameBtnActive", n === MAX_PICK);
   });
 }
+
 function setMaxPick(n){
   if(![6,7,8,9,10,11].includes(n)) return;
   MAX_PICK = n;
@@ -945,7 +932,7 @@ function setMaxPick(n){
     drawPicks();
     drawMembers();
     drawExportPicks();
-    renderFreeSlots();
+    renderFreeSlots(); // ★空き枠更新
   });
 }
 
@@ -967,27 +954,17 @@ function toggleCandidates(e){
   });
 }
 
-/* 投票枠の空き数 */
+/* ★投票枠の空き数（自動計算） */
 function renderFreeSlots(){
+  freeSlots = Math.max(0, MAX_PICK - selected.length);
+
   const t = `空き ${freeSlots} 枠`;
   document.getElementById("slotBadge").textContent = t;
   document.getElementById("exportSlotsText").textContent = t;
   document.getElementById("exportSlotsSentence").textContent = `${freeSlots} 投票枠 空いています`;
 
-  const input = document.getElementById("slotsInput");
-  if(String(input.value) !== String(freeSlots)) input.value = freeSlots;
-
-  // ★空き枠の水色ブロックも更新
+  // ★保存画像側の水色ブロックも更新
   renderMissingSlots();
-}
-function incSlots(){ freeSlots = Math.min(99, freeSlots + 1); renderFreeSlots(); }
-function decSlots(){ freeSlots = Math.max(0, freeSlots - 1); renderFreeSlots(); }
-function setSlotsFromInput(){
-  const input = document.getElementById("slotsInput");
-  let v = parseInt(input.value, 10);
-  if(Number.isNaN(v)) v = 0;
-  freeSlots = Math.max(0, Math.min(99, v));
-  renderFreeSlots();
 }
 
 /* 画面：選択枠（＋表示あり） */
@@ -1058,6 +1035,7 @@ function add(i){
     drawPicks();
     drawMembers();
     drawExportPicks();
+    renderFreeSlots(); // ★空き枠更新
   });
 }
 function undo(){
@@ -1067,6 +1045,7 @@ function undo(){
     drawPicks();
     drawMembers();
     drawExportPicks();
+    renderFreeSlots(); // ★空き枠更新
   });
 }
 function resetAll(){
@@ -1076,6 +1055,7 @@ function resetAll(){
     drawPicks();
     drawMembers();
     drawExportPicks();
+    renderFreeSlots(); // ★空き枠更新
   });
 }
 
@@ -1092,6 +1072,7 @@ function swap(a,b){
     const t = selected[a]; selected[a]=selected[b]; selected[b]=t;
     saveSelected();
     drawPicks(); drawMembers(); drawExportPicks();
+    renderFreeSlots(); // ★空き枠更新
   });
 }
 function moveLeft(pos){ swap(pos, pos-1); }
@@ -1199,7 +1180,8 @@ function drawExportPicks(){
     else bottom.classList.remove("compact");
   }
 
-  renderMissingSlots();
+  renderFreeSlots();   // ★空き枠は自動計算＆表示更新
+  renderMissingSlots(); // ★水色アイコン更新
 }
 
 function makeExportSlot(m, orderIndex){
@@ -1215,7 +1197,21 @@ function makeExportSlot(m, orderIndex){
   return d;
 }
 
-/* ★空き枠（freeSlots）を2段に割って描画 */
+/* ★空き枠（freeSlots）を2段に割って描画
+   10 -> 5/5
+   9  -> 4/5
+   8  -> 4/4
+   6  -> 3/3
+   7  -> 3/4
+   11 -> 5/6 なども自然に出る
+*/
+function planMissingRows(n){
+  if(n <= 0) return [0,0];
+  const first = Math.floor(n / 2);
+  const second = n - first;
+  return [first, second];
+}
+
 function renderMissingSlots(){
   const row1 = document.getElementById("exportMissingRow1");
   const row2 = document.getElementById("exportMissingRow2");
@@ -1225,25 +1221,17 @@ function renderMissingSlots(){
   if(row2) row2.innerHTML = "";
 
   const n = Math.max(0, freeSlots);
+  const [a,b] = planMissingRows(n);
 
-  if(n === 0){
-    if(row2) row2.style.display = "none";
-    return;
-  }
-
-  // 例: 10 -> 5/5, 9 -> 4/5, 8 -> 4/4, 6 -> 3/3, 7 -> 3/4
-  const first = Math.floor(n / 2);
-  const second = n - first;
-
-  for(let i=0;i<first;i++){
+  for(let i=0;i<a;i++){
     const d = document.createElement("div");
     d.className = "missingIcon";
     row1.appendChild(d);
   }
 
   if(row2){
-    row2.style.display = (second > 0) ? "flex" : "none";
-    for(let i=0;i<second;i++){
+    row2.style.display = (b > 0) ? "flex" : "none";
+    for(let i=0;i<b;i++){
       const d = document.createElement("div");
       d.className = "missingIcon";
       row2.appendChild(d);
@@ -1259,7 +1247,6 @@ async function saveImage(){
   }
 
   drawExportPicks();
-  renderFreeSlots();
 
   const toast = document.getElementById("toast");
   toast.style.display = "block";
@@ -1286,10 +1273,10 @@ async function saveImage(){
 /* 初期描画 */
 (function initAll(){
   updateFrameButtons();
-  renderFreeSlots();
   drawPicks();
   drawMembers();
   drawExportPicks();
+  renderFreeSlots(); // ★最初から空き枠自動
 })();
 </script>
 </body>
