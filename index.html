@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>日プ新世界推し投票メーカー</title>
+<title>日プ新世界投票枠交換メーカー</title>
 
 <style>
   :root{
@@ -614,114 +614,20 @@
     letter-spacing: .04em;
     white-space: nowrap;
   }
-
-  /* ===== 合言葉ゲート（TikTokボタン付き） ===== */
-  .gate{
-    position: fixed;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 18px;
-    background: rgba(0,0,0,.55);
-    z-index: 9999;
-  }
-  .gate.show{ display:flex; }
-
-  .gateBox{
-    width: min(520px, 100%);
-    background: rgba(255,255,255,.96);
-    border: 1px solid rgba(255,255,255,.85);
-    border-radius: 16px;
-    box-shadow: 0 18px 40px rgba(0,0,0,.22);
-    backdrop-filter: blur(10px);
-    padding: 18px 16px 16px;
-    text-align: center;
-  }
-
-  .gateTitle{
-    font-weight: 1000;
-    font-size: 16px;
-    letter-spacing: .03em;
-    margin-bottom: 10px;
-  }
-
-  .gateText{
-    font-size: 14px;
-    line-height: 1.7;
-    color:#111;
-    font-weight: 800;
-  }
-
-  .gateNote{
-    margin-top: 8px;
-    font-size: 12px;
-    color:#666;
-    font-weight: 900;
-  }
-
-  .gateRow{
-    margin-top: 14px;
-    display:flex;
-    gap:10px;
-  }
-  .gateInput{
-    flex: 1 1 auto;
-    padding: 11px 12px;
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    font-size: 14px;
-    outline:none;
-  }
-  .gateEnter{
-    flex: 0 0 auto;
-    padding: 11px 14px;
-    border-radius: 12px;
-    border: 1px solid #cfe2ff;
-    background: #eef6ff;
-    font-weight: 1000;
-  }
-  .gateEnter:active{ transform: scale(.98); }
-
-  .gateMsg{
-    margin-top: 10px;
-    font-size: 12px;
-    font-weight: 900;
-    color: #666;
-    line-height: 1.4;
-    min-height: 1.4em;
-  }
-
-  .gateTikTok{
-    margin-top: 12px;
-    display: inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding: 10px 14px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 1000;
-    text-decoration:none;
-    color:#fff;
-    background: linear-gradient(135deg, #000, #222);
-    border: 1px solid #111;
-    box-shadow: 0 6px 14px rgba(0,0,0,.18);
-  }
-  .gateTikTok:active{ transform: scale(.98); }
 </style>
 </head>
 
 <body>
 <header>
   <div class="topbar">
-    <h1>日プ新世界推し投票メーカー</h1>
+    <h1>日プ新世界 投票枠交換メーカー</h1>
   </div>
 </header>
 
 <main>
   <div class="card" id="picksCard">
     <div id="banner" class="banner">
-      <div class="bannerTitle">日プ新世界 推し投票メーカー</div>
+      <div class="bannerTitle">日プ新世界 投票枠交換メーカー</div>
       <div class="slotBadge" id="slotBadge">空き 0 枠</div>
     </div>
 
@@ -780,31 +686,6 @@
   </div>
 </main>
 
-<!-- ===== 合言葉ゲート（TikTokボタン付き） ===== -->
-<div id="gate" class="gate" aria-hidden="true">
-  <div class="gateBox" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
-    <div class="gateTitle" id="gateTitle">TikTok視聴者限定</div>
-
-    <div class="gateText">
-      TikTokをフォローして、<br>
-      最新動画から合言葉を確認してください
-      <div class="gateNote">※合言葉は定期的に更新されます。</div>
-    </div>
-
-    <div class="gateRow">
-      <input id="keywordInput" class="gateInput" type="text" inputmode="text" autocomplete="off"
-             placeholder="合言葉を入力">
-      <button id="gateEnterBtn" class="gateEnter" type="button">入る</button>
-    </div>
-
-    <div id="gateMsg" class="gateMsg"></div>
-
-    <a class="gateTikTok" href="https://www.tiktok.com/@12agassi" target="_blank" rel="noopener">
-      TikTokへ行く →
-    </a>
-  </div>
-</div>
-
 <div class="toast" id="toast">画像を生成中…</div>
 
 <!-- 保存専用 -->
@@ -813,7 +694,7 @@
     <div class="exportCredit">created by @12agassi</div>
 
     <div id="exportBanner" class="exportBanner">
-      <div class="exportTitlePill">日プ新世界 推し投票メーカー</div>
+      <div class="exportTitlePill">日プ新世界 投票枠交換メーカー</div>
     </div>
 
     <div class="exportBody">
@@ -1346,123 +1227,13 @@ async function saveImage(){
   }
 }
 
-/* ===== 合言葉ゲート（vote101 / 3回で15分ロック） ===== */
-const SECRET_WORD = "vote101";
-const MAX_TRIES = 3;
-const LOCK_MINUTES = 15;
-
-const TRY_KEY  = "oshivote_try_count_v2";
-const LOCK_KEY = "oshivote_lock_until_v2";
-
-function nowMs(){ return Date.now(); }
-function getInt(key){
-  try{
-    const v = parseInt(localStorage.getItem(key) || "0", 10);
-    return Number.isFinite(v) ? v : 0;
-  }catch(e){
-    return 0;
-  }
-}
-function setInt(key, n){
-  try{ localStorage.setItem(key, String(n)); }catch(e){}
-}
-function formatRemain(ms){
-  const totalSec = Math.max(0, Math.ceil(ms / 1000));
-  const m = Math.floor(totalSec / 60);
-  const s = totalSec % 60;
-  return m + "分" + String(s).padStart(2,"0") + "秒";
-}
-
-function showGate(){
-  const gate = document.getElementById("gate");
-  if(!gate) return;
-  gate.classList.add("show");
-  gate.setAttribute("aria-hidden","false");
-  requestAnimationFrame(() => {
-    const inp = document.getElementById("keywordInput");
-    if(inp) inp.focus();
-  });
-}
-function hideGate(){
-  const gate = document.getElementById("gate");
-  if(!gate) return;
-  gate.classList.remove("show");
-  gate.setAttribute("aria-hidden","true");
-}
-
-function gateSetMsg(text){
-  const msg = document.getElementById("gateMsg");
-  if(msg) msg.textContent = text || "";
-}
-
-function gateCheckLock(){
-  const lockUntil = getInt(LOCK_KEY);
-  if(lockUntil > nowMs()){
-    const remain = formatRemain(lockUntil - nowMs());
-    gateSetMsg(`入力を間違えたため、あと ${remain} 利用できません。`);
-    return true;
-  }
-  return false;
-}
-
-function gateTryEnter(){
-  if(gateCheckLock()){
-    return;
-  }
-
-  const inp = document.getElementById("keywordInput");
-  const v = (inp?.value || "").trim();
-
-  if(v === SECRET_WORD){
-    setInt(TRY_KEY, 0);
-    setInt(LOCK_KEY, 0);
-    gateSetMsg("");
-    hideGate();
-    return;
-  }
-
-  let tries = getInt(TRY_KEY) + 1;
-  setInt(TRY_KEY, tries);
-
-  const left = Math.max(0, MAX_TRIES - tries);
-  if(left <= 0){
-    const until = nowMs() + LOCK_MINUTES * 60 * 1000;
-    setInt(LOCK_KEY, until);
-    setInt(TRY_KEY, 0);
-
-    const remain = formatRemain(until - nowMs());
-    gateSetMsg(`合言葉が違います。${remain} のあいだ利用できません。`);
-  }else{
-    gateSetMsg(`合言葉が違います。あと ${left} 回で${LOCK_MINUTES}分ロックになります。`);
-  }
-
-  if(inp) inp.value = "";
-  if(inp) inp.focus();
-}
-
-/* 初期描画 + ゲート起動 */
+/* 初期描画 */
 (function initAll(){
   updateFrameButtons();
   renderFreeSlots();
   drawPicks();
   drawMembers();
   drawExportPicks();
-
-  const btn = document.getElementById("gateEnterBtn");
-  if(btn) btn.addEventListener("click", gateTryEnter);
-
-  const inp = document.getElementById("keywordInput");
-  if(inp){
-    inp.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter"){
-        e.preventDefault();
-        gateTryEnter();
-      }
-    });
-  }
-
-  showGate();
-  gateCheckLock();
 })();
 </script>
 </body>
