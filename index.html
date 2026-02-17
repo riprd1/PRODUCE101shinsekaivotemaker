@@ -32,6 +32,13 @@
     --exBottomPadTop: 16px;
     --exBottomPadBottom: 150px; /* TikTok/ハッシュタグ安全地帯（被り防止） */
     --exMissTop: 18px;
+
+    /* ★追加：下段(空き枠)の“被り防止”自動縮小用 */
+    --exMissSize: 120px;     /* 水色アイコンのサイズ */
+    --exMissGapX: 28px;      /* 水色アイコンの横gap */
+    --exMissRowH: 130px;     /* 1行の最低高さ */
+    --exMissGapY: 12px;      /* 2行の縦gap */
+    --exSentenceTop: 12px;   /* 「◯投票枠…」の上margin */
   }
 
   *{ box-sizing:border-box; }
@@ -584,20 +591,20 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap: 12px;
+    gap: var(--exMissGapY); /* ★可変 */
   }
 
   .exportMissingRow{
     display:flex;
     justify-content:center;
-    gap: 28px;
-    min-height: 130px;
+    gap: var(--exMissGapX);  /* ★可変 */
+    min-height: var(--exMissRowH); /* ★可変 */
   }
 
   /* 未選択アイコン：指定画像 / 色 #82cded */
   .missingIcon{
-    width: 120px;
-    height: 120px;
+    width: var(--exMissSize);
+    height: var(--exMissSize);
     background: #82cded;
 
     -webkit-mask-image: url("https://i.imgur.com/nAiYU1V.png");
@@ -615,7 +622,7 @@
   }
 
   .exportSlotsSentence{
-    margin-top: 12px;
+    margin-top: var(--exSentenceTop); /* ★可変（被り防止） */
     text-align:center;
     font-size: 20px;
     font-weight: 900;
@@ -666,8 +673,6 @@
           <button type="button" class="mode frameBtn" data-n="11" onclick="setMaxPick(11)">11</button>
         </div>
       </div>
-
-      <!-- 投票枠の空き数UIは削除 -->
     </div>
   </div>
 
@@ -1136,16 +1141,15 @@ function setExportVars(avatar, gapX, gapY, nameSize){
   document.documentElement.style.setProperty("--exName", nameSize + "px");
 }
 
-/* ★保存画像：空白を減らして、下のTikTok/ハッシュタグと被らないように自動調整 */
+/* ★保存画像：空白を減らして、下のTikTok/ハッシュタグと絶対に被らないように自動調整 */
 function adjustExportLayout(count, r2){
-  // 1) 上(選択メンバー)の高さを人数で縮めて空白を減らす
+  // 1) 上(選択メンバー)の高さ：人数で縮めて空白を減らす
   let topH = 470;
   if(r2 === 0){
     if(count <= 2) topH = 320;
     else if(count <= 4) topH = 360;
     else topH = 400;
   }else{
-    // 2段あるときは少しだけ縮める（空白は残しすぎない）
     if(count <= 7) topH = 440;
     else topH = 470;
   }
@@ -1160,14 +1164,53 @@ function adjustExportLayout(count, r2){
   document.documentElement.style.setProperty("--exBottomPadTop", padTop + "px");
 
   // 3) 下部の安全地帯（TikTok/ハッシュタグと被らない）
-  document.documentElement.style.setProperty("--exBottomPadBottom", "150px");
+  const safeBottom = 150;
+  document.documentElement.style.setProperty("--exBottomPadBottom", safeBottom + "px");
 
-  // 4) 水色ブロック上の余白も人数に合わせる
+  // 4) 水色ブロック上の余白
   let missTop = 18;
   if(count <= 2) missTop = 8;
   else if(count <= 4) missTop = 12;
   else missTop = 18;
   document.documentElement.style.setProperty("--exMissTop", missTop + "px");
+
+  // === ★ここが改善の本体：下段の内容が安全地帯を侵食しそうなら自動で縮小 ===
+  const bottomH = 1040 - 150 - topH;                 // exportBottom 全高
+  const available = Math.max(0, bottomH - padTop - safeBottom); // 実際に置ける高さ
+
+  // 何行必要？
+  const rows = (freeSlots > 0 && freeSlots !== planMissingRows(freeSlots)[0]) ? 2 : (freeSlots > 0 ? 1 : 0);
+
+  // だいたいの必要高さ（slotsText + missTop + missingRows + sentence）
+  const slotsTextH = 62; // pill概算
+  const sentenceH  = 28; // 文字概算
+
+  // デフォルト値
+  let iconSize = 120;
+  let gapX = 28;
+  let rowGapY = 12;
+  let sentenceTop = 12;
+
+  // missingRows必要高さ概算
+  const needMissing = rows === 0 ? 0 : (rows * iconSize + (rows - 1) * rowGapY);
+  const needTotal = slotsTextH + missTop + needMissing + sentenceTop + sentenceH;
+
+  // はみ出るなら、縮小率でアイコン/余白を下げる（下限付き）
+  if(available > 0 && needTotal > available){
+    const scale = Math.max(0.72, Math.min(1, available / needTotal)); // 0.72まで（小さくしすぎない）
+    iconSize = Math.max(92, Math.round(120 * scale));
+    gapX = Math.max(18, Math.round(28 * scale));
+    rowGapY = Math.max(8, Math.round(12 * scale));
+    sentenceTop = Math.max(6, Math.round(12 * scale));
+  }
+
+  const rowH = iconSize + 10; // 影の分だけ少し余裕
+
+  document.documentElement.style.setProperty("--exMissSize", iconSize + "px");
+  document.documentElement.style.setProperty("--exMissGapX", gapX + "px");
+  document.documentElement.style.setProperty("--exMissGapY", rowGapY + "px");
+  document.documentElement.style.setProperty("--exMissRowH", rowH + "px");
+  document.documentElement.style.setProperty("--exSentenceTop", sentenceTop + "px");
 }
 
 /* 保存：上に選択だけ（＋は出さない）／ 下に空き枠を2段で必ず出す */
@@ -1196,9 +1239,8 @@ function drawExportPicks(){
     row2.style.display = "none";
   }
 
-  renderFreeSlots();      // 空き枠 自動計算＆表示更新
-  renderMissingSlots();   // 水色アイコン更新
-  adjustExportLayout(count, r2); // ★空白/被り 自動調整
+  renderFreeSlots();            // freeSlots確定 & アイコン描画
+  adjustExportLayout(count, r2); // ★ここで被り防止の縮小も確定（CSS変数）
 }
 
 function makeExportSlot(m, orderIndex){
