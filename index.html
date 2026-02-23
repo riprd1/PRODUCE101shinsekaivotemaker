@@ -32,6 +32,12 @@
     --exBottomPadTop: 16px;
     --exBottomPadBottom: 150px; /* TikTok/ハッシュタグ安全地帯（被り防止） */
     --exMissTop: 18px;
+
+    /* ★追加：空き枠ブロックの自動縮小用 */
+    --exMissSize: 120px;
+    --exMissGap: 28px;
+    --exMissRowH: 130px;
+    --exSentenceMt: 12px;
   }
 
   *{ box-sizing:border-box; }
@@ -590,14 +596,14 @@
   .exportMissingRow{
     display:flex;
     justify-content:center;
-    gap: 28px;
-    min-height: 130px;
+    gap: var(--exMissGap);
+    min-height: var(--exMissRowH);
   }
 
   /* 未選択アイコン：指定画像 / 色 #82cded */
   .missingIcon{
-    width: 120px;
-    height: 120px;
+    width: var(--exMissSize);
+    height: var(--exMissSize);
     background: #82cded;
 
     -webkit-mask-image: url("https://i.imgur.com/nAiYU1V.png");
@@ -615,7 +621,7 @@
   }
 
   .exportSlotsSentence{
-    margin-top: 12px;
+    margin-top: var(--exSentenceMt);
     text-align:center;
     font-size: 20px;
     font-weight: 900;
@@ -821,7 +827,8 @@ function closeIntro(){
   if(!m) return;
   m.classList.remove("show");
   m.setAttribute("aria-hidden","true");
-  try{ localStorage.setItem(INTRO_KEY, "1"); }catch(e){}
+  // ★毎回表示させたいなら保存しない（=何もしない）
+  // try{ localStorage.setItem(INTRO_KEY, "1"); }catch(e){}
 }
 document.addEventListener("click", (e) => {
   const m = document.getElementById("introModal");
@@ -1264,9 +1271,15 @@ function adjustExportLayout(count, r2){
   else if(count <= 4) missTop = 12;
   else missTop = 18;
   document.documentElement.style.setProperty("--exMissTop", missTop + "px");
+
+  // ★基本値に戻す（autoFitNoOverlapが必要ならここから縮める）
+  document.documentElement.style.setProperty("--exMissSize", "120px");
+  document.documentElement.style.setProperty("--exMissGap", "28px");
+  document.documentElement.style.setProperty("--exMissRowH", "130px");
+  document.documentElement.style.setProperty("--exSentenceMt", "12px");
 }
 
-/* 保存：上に選択だけ（＋は出さない）／ 下に空き枠を2段で必ず出す */
+/* 保存：上に選択だけ（＋は出さない）／ 下に空き枠を表示 */
 function drawExportPicks(){
   const row1 = document.getElementById("exportRow1");
   const row2 = document.getElementById("exportRow2");
@@ -1295,6 +1308,11 @@ function drawExportPicks(){
   renderFreeSlots();      // 空き枠 自動計算＆表示更新
   renderMissingSlots();   // 水色アイコン更新
   adjustExportLayout(count, r2); // ★空白/被り 自動調整
+
+  // ★DOM反映後に被りチェックして自動フィット
+  requestAnimationFrame(() => {
+    autoFitNoOverlap();
+  });
 }
 
 function makeExportSlot(m, orderIndex){
@@ -1310,10 +1328,12 @@ function makeExportSlot(m, orderIndex){
   return d;
 }
 
-/* ★空き枠（freeSlots）を2段に割って描画 */
+/* ★空き枠（freeSlots）を描画：1〜4は1段、それ以上は2段 */
 function planMissingRows(n){
   if(n <= 0) return [0,0];
-  const first = Math.floor(n / 2);
+  if(n <= 4) return [n, 0]; // ★縦を圧縮して被り防止
+
+  const first = Math.ceil(n / 2);
   const second = n - first;
   return [first, second];
 }
@@ -1341,6 +1361,44 @@ function renderMissingSlots(){
       const d = document.createElement("div");
       d.className = "missingIcon";
       row2.appendChild(d);
+    }
+  }
+}
+
+/* ★被りそうなら自動で縮める（TikTok/ハッシュタグと重ならない） */
+function autoFitNoOverlap(){
+  const exportInner = document.getElementById("exportInner");
+  const tiktok = document.querySelector(".exportTikTok");
+  const hashtag = document.querySelector(".exportHashtag");
+  const sentence = document.getElementById("exportSlotsSentence");
+  if(!exportInner || !tiktok || !hashtag || !sentence) return;
+
+  const innerTop = exportInner.getBoundingClientRect().top;
+  const safeLine = Math.min(tiktok.getBoundingClientRect().top, hashtag.getBoundingClientRect().top) - innerTop - 10;
+
+  const steps = [
+    { topMinus: 0,  size: 120, gap: 28, rowH: 130, mt: 12, missTop: null },
+    { topMinus: 20, size: 112, gap: 24, rowH: 122, mt: 10, missTop: 14 },
+    { topMinus: 40, size: 104, gap: 22, rowH: 116, mt: 8,  missTop: 12 },
+    { topMinus: 60, size: 96,  gap: 20, rowH: 108, mt: 6,  missTop: 10 },
+  ];
+
+  const currentTopH = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--exTopH"), 10) || 470;
+
+  for(const s of steps){
+    document.documentElement.style.setProperty("--exTopH", (currentTopH - s.topMinus) + "px");
+
+    document.documentElement.style.setProperty("--exMissSize", s.size + "px");
+    document.documentElement.style.setProperty("--exMissGap", s.gap + "px");
+    document.documentElement.style.setProperty("--exMissRowH", s.rowH + "px");
+    document.documentElement.style.setProperty("--exSentenceMt", s.mt + "px");
+    if(s.missTop !== null){
+      document.documentElement.style.setProperty("--exMissTop", s.missTop + "px");
+    }
+
+    const bottomOfSentence = sentence.getBoundingClientRect().bottom - innerTop;
+    if(bottomOfSentence <= safeLine){
+      break;
     }
   }
 }
@@ -1384,13 +1442,8 @@ async function saveImage(){
   drawExportPicks();
   renderFreeSlots();
 
-  // 初回だけポップアップ表示
-  try{
-    const seen = localStorage.getItem(INTRO_KEY);
-    if(!seen) openIntro();
-  }catch(e){
-    openIntro();
-  }
+  // ★毎回表示させたい：常に開く
+  openIntro();
 })();
 </script>
 </body>
