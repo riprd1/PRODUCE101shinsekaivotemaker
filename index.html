@@ -16,7 +16,7 @@
     --radius:14px;
     --blue:#0080ff;
 
-    /* 画面側（基本そのまま） */
+    /* 画面側 */
     --slot: 86px;
     --gap:  14px;
 
@@ -27,17 +27,16 @@
     --exGapY: 30px;
     --exName: 15px;
 
-    /* ★追加：保存レイアウト自動調整用 */
+    /* 保存レイアウト自動調整用 */
     --exTopH: 470px;
     --exBottomPadTop: 16px;
-    --exBottomPadBottom: 150px; /* TikTok/ハッシュタグ安全地帯（被り防止） */
+    --exBottomPadBottom: 150px; /* 安全地帯 */
     --exMissTop: 18px;
 
-    /* ★追加：空き枠ブロックの自動縮小用 */
+    /* ★追加：空き枠アイコンのサイズをJSで可変（被り防止） */
     --exMissSize: 120px;
-    --exMissGap: 28px;
-    --exMissRowH: 130px;
-    --exSentenceMt: 12px;
+    --exMissRowMinH: 130px;
+    --exMissGapY: 12px;
   }
 
   *{ box-sizing:border-box; }
@@ -115,7 +114,7 @@
     pointer-events:none;
   }
 
-  /* ===== 上：選択枠（背景画像そのまま） ===== */
+  /* ===== 上：選択枠 ===== */
   .picksWrap{
     padding: 12px 14px 8px;
     background-image: url("https://i.imgur.com/lFGbXfI.png");
@@ -151,7 +150,6 @@
     object-fit: cover;
     object-position: 50% 35%;
     display:block;
-
     image-rendering: auto;
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -253,22 +251,20 @@
   }
   .tiktokWrap{ display:flex; flex-direction:column; align-items:center; }
 
-  /* 枠数切替 */
-  .frameControl{ display:flex; flex-direction:column; align-items:center; gap:6px; }
-  .frameLabel{ font-size:12px; font-weight:900; color:#666; }
-  .frameBtns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
-  .frameBtnActive{ border-color:#cfe2ff; background:#eef6ff; font-weight: 1000; }
+  /* ★空き枠ボタン */
+  .freeControl{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .freeLabel{ font-size:12px; font-weight:900; color:#666; }
+  .freeBtns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+  .freeBtnActive{ border-color:#cfe2ff; background:#eef6ff; font-weight: 1000; }
 
   /* ===== 一覧：2列ボタン ===== */
   .listCard{
     margin-top: 12px;
     padding: 10px;
-
     background-image: url("https://i.imgur.com/lUMY5QA.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-
     border:1px solid var(--line);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -319,6 +315,7 @@
     position:relative;
   }
   .memberCard:active{ transform:scale(.99); }
+
   .memberCardThumb{
     width:100%;
     aspect-ratio: 1 / 1;
@@ -326,6 +323,7 @@
     overflow:hidden;
     background:#f7f7f7;
     border:1px solid #f0f0f0;
+    position: relative; /* ★辞退ラベル用 */
   }
   .memberCardThumb img{
     width:100%;
@@ -333,7 +331,6 @@
     object-fit: cover;
     object-position: 50% 20%;
     display:block;
-
     image-rendering: auto;
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -355,6 +352,28 @@
     text-decoration:none;
     line-height:1;
   }
+
+  /* ★辞退：グレーアウト＋選択不可＋写真上に表示 */
+  .memberCard.withdrawn{
+    opacity: .45;
+    filter: grayscale(1);
+    cursor: default;
+  }
+  .memberCard.withdrawn:active{ transform:none; }
+  .withdrawnBadge{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.9);
+    border: 1px solid rgba(0,0,0,.08);
+    font-weight: 1000;
+    font-size: 12px;
+    color: #111;
+    box-shadow: 0 8px 18px rgba(0,0,0,.10);
+  }
+  .memberCard.withdrawn .memberCardProfile{ opacity:.65; }
 
   .toast{
     position: fixed;
@@ -481,9 +500,9 @@
     margin-top: 10px;
   }
 
-  /* ★保存ボディは “上(選択)” と “下(空き枠)” を固定で分割 */
+  /* 上(選択) と 下(空き枠) を固定で分割 */
   .exportTop{
-    height: var(--exTopH); /* ★自動調整 */
+    height: var(--exTopH);
     display:flex;
     flex-direction:column;
     justify-content:flex-start;
@@ -527,7 +546,6 @@
     background-size: cover;
     background-position: 50% 35%;
     background-repeat: no-repeat;
-
     image-rendering: auto;
     transform: translateZ(0);
     backface-visibility: hidden;
@@ -559,15 +577,15 @@
     text-overflow: ellipsis;
   }
 
-  /* 下：空き枠エリア（必ず表示） */
+  /* 下：空き枠エリア */
   .exportBottom{
     height: calc(1040px - 150px - var(--exTopH));
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:flex-start;
-    padding-top: var(--exBottomPadTop);       /* ★自動調整 */
-    padding-bottom: var(--exBottomPadBottom); /* ★安全地帯 */
+    padding-top: var(--exBottomPadTop);
+    padding-bottom: var(--exBottomPadBottom);
   }
 
   .exportSlotsText{
@@ -584,23 +602,21 @@
     box-shadow: 0 8px 18px rgba(0,128,255,.25);
   }
 
-  /* ★空き枠を2段にするためのラッパー */
   .exportMissingRows{
-    margin-top: var(--exMissTop); /* ★自動調整 */
+    margin-top: var(--exMissTop);
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap: 12px;
+    gap: var(--exMissGapY);
   }
-
   .exportMissingRow{
     display:flex;
     justify-content:center;
-    gap: var(--exMissGap);
-    min-height: var(--exMissRowH);
+    gap: 28px;
+    min-height: var(--exMissRowMinH);
   }
 
-  /* 未選択アイコン：指定画像 / 色 #82cded */
+  /* 未選択アイコン */
   .missingIcon{
     width: var(--exMissSize);
     height: var(--exMissSize);
@@ -621,7 +637,7 @@
   }
 
   .exportSlotsSentence{
-    margin-top: var(--exSentenceMt);
+    margin-top: 12px;
     text-align:center;
     font-size: 20px;
     font-weight: 900;
@@ -630,7 +646,7 @@
     white-space: nowrap;
   }
 
-  /* ===== 初回ポップアップ ===== */
+  /* ===== ポップアップ（毎回表示） ===== */
   .introModal{
     position: fixed;
     inset: 0;
@@ -716,19 +732,22 @@
         <div class="tiktokHint">↑ここをクリック</div>
       </div>
 
-      <div class="frameControl">
-        <div class="frameLabel">選択枠</div>
-        <div class="frameBtns" id="frameBtns">
-          <button type="button" class="mode frameBtn" data-n="6" onclick="setMaxPick(6)">6</button>
-          <button type="button" class="mode frameBtn" data-n="7" onclick="setMaxPick(7)">7</button>
-          <button type="button" class="mode frameBtn" data-n="8" onclick="setMaxPick(8)">8</button>
-          <button type="button" class="mode frameBtn" data-n="9" onclick="setMaxPick(9)">9</button>
-          <button type="button" class="mode frameBtn" data-n="10" onclick="setMaxPick(10)">10</button>
-          <button type="button" class="mode frameBtn" data-n="11" onclick="setMaxPick(11)">11</button>
+      <!-- ★空き枠ボタン（1〜10） -->
+      <div class="freeControl">
+        <div class="freeLabel">空き枠</div>
+        <div class="freeBtns" id="freeBtns">
+          <button type="button" class="mode freeBtn" data-n="1" onclick="setFreeSlots(1)">1</button>
+          <button type="button" class="mode freeBtn" data-n="2" onclick="setFreeSlots(2)">2</button>
+          <button type="button" class="mode freeBtn" data-n="3" onclick="setFreeSlots(3)">3</button>
+          <button type="button" class="mode freeBtn" data-n="4" onclick="setFreeSlots(4)">4</button>
+          <button type="button" class="mode freeBtn" data-n="5" onclick="setFreeSlots(5)">5</button>
+          <button type="button" class="mode freeBtn" data-n="6" onclick="setFreeSlots(6)">6</button>
+          <button type="button" class="mode freeBtn" data-n="7" onclick="setFreeSlots(7)">7</button>
+          <button type="button" class="mode freeBtn" data-n="8" onclick="setFreeSlots(8)">8</button>
+          <button type="button" class="mode freeBtn" data-n="9" onclick="setFreeSlots(9)">9</button>
+          <button type="button" class="mode freeBtn" data-n="10" onclick="setFreeSlots(10)">10</button>
         </div>
       </div>
-
-      <!-- 投票枠の空き数UIは削除 -->
     </div>
   </div>
 
@@ -768,11 +787,10 @@
         </div>
       </div>
 
-      <!-- 空き枠は2段表示 -->
       <div class="exportBottom" id="exportBottom">
         <div class="exportSlotsText" id="exportSlotsText">空き 0 枠</div>
 
-        <div class="exportMissingRows">
+        <div class="exportMissingRows" id="exportMissingRows">
           <div class="exportMissingRow" id="exportMissingRow1"></div>
           <div class="exportMissingRow" id="exportMissingRow2"></div>
         </div>
@@ -781,12 +799,12 @@
       </div>
     </div>
 
-    <div class="exportTikTok">TikTok:@12agassi</div>
-    <div class="exportHashtag">#日プ新世界 投票枠交換メーカー</div>
+    <div class="exportTikTok" id="exportTikTok">TikTok:@12agassi</div>
+    <div class="exportHashtag" id="exportHashtag">#日プ新世界 投票枠交換メーカー</div>
   </div>
 </div>
 
-<!-- 初回ポップアップ -->
+<!-- ポップアップ（毎回表示） -->
 <div class="introModal" id="introModal" aria-hidden="true">
   <div class="introBox" role="dialog" aria-modal="true" aria-labelledby="introTitle">
     <div class="introHead" id="introTitle">このメーカーについて</div>
@@ -806,40 +824,22 @@
 const HEADER_IMAGE_URL = "https://i.imgur.com/nYBRUdd.png";
 const FALLBACK_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 
-let MAX_PICK = 11;
-const MAX_PICK_KEY = "oshivote_max_pick_v3";
-const STORAGE_KEY  = "oshivote_selected_v5";
+/* ★選択できる上限（表示の＋枠用） */
+const MAX_SELECTED = 11;
+
+const STORAGE_KEY  = "oshivote_selected_v6";
+const FREE_SLOTS_KEY = "oshivote_free_slots_v1";
 
 let showingCandidates = false;
-let freeSlots = 0; // 自動計算（MAX_PICK - selected.length）
 
-/* ===== 初回ポップアップ制御 ===== */
-const INTRO_KEY = "oshivote_intro_seen_v1";
+/* ★空き枠は手動 */
+let freeSlots = loadFreeSlots();
 
-function openIntro(){
-  const m = document.getElementById("introModal");
-  if(!m) return;
-  m.classList.add("show");
-  m.setAttribute("aria-hidden","false");
-}
-function closeIntro(){
-  const m = document.getElementById("introModal");
-  if(!m) return;
-  m.classList.remove("show");
-  m.setAttribute("aria-hidden","true");
-  // ★毎回表示させたいなら保存しない（=何もしない）
-  // try{ localStorage.setItem(INTRO_KEY, "1"); }catch(e){}
-}
-document.addEventListener("click", (e) => {
-  const m = document.getElementById("introModal");
-  if(!m || !m.classList.contains("show")) return;
-  if(e.target === m) closeIntro();
-});
-document.addEventListener("keydown", (e) => {
-  if(e.key !== "Escape") return;
-  const m = document.getElementById("introModal");
-  if(m && m.classList.contains("show")) closeIntro();
-});
+/* ★辞退者ID */
+const WITHDRAWN_IDS = new Set([
+  "horieito",      // 練習生：保里瑛都
+  "sakuraihikaru"  // 候補：櫻井輝
+]);
 
 function profileUrlById(id){
   if(!id) return "https://produce101.jp/profile/detail/?lang=ja";
@@ -870,7 +870,7 @@ const traineesOnly = [
   {name:"加藤 大樹 (K.DAIKI)", img:"https://i.imgur.com/4fRk2EB.png", id:"katodaiki"},
   {name:"カク・ドンミン(DONGMIN)", img:"https://i.imgur.com/xZSQqMh.png", id:"kwakdongmin"},
   {name:"末川 瑛太(EITA)", img:"https://i.imgur.com/alEjKCP.png", id:"suekawaeita"},
-  {name:"保里 瑛都(H.EITO)", img:"https://i.imgur.com/IAhs4ZA.png", id:"horieito"},
+  {name:"保里 瑛都(H.EITO)", img:"https://i.imgur.com/IAhs4ZA.png", id:"horieito"}, /* ★辞退 */
   {name:"金田 栄都(K.EITO)", img:"https://i.imgur.com/tF7i1du.png", id:"kanedaeito"},
   {name:"櫻井 楓真(FUMA)", img:"https://i.imgur.com/WIWI8Sx.png", id:"sakuraifuma"},
   {name:"小笠原ジュゼッペ慧(GIUSEPPE)", img:"https://i.imgur.com/2oKn3Ma.jpeg", id:"ogasawaragiuseppekei"},
@@ -954,7 +954,7 @@ const candidates = [
   {name:"村松 遼空(HARUKU)", img:"https://i.imgur.com/3JEtKs6.png", id:"muramatsuharuku"},
   {name:"髙城 暖人(HARUTO)", img:"https://i.imgur.com/qdXIOpr.png", id:"takagiharuto"},
   {name:"平島 輝(H.HIKARU)", img:"https://i.imgur.com/P5gzRZh.png", id:"hirashimahikaru"},
-  {name:"櫻井 輝(S.HIKARU)", img:"https://i.imgur.com/h2fBMUv.png", id:"sakuraihikaru"},
+  {name:"櫻井 輝(S.HIKARU)", img:"https://i.imgur.com/h2fBMUv.png", id:"sakuraihikaru"}, /* ★辞退 */
   {name:"佐川 太一(HIROKAZU)", img:"https://i.imgur.com/h2fBMUv.png", id:"sagawahirokazu"},
   {name:"イ・ヒョンジェ(HYUNJAE)", img:"https://i.imgur.com/wOhvKDu.png", id:"leehyunjae"},
   {name:"阿部 樹(ITSUKI)", img:"https://i.imgur.com/TaTAc2L.png", id:"abeitsuki"},
@@ -1003,67 +1003,62 @@ let selected = loadSelected();
   }
 })();
 
-/* 枠数ロード */
-(function loadMaxPick(){
+/* ===== ポップアップ（毎回表示） ===== */
+function openIntro(){
+  const m = document.getElementById("introModal");
+  if(!m) return;
+  m.classList.add("show");
+  m.setAttribute("aria-hidden","false");
+}
+function closeIntro(){
+  const m = document.getElementById("introModal");
+  if(!m) return;
+  m.classList.remove("show");
+  m.setAttribute("aria-hidden","true");
+}
+document.addEventListener("click", (e) => {
+  const m = document.getElementById("introModal");
+  if(!m || !m.classList.contains("show")) return;
+  if(e.target === m) closeIntro();
+});
+document.addEventListener("keydown", (e) => {
+  if(e.key !== "Escape") return;
+  const m = document.getElementById("introModal");
+  if(m && m.classList.contains("show")) closeIntro();
+});
+
+/* ===== 空き枠（手動） ===== */
+function loadFreeSlots(){
   try{
-    const v = parseInt(localStorage.getItem(MAX_PICK_KEY), 10);
-    if([6,7,8,9,10,11].includes(v)) MAX_PICK = v;
+    const v = parseInt(localStorage.getItem(FREE_SLOTS_KEY), 10);
+    if(Number.isFinite(v) && v >= 0 && v <= 10) return v;
   }catch(e){}
-})();
-
-function updateFrameButtons(){
-  document.querySelectorAll(".frameBtn").forEach(b=>{
+  return 0;
+}
+function saveFreeSlots(){
+  try{ localStorage.setItem(FREE_SLOTS_KEY, String(freeSlots)); }catch(e){}
+}
+function updateFreeButtons(){
+  document.querySelectorAll(".freeBtn").forEach(b=>{
     const n = parseInt(b.getAttribute("data-n"), 10);
-    b.classList.toggle("frameBtnActive", n === MAX_PICK);
+    b.classList.toggle("freeBtnActive", n === freeSlots);
   });
 }
-
-function setMaxPick(n){
-  if(![6,7,8,9,10,11].includes(n)) return;
-  MAX_PICK = n;
-
-  if(selected.length > MAX_PICK){
-    selected = selected.slice(0, MAX_PICK);
-    saveSelected();
-  }
-  try{ localStorage.setItem(MAX_PICK_KEY, String(MAX_PICK)); }catch(e){}
-
-  withMembersScrollLock(() => {
-    updateFrameButtons();
-    drawPicks();
-    drawMembers();
-    drawExportPicks();
-    renderFreeSlots();
-  });
+function setFreeSlots(n){
+  if(!Number.isInteger(n) || n < 1 || n > 10) return;
+  freeSlots = n;
+  saveFreeSlots();
+  updateFreeButtons();
+  renderFreeSlots();
+  drawExportPicks();
 }
 
-/* 練習生/候補切替（スクロール維持） */
-function toggleCandidates(e){
-  if(e && e.preventDefault) e.preventDefault();
-  const wrap = document.getElementById("membersWrap");
-  const listScroll = wrap ? wrap.scrollTop : 0;
-  const winY = window.scrollY;
-
-  showingCandidates = !showingCandidates;
-  document.getElementById("toggleListBtn").textContent = showingCandidates ? "練習生" : "練習生候補";
-
-  drawMembers();
-
-  requestAnimationFrame(function(){
-    if(wrap) wrap.scrollTop = listScroll;
-    window.scrollTo(0, winY);
-  });
-}
-
-/* ★投票枠の空き数（自動計算） */
+/* ★空き枠表示（自動計算しない） */
 function renderFreeSlots(){
-  freeSlots = Math.max(0, MAX_PICK - selected.length);
-
   const t = `空き ${freeSlots} 枠`;
   document.getElementById("slotBadge").textContent = t;
   document.getElementById("exportSlotsText").textContent = t;
   document.getElementById("exportSlotsSentence").textContent = `${freeSlots} 投票枠 空いています`;
-
   renderMissingSlots();
 }
 
@@ -1072,7 +1067,7 @@ function drawPicks(){
   const row = document.getElementById("picksRow");
   row.innerHTML = "";
 
-  for(let i=0; i<MAX_PICK; i++){
+  for(let i=0; i<MAX_SELECTED; i++){
     const slot = document.createElement("div");
 
     if(i < selected.length){
@@ -1097,7 +1092,7 @@ function drawPicks(){
   }
 }
 
-/* 一覧：2列カード＋profile */
+/* 一覧：2列カード＋profile（辞退は選択不可） */
 function drawMembers(){
   const q = (document.getElementById("search").value || "").trim().toLowerCase();
   const membersEl = document.getElementById("members");
@@ -1110,24 +1105,55 @@ function drawMembers(){
     const m = trainees[i];
     if(q && (m.name||"").toLowerCase().indexOf(q) === -1) continue;
 
+    const isWithdrawn = WITHDRAWN_IDS.has(m.id);
     const card = document.createElement("div");
-    card.className = "memberCard" + (selected.indexOf(i) !== -1 ? " selected" : "");
+    card.className = "memberCard"
+      + (selected.indexOf(i) !== -1 ? " selected" : "")
+      + (isWithdrawn ? " withdrawn" : "");
+
     const purl = profileUrlById(m.id);
 
     card.innerHTML = `
-      <div class="memberCardThumb"><img src="${m.img || FALLBACK_IMG}" alt=""></div>
+      <div class="memberCardThumb">
+        <img src="${m.img || FALLBACK_IMG}" alt="">
+        ${isWithdrawn ? `<div class="withdrawnBadge">※辞退</div>` : ``}
+      </div>
       <div class="memberCardName">${displayName(m.name)}</div>
       <div class="memberCardSub">${alphaPart(m.name)}</div>
       <a class="memberCardProfile" href="${purl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">profile</a>
     `;
-    card.addEventListener("click", () => add(i));
+
+    if(!isWithdrawn){
+      card.addEventListener("click", () => add(i));
+    }
     membersEl.appendChild(card);
   }
 }
 
+/* 練習生/候補切替（スクロール維持） */
+function toggleCandidates(e){
+  if(e && e.preventDefault) e.preventDefault();
+  const wrap = document.getElementById("membersWrap");
+  const listScroll = wrap ? wrap.scrollTop : 0;
+  const winY = window.scrollY;
+
+  showingCandidates = !showingCandidates;
+  document.getElementById("toggleListBtn").textContent = showingCandidates ? "練習生" : "練習生候補";
+
+  drawMembers();
+
+  requestAnimationFrame(function(){
+    if(wrap) wrap.scrollTop = listScroll;
+    window.scrollTo(0, winY);
+  });
+}
+
 function add(i){
-  if(selected.length >= MAX_PICK){ alert(MAX_PICK + "人まで！"); return; }
+  if(selected.length >= MAX_SELECTED){ alert(MAX_SELECTED + "人まで！"); return; }
   if(selected.indexOf(i) !== -1) return;
+
+  const m = trainees[i];
+  if(m && WITHDRAWN_IDS.has(m.id)) return; // 念のため
 
   withMembersScrollLock(() => {
     selected.push(i);
@@ -1135,7 +1161,6 @@ function add(i){
     drawPicks();
     drawMembers();
     drawExportPicks();
-    renderFreeSlots();
   });
 }
 function undo(){
@@ -1145,15 +1170,19 @@ function undo(){
     drawPicks();
     drawMembers();
     drawExportPicks();
-    renderFreeSlots();
   });
 }
 function resetAll(){
   withMembersScrollLock(() => {
     selected = [];
     saveSelected();
+
+    freeSlots = 0;          // ★リセットで空き枠も0に
+    saveFreeSlots();
+
     drawPicks();
     drawMembers();
+    updateFreeButtons();
     drawExportPicks();
     renderFreeSlots();
   });
@@ -1172,7 +1201,6 @@ function swap(a,b){
     const t = selected[a]; selected[a]=selected[b]; selected[b]=t;
     saveSelected();
     drawPicks(); drawMembers(); drawExportPicks();
-    renderFreeSlots();
   });
 }
 function moveLeft(pos){ swap(pos, pos-1); }
@@ -1203,7 +1231,7 @@ function exportPlanBySelectedCount(count){
   return [Math.min(5,count), Math.max(0,count-5)];
 }
 
-/* ★“少し小さく” 自動調整（極端にしない） */
+/* “少し小さく” 自動調整 */
 function fitExportAvatar(count){
   const plan = exportPlanBySelectedCount(count);
   const maxCols = Math.max(plan[0], plan[1]);
@@ -1239,22 +1267,19 @@ function setExportVars(avatar, gapX, gapY, nameSize){
   document.documentElement.style.setProperty("--exName", nameSize + "px");
 }
 
-/* ★保存画像：空白を減らして、下のTikTok/ハッシュタグと被らないように自動調整 */
-function adjustExportLayout(count, r2){
-  // 1) 上(選択メンバー)の高さを人数で縮めて空白を減らす
+/* 余白調整（基本） */
+function adjustExportLayoutBase(count, r2){
   let topH = 470;
   if(r2 === 0){
     if(count <= 2) topH = 320;
     else if(count <= 4) topH = 360;
     else topH = 400;
   }else{
-    // 2段あるときは少しだけ縮める（空白は残しすぎない）
     if(count <= 7) topH = 440;
     else topH = 470;
   }
   document.documentElement.style.setProperty("--exTopH", topH + "px");
 
-  // 2) 下(空き枠)開始位置：上げすぎない範囲で調整
   let padTop = 16;
   if(count <= 2) padTop = 0;
   else if(count <= 4) padTop = 6;
@@ -1262,24 +1287,49 @@ function adjustExportLayout(count, r2){
   else padTop = 16;
   document.documentElement.style.setProperty("--exBottomPadTop", padTop + "px");
 
-  // 3) 下部の安全地帯（TikTok/ハッシュタグと被らない）
   document.documentElement.style.setProperty("--exBottomPadBottom", "150px");
 
-  // 4) 水色ブロック上の余白も人数に合わせる
   let missTop = 18;
   if(count <= 2) missTop = 8;
   else if(count <= 4) missTop = 12;
   else missTop = 18;
   document.documentElement.style.setProperty("--exMissTop", missTop + "px");
 
-  // ★基本値に戻す（autoFitNoOverlapが必要ならここから縮める）
+  /* 初期サイズ */
   document.documentElement.style.setProperty("--exMissSize", "120px");
-  document.documentElement.style.setProperty("--exMissGap", "28px");
-  document.documentElement.style.setProperty("--exMissRowH", "130px");
-  document.documentElement.style.setProperty("--exSentenceMt", "12px");
+  document.documentElement.style.setProperty("--exMissRowMinH", "130px");
+  document.documentElement.style.setProperty("--exMissGapY", "12px");
 }
 
-/* 保存：上に選択だけ（＋は出さない）／ 下に空き枠を表示 */
+/* ★保存画像：下の文字（投票枠〜）が TikTok/ハッシュタグと被ったら自動で詰める */
+function preventFooterOverlap(){
+  const sentence = document.getElementById("exportSlotsSentence");
+  const tiktok = document.getElementById("exportTikTok");
+  const hashtag = document.getElementById("exportHashtag");
+  if(!sentence || !tiktok || !hashtag) return;
+
+  const limitTop = Math.min(tiktok.getBoundingClientRect().top, hashtag.getBoundingClientRect().top) - 8;
+
+  let missSize = 120;
+  let rowMinH = 130;
+  let gapY = 12;
+
+  // 最大 10 回詰める（詰めすぎ防止）
+  for(let k=0;k<10;k++){
+    const sRect = sentence.getBoundingClientRect();
+    if(sRect.bottom <= limitTop) break;
+
+    missSize = Math.max(88, missSize - 4);
+    rowMinH = Math.max(96, rowMinH - 4);
+    gapY = Math.max(6, gapY - 1);
+
+    document.documentElement.style.setProperty("--exMissSize", missSize + "px");
+    document.documentElement.style.setProperty("--exMissRowMinH", rowMinH + "px");
+    document.documentElement.style.setProperty("--exMissGapY", gapY + "px");
+  }
+}
+
+/* 保存：上に選択だけ／下に空き枠を2段で必ず出す */
 function drawExportPicks(){
   const row1 = document.getElementById("exportRow1");
   const row2 = document.getElementById("exportRow2");
@@ -1305,13 +1355,16 @@ function drawExportPicks(){
     row2.style.display = "none";
   }
 
-  renderFreeSlots();      // 空き枠 自動計算＆表示更新
-  renderMissingSlots();   // 水色アイコン更新
-  adjustExportLayout(count, r2); // ★空白/被り 自動調整
+  renderFreeSlots();
+  renderMissingSlots();
 
-  // ★DOM反映後に被りチェックして自動フィット
+  adjustExportLayoutBase(count, r2);
+
+  // レイアウト確定後に被り判定（2フレーム待つ）
   requestAnimationFrame(() => {
-    autoFitNoOverlap();
+    requestAnimationFrame(() => {
+      preventFooterOverlap();
+    });
   });
 }
 
@@ -1328,12 +1381,10 @@ function makeExportSlot(m, orderIndex){
   return d;
 }
 
-/* ★空き枠（freeSlots）を描画：1〜4は1段、それ以上は2段 */
+/* 空き枠（freeSlots）を2段に割って描画 */
 function planMissingRows(n){
   if(n <= 0) return [0,0];
-  if(n <= 4) return [n, 0]; // ★縦を圧縮して被り防止
-
-  const first = Math.ceil(n / 2);
+  const first = Math.floor(n / 2);
   const second = n - first;
   return [first, second];
 }
@@ -1361,44 +1412,6 @@ function renderMissingSlots(){
       const d = document.createElement("div");
       d.className = "missingIcon";
       row2.appendChild(d);
-    }
-  }
-}
-
-/* ★被りそうなら自動で縮める（TikTok/ハッシュタグと重ならない） */
-function autoFitNoOverlap(){
-  const exportInner = document.getElementById("exportInner");
-  const tiktok = document.querySelector(".exportTikTok");
-  const hashtag = document.querySelector(".exportHashtag");
-  const sentence = document.getElementById("exportSlotsSentence");
-  if(!exportInner || !tiktok || !hashtag || !sentence) return;
-
-  const innerTop = exportInner.getBoundingClientRect().top;
-  const safeLine = Math.min(tiktok.getBoundingClientRect().top, hashtag.getBoundingClientRect().top) - innerTop - 10;
-
-  const steps = [
-    { topMinus: 0,  size: 120, gap: 28, rowH: 130, mt: 12, missTop: null },
-    { topMinus: 20, size: 112, gap: 24, rowH: 122, mt: 10, missTop: 14 },
-    { topMinus: 40, size: 104, gap: 22, rowH: 116, mt: 8,  missTop: 12 },
-    { topMinus: 60, size: 96,  gap: 20, rowH: 108, mt: 6,  missTop: 10 },
-  ];
-
-  const currentTopH = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--exTopH"), 10) || 470;
-
-  for(const s of steps){
-    document.documentElement.style.setProperty("--exTopH", (currentTopH - s.topMinus) + "px");
-
-    document.documentElement.style.setProperty("--exMissSize", s.size + "px");
-    document.documentElement.style.setProperty("--exMissGap", s.gap + "px");
-    document.documentElement.style.setProperty("--exMissRowH", s.rowH + "px");
-    document.documentElement.style.setProperty("--exSentenceMt", s.mt + "px");
-    if(s.missTop !== null){
-      document.documentElement.style.setProperty("--exMissTop", s.missTop + "px");
-    }
-
-    const bottomOfSentence = sentence.getBoundingClientRect().bottom - innerTop;
-    if(bottomOfSentence <= safeLine){
-      break;
     }
   }
 }
@@ -1436,14 +1449,14 @@ async function saveImage(){
 
 /* 初期描画 */
 (function initAll(){
-  updateFrameButtons();
+  // 毎回ポップアップ表示
+  openIntro();
+
+  updateFreeButtons();
   drawPicks();
   drawMembers();
   drawExportPicks();
   renderFreeSlots();
-
-  // ★毎回表示させたい：常に開く
-  openIntro();
 })();
 </script>
 </body>
