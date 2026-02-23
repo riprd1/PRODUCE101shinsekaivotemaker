@@ -37,6 +37,9 @@
     --exMissSize: 120px;
     --exMissRowMinH: 130px;
     --exMissGapY: 12px;
+
+    /* ★追加：@文字サイズ（全員統一・JSで調整） */
+    --exHandle: 13px;
   }
 
   *{ box-sizing:border-box; }
@@ -577,6 +580,20 @@
     text-overflow: ellipsis;
   }
 
+  /* ★追加：@表示（下段と被らないように必ず1行分の高さ確保） */
+  .exportHandle{
+    margin-top: 6px;
+    font-size: var(--exHandle);
+    font-weight: 900;
+    color: rgba(0,0,0,.55);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    line-height: 1.1;
+    height: calc(var(--exHandle) * 1.1);
+  }
+
   /* 下：空き枠エリア */
   .exportBottom{
     height: calc(1040px - 150px - var(--exTopH));
@@ -830,6 +847,10 @@ const MAX_SELECTED = 11;
 const STORAGE_KEY  = "oshivote_selected_v6";
 const FREE_SLOTS_KEY = "oshivote_free_slots_v1";
 
+/* ★追加：@アカウント保存 */
+const HANDLES_KEY = "oshivote_handles_v1";
+let handles = loadHandles();
+
 let showingCandidates = false;
 
 /* ★空き枠は手動 */
@@ -857,6 +878,42 @@ function withMembersScrollLock(fn){
   const prev = wrap ? wrap.scrollTop : 0;
   fn();
   requestAnimationFrame(() => { if(wrap) wrap.scrollTop = prev; });
+}
+
+/* ★追加：@読み書き */
+function loadHandles(){
+  try{
+    const raw = localStorage.getItem(HANDLES_KEY);
+    const obj = raw ? JSON.parse(raw) : {};
+    return (obj && typeof obj === "object") ? obj : {};
+  }catch(e){ return {}; }
+}
+function saveHandles(){
+  try{ localStorage.setItem(HANDLES_KEY, JSON.stringify(handles)); }catch(e){}
+}
+/* ★追加：選択枠タップで @入力 */
+function editHandle(pos){
+  if(pos < 0 || pos >= selected.length) return;
+  const traineeIndex = selected[pos];
+  const current = (handles[String(traineeIndex)] || "").trim();
+
+  let next = prompt("アカウント名を入力してね（例：@xxxx）", current || "@");
+  if(next === null) return; // キャンセル
+  next = String(next || "").trim();
+
+  // 空入力なら削除
+  if(!next){
+    delete handles[String(traineeIndex)];
+    saveHandles();
+    drawExportPicks();
+    return;
+  }
+  // 先頭が@じゃなければ付ける
+  if(next[0] !== "@") next = "@" + next;
+
+  handles[String(traineeIndex)] = next;
+  saveHandles();
+  drawExportPicks();
 }
 
 /* ====== 練習生データ（練習生＋候補） ====== */
@@ -1074,14 +1131,14 @@ function drawPicks(){
       const m = trainees[selected[i]];
       slot.className = "slot";
       slot.innerHTML = `
-        <div class="avatar">
+        <div class="avatar" onclick="editHandle(${i})">
           <img src="${m.img || FALLBACK_IMG}" alt="">
           <div class="rank">${i + 1}</div>
         </div>
-        <div class="name">${displayName(m.name)}</div>
+        <div class="name" onclick="editHandle(${i})">${displayName(m.name)}</div>
         <div class="reorder">
-          <button type="button" onclick="moveLeft(${i})">←</button>
-          <button type="button" onclick="moveRight(${i})">→</button>
+          <button type="button" onclick="event.stopPropagation(); moveLeft(${i})">←</button>
+          <button type="button" onclick="event.stopPropagation(); moveRight(${i})">→</button>
         </div>
       `;
     }else{
@@ -1179,6 +1236,9 @@ function resetAll(){
 
     freeSlots = 0;          // ★リセットで空き枠も0に
     saveFreeSlots();
+
+    handles = {};           // ★リセットで@も消す
+    saveHandles();
 
     drawPicks();
     drawMembers();
@@ -1301,6 +1361,39 @@ function adjustExportLayoutBase(count, r2){
   document.documentElement.style.setProperty("--exMissGapY", "12px");
 }
 
+/* ★追加：@の文字サイズを全員同じに揃える */
+function setExportHandleSize(px){
+  document.documentElement.style.setProperty("--exHandle", px + "px");
+}
+function fitExportHandlesUniform(){
+  const els = Array.from(document.querySelectorAll("#exportInner .exportHandle"));
+  if(!els.length) return;
+
+  const MAX = 13;
+  const MIN = 10;
+
+  setExportHandleSize(MAX);
+
+  const targets = els.filter(el => {
+    const t = (el.textContent || "").trim();
+    return t && t !== "";
+  });
+
+  if(!targets.length){
+    setExportHandleSize(MAX);
+    return;
+  }
+
+  for(let size = MAX; size >= MIN; size--){
+    setExportHandleSize(size);
+
+    const ok = targets.every(el => el.scrollWidth <= el.clientWidth);
+    if(ok) return;
+  }
+
+  setExportHandleSize(MIN);
+}
+
 /* ★保存画像：下の文字（投票枠〜）が TikTok/ハッシュタグと被ったら自動で詰める */
 function preventFooterOverlap(){
   const sentence = document.getElementById("exportSlotsSentence");
@@ -1342,6 +1435,12 @@ function drawExportPicks(){
 
   fitExportAvatar(count);
 
+  // ★@が1つでも入っていて2段表示なら段間を少し広げる（被り防止）
+  const hasAnyHandle = selected.some(idx => (handles[String(idx)] || "").trim());
+  if(r2 > 0 && hasAnyHandle){
+    document.documentElement.style.setProperty("--exGapY", "38px");
+  }
+
   for(let i=0;i<r1;i++){
     row1.appendChild(makeExportSlot(trainees[selected[i]], i));
   }
@@ -1363,12 +1462,16 @@ function drawExportPicks(){
   // レイアウト確定後に被り判定（2フレーム待つ）
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
+      fitExportHandlesUniform();
       preventFooterOverlap();
     });
   });
 }
 
 function makeExportSlot(m, orderIndex){
+  const traineeIndex = selected[orderIndex];
+  const handle = (handles[String(traineeIndex)] || "").trim();
+
   const d = document.createElement("div");
   d.className = "exportSlot";
   d.innerHTML = `
@@ -1377,6 +1480,7 @@ function makeExportSlot(m, orderIndex){
       <div class="exportRank">${orderIndex + 1}</div>
     </div>
     <div class="exportName">${displayName(m && m.name ? m.name : "")}</div>
+    <div class="exportHandle">${handle ? handle : "&nbsp;"}</div>
   `;
   return d;
 }
