@@ -40,6 +40,9 @@
 
     /* ★追加：@文字サイズ（全員統一・JSで調整） */
     --exHandle: 13px;
+
+    /* ★追加：下の「◯投票枠 空いています」文字サイズ（被り防止でJSが調整） */
+    --exSentence: 20px;
   }
 
   *{ box-sizing:border-box; }
@@ -459,36 +462,68 @@
     pointer-events:none;
   }
 
-  /* 下固定：TikTok/ハッシュタグ（必ず表示） */
-  .exportTikTok{
-    position:absolute;
-    left: 50%;
-    bottom: 22px;
-    transform: translateX(-50%);
-    font-size: 16px;
-    font-weight: 900;
-    color: rgba(0,0,0,.55);
-    background: rgba(255,255,255,.72);
-    padding: 6px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.85);
-    backdrop-filter: blur(6px);
-    z-index: 120;
-    pointer-events:none;
-    white-space: nowrap;
-  }
+  /* ★変更：下固定（左下 TikTok / 右下 #）を“高級ガラス”に */
+  .exportTikTok,
   .exportHashtag{
     position:absolute;
-    left: 50%;
-    bottom: 6px;
-    transform: translateX(-50%);
-    font-size: 13px;
-    font-weight: 900;
-    color: rgba(0,0,0,.45);
-    letter-spacing: .03em;
-    white-space: nowrap;
-    pointer-events:none;
+    bottom: 14px;
     z-index: 120;
+    pointer-events:none;
+    white-space: nowrap;
+
+    background: linear-gradient(135deg,
+      rgba(255,255,255,.72),
+      rgba(255,255,255,.42)
+    );
+    border: 1px solid rgba(255,255,255,.55);
+    border-bottom-color: rgba(255,255,255,.32);
+    border-right-color: rgba(255,255,255,.32);
+
+    backdrop-filter: blur(12px) saturate(155%);
+    -webkit-backdrop-filter: blur(12px) saturate(155%);
+
+    box-shadow:
+      0 14px 30px rgba(0,0,0,.14),
+      inset 0 1px 0 rgba(255,255,255,.75),
+      inset 0 -1px 0 rgba(255,255,255,.18);
+
+    border-radius: 999px;
+    padding: 8px 12px;
+
+    color: rgba(10,10,10,.88);
+    font-weight: 1000;
+    text-shadow:
+      0 1px 0 rgba(255,255,255,.70),
+      0 0 6px rgba(255,255,255,.22);
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+  .exportTikTok::before,
+  .exportHashtag::before{
+    content:"";
+    position:absolute;
+    inset: 1px;
+    border-radius: 999px;
+    background: linear-gradient(
+      135deg,
+      rgba(255,255,255,.55),
+      rgba(255,255,255,0) 55%
+    );
+    pointer-events:none;
+    mix-blend-mode: screen;
+    opacity: .55;
+  }
+  .exportTikTok{
+    left: 18px;
+    font-size: 14px;
+  }
+  .exportHashtag{
+    right: 18px;
+    font-size: 13px;
+    letter-spacing: .03em;
   }
 
   /* ボディ */
@@ -653,14 +688,18 @@
     box-shadow: 0 10px 22px rgba(0,0,0,.12);
   }
 
+  /* ★変更：下の文は「文字だけ」 */
   .exportSlotsSentence{
     margin-top: 12px;
     text-align:center;
-    font-size: 20px;
+    font-size: var(--exSentence);
     font-weight: 900;
-    color: #000;
+    color: rgba(10,10,10,.86);
     letter-spacing: .04em;
     white-space: nowrap;
+    text-shadow:
+      0 1px 0 rgba(255,255,255,.65),
+      0 0 6px rgba(255,255,255,.18);
   }
 
   /* ===== ポップアップ（毎回表示） ===== */
@@ -816,8 +855,9 @@
       </div>
     </div>
 
-    <div class="exportTikTok" id="exportTikTok">TikTok:@12agassi</div>
-    <div class="exportHashtag" id="exportHashtag">#日プ新世界 投票枠交換メーカー</div>
+    <!-- ★変更：左下 TikTok / 右下 #（ガラス枠） -->
+    <div class="exportTikTok" id="exportTikTok">TikTok:12agassi</div>
+    <div class="exportHashtag" id="exportHashtag">#日プ新世界投票枠交換メーカー</div>
   </div>
 </div>
 
@@ -1359,6 +1399,9 @@ function adjustExportLayoutBase(count, r2){
   document.documentElement.style.setProperty("--exMissSize", "120px");
   document.documentElement.style.setProperty("--exMissRowMinH", "130px");
   document.documentElement.style.setProperty("--exMissGapY", "12px");
+
+  /* ★初期 sentence サイズ */
+  document.documentElement.style.setProperty("--exSentence", "20px");
 }
 
 /* ★追加：@の文字サイズを全員同じに揃える */
@@ -1394,31 +1437,41 @@ function fitExportHandlesUniform(){
   setExportHandleSize(MIN);
 }
 
-/* ★保存画像：下の文字（投票枠〜）が TikTok/ハッシュタグと被ったら自動で詰める */
+/* ★変更：下の「◯投票枠 空いています」がガラス枠と絶対被らないように詰める */
+function setExportSentenceSize(px){
+  document.documentElement.style.setProperty("--exSentence", px + "px");
+}
 function preventFooterOverlap(){
   const sentence = document.getElementById("exportSlotsSentence");
   const tiktok = document.getElementById("exportTikTok");
   const hashtag = document.getElementById("exportHashtag");
   if(!sentence || !tiktok || !hashtag) return;
 
-  const limitTop = Math.min(tiktok.getBoundingClientRect().top, hashtag.getBoundingClientRect().top) - 8;
+  const limitTop = Math.min(tiktok.getBoundingClientRect().top, hashtag.getBoundingClientRect().top) - 10;
 
   let missSize = 120;
   let rowMinH = 130;
   let gapY = 12;
 
-  // 最大 10 回詰める（詰めすぎ防止）
-  for(let k=0;k<10;k++){
+  // まず空き枠アイコン側を詰める
+  for(let k=0;k<12;k++){
     const sRect = sentence.getBoundingClientRect();
     if(sRect.bottom <= limitTop) break;
 
-    missSize = Math.max(88, missSize - 4);
-    rowMinH = Math.max(96, rowMinH - 4);
+    missSize = Math.max(82, missSize - 4);
+    rowMinH = Math.max(92, rowMinH - 4);
     gapY = Math.max(6, gapY - 1);
 
     document.documentElement.style.setProperty("--exMissSize", missSize + "px");
     document.documentElement.style.setProperty("--exMissRowMinH", rowMinH + "px");
     document.documentElement.style.setProperty("--exMissGapY", gapY + "px");
+  }
+
+  // それでもダメなら sentence の文字だけ少し小さく（文字だけ条件は維持）
+  for(let size=20; size>=16; size--){
+    setExportSentenceSize(size);
+    const sRect = sentence.getBoundingClientRect();
+    if(sRect.bottom <= limitTop) break;
   }
 }
 
