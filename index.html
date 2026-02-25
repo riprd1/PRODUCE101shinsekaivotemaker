@@ -14,7 +14,12 @@
     --muted:#666;
     --shadow: 0 4px 14px rgba(0,0,0,.06);
     --radius:14px;
-    --blue:#0080ff;
+
+    /* ★追加：アクセントカラー（丸枠の色） */
+    --accent:#0080ff;
+
+    /* 既存互換：今まで --blue を使ってたので、ここで連動 */
+    --blue: var(--accent);
 
     /* 画面側 */
     --slot: 86px;
@@ -262,6 +267,49 @@
   .freeLabel{ font-size:12px; font-weight:900; color:#666; }
   .freeBtns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
   .freeBtnActive{ border-color:#cfe2ff; background:#eef6ff; font-weight: 1000; }
+
+  /* ★追加：丸枠カラー変更UI */
+  .colorControl{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    padding: 2px 6px;
+  }
+  .colorLabel{
+    font-size:12px;
+    font-weight:900;
+    color:#666;
+  }
+  .palette{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+  }
+  .colorSwatch{
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    border: 2px solid rgba(0,0,0,.10);
+    box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    cursor:pointer;
+    background: #000;
+  }
+  .colorSwatch.active{
+    outline: 3px solid rgba(0,0,0,.12);
+    border-color: rgba(0,0,0,.25);
+    transform: scale(1.03);
+  }
+  .colorPicker{
+    width: 40px;
+    height: 30px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 0;
+    background:#fff;
+  }
 
   /* ===== 一覧：2列ボタン ===== */
   .listCard{
@@ -531,21 +579,15 @@
     height: calc(1040px - 150px);
     padding: 18px 56px 0;
   }
-  .exportSubtitle{
-    text-align:center;
-    font-size: 22px;
-    font-weight: 900;
-    margin-top: 10px;
-  }
 
-  /* 上(選択) と 下(空き枠) を固定で分割 */
+  /* ★「投票して欲しいメンバー」消したので、余白を詰める */
   .exportTop{
     height: var(--exTopH);
     display:flex;
     flex-direction:column;
     justify-content:flex-start;
     align-items:center;
-    padding-top: 18px;
+    padding-top: 6px; /* ★18px→6px */
   }
   .exportRows{
     width: 100%;
@@ -553,7 +595,7 @@
     flex-direction:column;
     gap: var(--exGapY);
     align-items:center;
-    margin-top: 12px;
+    margin-top: 8px; /* ★12px→8px */
   }
   .exportRow{
     display:flex;
@@ -783,6 +825,20 @@
       <button class="danger" type="button" onclick="resetAll()">リセット</button>
       <button class="mode" type="button" id="reorderBtn" onclick="toggleReorder()">並び替えモード：OFF</button>
 
+      <!-- ★追加：丸枠カラー変更 -->
+      <div class="colorControl">
+        <div class="colorLabel">丸枠の色</div>
+        <div class="palette" id="palette">
+          <div class="colorSwatch" data-color="#0080ff" style="background:#0080ff" title="ブルー" onclick="setAccentColor('#0080ff')"></div>
+          <div class="colorSwatch" data-color="#ff4fa3" style="background:#ff4fa3" title="ピンク" onclick="setAccentColor('#ff4fa3')"></div>
+          <div class="colorSwatch" data-color="#7a5cff" style="background:#7a5cff" title="パープル" onclick="setAccentColor('#7a5cff')"></div>
+          <div class="colorSwatch" data-color="#23c16b" style="background:#23c16b" title="グリーン" onclick="setAccentColor('#23c16b')"></div>
+          <div class="colorSwatch" data-color="#ff8a00" style="background:#ff8a00" title="オレンジ" onclick="setAccentColor('#ff8a00')"></div>
+          <div class="colorSwatch" data-color="#111111" style="background:#111111" title="ブラック" onclick="setAccentColor('#111111')"></div>
+          <input class="colorPicker" id="colorPicker" type="color" value="#0080ff" onchange="setAccentColor(this.value)" title="自由に選ぶ" />
+        </div>
+      </div>
+
       <div class="tiktokWrap">
         <a class="tiktokBtn" href="https://www.tiktok.com/@12agassi" target="_blank" rel="noopener">TikTokフォローお願い🥹</a>
         <div class="tiktokHint">↑ここをクリック</div>
@@ -834,7 +890,8 @@
     </div>
 
     <div class="exportBody">
-      <div class="exportSubtitle">投票して欲しいメンバー</div>
+      <!-- ★削除：投票して欲しいメンバー -->
+      <!-- <div class="exportSubtitle">投票して欲しいメンバー</div> -->
 
       <div class="exportTop">
         <div class="exportRows">
@@ -887,6 +944,9 @@ const MAX_SELECTED = 11;
 const STORAGE_KEY  = "oshivote_selected_v6";
 const FREE_SLOTS_KEY = "oshivote_free_slots_v1";
 
+/* ★追加：丸枠カラー保存 */
+const ACCENT_COLOR_KEY = "oshivote_accent_color_v1";
+
 /* ★追加：@アカウント保存 */
 const HANDLES_KEY = "oshivote_handles_v1";
 let handles = loadHandles();
@@ -901,6 +961,50 @@ const WITHDRAWN_IDS = new Set([
   "horieito",      // 練習生：保里瑛都
   "sakuraihikaru"  // 候補：櫻井輝
 ]);
+
+/* ★追加：丸枠カラー 読み書き＆反映 */
+function normalizeHexColor(c){
+  if(!c) return "#0080ff";
+  c = String(c).trim();
+  if(/^#[0-9a-fA-F]{3}$/.test(c)){
+    // #abc -> #aabbcc
+    return "#" + c[1]+c[1] + c[2]+c[2] + c[3]+c[3];
+  }
+  if(/^#[0-9a-fA-F]{6}$/.test(c)) return c.toLowerCase();
+  return "#0080ff";
+}
+function loadAccentColor(){
+  try{
+    const v = localStorage.getItem(ACCENT_COLOR_KEY);
+    return normalizeHexColor(v);
+  }catch(e){
+    return "#0080ff";
+  }
+}
+function saveAccentColor(color){
+  try{ localStorage.setItem(ACCENT_COLOR_KEY, normalizeHexColor(color)); }catch(e){}
+}
+function updatePaletteUI(color){
+  const c = normalizeHexColor(color);
+  const swatches = document.querySelectorAll(".colorSwatch");
+  swatches.forEach(el=>{
+    const d = normalizeHexColor(el.getAttribute("data-color"));
+    el.classList.toggle("active", d === c);
+  });
+  const picker = document.getElementById("colorPicker");
+  if(picker) picker.value = c;
+}
+function applyAccentColor(color){
+  const c = normalizeHexColor(color);
+  document.documentElement.style.setProperty("--accent", c);
+  // --blue は CSSで var(--accent) に連動してるので触らなくてOK
+  updatePaletteUI(c);
+}
+function setAccentColor(color){
+  const c = normalizeHexColor(color);
+  saveAccentColor(c);
+  applyAccentColor(c);
+}
 
 function profileUrlById(id){
   if(!id) return "https://produce101.jp/profile/detail/?lang=ja";
@@ -1280,6 +1384,9 @@ function resetAll(){
     handles = {};           // ★リセットで@も消す
     saveHandles();
 
+    /* ★リセットで色もデフォルトに戻す */
+    setAccentColor("#0080ff");
+
     drawPicks();
     drawMembers();
     updateFreeButtons();
@@ -1608,6 +1715,10 @@ async function saveImage(){
 (function initAll(){
   // 毎回ポップアップ表示
   openIntro();
+
+  // ★初期：保存してある色を反映
+  const savedAccent = loadAccentColor();
+  applyAccentColor(savedAccent);
 
   updateFreeButtons();
   drawPicks();
