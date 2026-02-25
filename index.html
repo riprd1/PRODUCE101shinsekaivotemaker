@@ -265,7 +265,12 @@
   /* ★空き枠ボタン */
   .freeControl{ display:flex; flex-direction:column; align-items:center; gap:6px; }
   .freeLabel{ font-size:12px; font-weight:900; color:#666; }
-  .freeBtns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+  .freeBtns{
+  display: grid;
+  grid-template-columns: repeat(5, 44px);
+  gap: 8px;
+  justify-content: center;
+}
   .freeBtnActive{ border-color:#cfe2ff; background:#eef6ff; font-weight: 1000; }
 
   /* ★追加：丸枠カラー変更UI */
