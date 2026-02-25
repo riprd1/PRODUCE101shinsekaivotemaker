@@ -799,6 +799,183 @@
     font-size: 14px;
   }
   .introCloseBtn:active{ transform: scale(.98); }
+
+  /* ===== ここから追加：ポップアップ2ページ＋ガラス風（お願い全部） ===== */
+
+  /* ガラス本体（①〜④） */
+  .introBox.glass{
+    position: relative;
+    background: linear-gradient(135deg, rgba(255,255,255,.82), rgba(255,255,255,.48));
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow:
+      0 22px 60px rgba(0,0,0,.28),
+      inset 0 1px 0 rgba(255,255,255,.75),
+      inset 0 -1px 0 rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.38);
+    backdrop-filter: blur(12px) saturate(155%);
+    -webkit-backdrop-filter: blur(12px) saturate(155%);
+  }
+  .introBox.glass::before{
+    content:"";
+    position:absolute;
+    left:-20%;
+    top:-30%;
+    width:140%;
+    height:60%;
+    background: linear-gradient(135deg, rgba(255,255,255,.65), rgba(255,255,255,0) 55%);
+    transform: rotate(-6deg);
+    pointer-events:none;
+    opacity:.55;
+  }
+  .introBox.glass::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image: radial-gradient(rgba(0,0,0,.06) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity:.12;
+    mix-blend-mode: overlay;
+    pointer-events:none;
+  }
+
+  /* ヘッダーもガラス寄せ */
+  .introBox.glass .introHead{
+    background: rgba(255,255,255,.55);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* ⑤スライド＋フェード（ページ） */
+  .introBox.glass .introBody{
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+    min-height: 190px;
+    white-space: normal;
+  }
+  .introPage{
+    white-space: pre-line;
+    font-size: 14px;
+    line-height: 1.7;
+    font-weight: 800;
+    color: #111;
+
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: 16px;
+    bottom: 16px;
+
+    opacity: 0;
+    transform: translateX(14px);
+    transition: opacity .28s ease, transform .32s cubic-bezier(.2,.8,.2,1);
+    pointer-events: none;
+  }
+  .introPage.isActive{
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  /* フッター：左下（応援）/ 真ん中（◀︎1/2▶︎＋ドット）/ 右下（閉じる） */
+  .introFooter{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 12px 14px;
+    border-top: 1px solid rgba(0,0,0,.06);
+    background: rgba(255,255,255,.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 3;
+  }
+
+  .supportBtn{
+    text-decoration:none;
+    font-weight:1000;
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 999px;
+    color: rgba(10,10,10,.88);
+    background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.40));
+    border: 1px solid rgba(255,255,255,.45);
+    box-shadow:
+      0 12px 26px rgba(0,0,0,.16),
+      inset 0 1px 0 rgba(255,255,255,.70);
+    backdrop-filter: blur(12px) saturate(155%);
+    -webkit-backdrop-filter: blur(12px) saturate(155%);
+    white-space: nowrap;
+  }
+  .supportBtn:active{ transform: scale(.98); }
+
+  /* ⑪ゆっくり光る（やりすぎない） */
+  @keyframes pulseGlow{
+    0%   { box-shadow: 0 12px 26px rgba(0,0,0,.16), 0 0 0 0 rgba(0,128,255,.22), inset 0 1px 0 rgba(255,255,255,.70); }
+    60%  { box-shadow: 0 12px 26px rgba(0,0,0,.16), 0 0 0 10px rgba(0,128,255,0), inset 0 1px 0 rgba(255,255,255,.70); }
+    100% { box-shadow: 0 12px 26px rgba(0,0,0,.16), 0 0 0 0 rgba(0,128,255,0), inset 0 1px 0 rgba(255,255,255,.70); }
+  }
+  .pulse{ animation: pulseGlow 2.2s ease-in-out infinite; }
+
+  .pager{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    user-select:none;
+  }
+  .pagerBtn{
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.45);
+    background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.40));
+    box-shadow: 0 10px 22px rgba(0,0,0,.12);
+    backdrop-filter: blur(12px) saturate(155%);
+    -webkit-backdrop-filter: blur(12px) saturate(155%);
+    font-weight: 1000;
+  }
+  .pagerBtn:active{ transform: scale(.98); }
+
+  .pagerCenter{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-width: 56px;
+  }
+  .pagerText{
+    font-weight: 1000;
+    font-size: 12px;
+    color: rgba(0,0,0,.70);
+    line-height: 1.1;
+  }
+  .dots{
+    margin-top: 4px;
+    display:flex;
+    gap: 6px;
+  }
+  .dot{
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.22);
+  }
+  .dot.isOn{ background: rgba(0,0,0,.55); }
+
+  /* 右下閉じるもガラス寄せ */
+  .glassBtn{
+    background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.40));
+    border: 1px solid rgba(255,255,255,.45);
+    box-shadow:
+      0 10px 24px rgba(0,0,0,.16),
+      inset 0 1px 0 rgba(255,255,255,.70);
+    backdrop-filter: blur(12px) saturate(155%);
+    -webkit-backdrop-filter: blur(12px) saturate(155%);
+  }
+
+  /* ===== 追加ここまで ===== */
 </style>
 </head>
 
@@ -918,17 +1095,52 @@
   </div>
 </div>
 
-<!-- ポップアップ（毎回表示） -->
+<!-- ポップアップ（毎回表示・2ページ） -->
 <div class="introModal" id="introModal" aria-hidden="true">
-  <div class="introBox" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <div class="introBox glass" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+
     <div class="introHead" id="introTitle">このメーカーについて</div>
-    <div class="introBody" id="introText">
+
+    <div class="introBody" id="introBody">
+      <!-- Page 1 -->
+      <div class="introPage isActive" data-page="1">
 このメーカーは、SNSにて投票枠を
 交換する際に使用する画像を作成できます。
+      </div>
+
+      <!-- Page 2 -->
+      <div class="introPage" data-page="2">
+追加した練習生を押すと
+アカウント名を入れれるよ✨
+（既に枠を交換した人のアカウント入れてね）
+
+【お願い】Tiktokもフォローして下さい🥺
+      </div>
     </div>
-    <div class="introActions">
-      <button class="introCloseBtn" type="button" onclick="closeIntro()">閉じる</button>
+
+    <!-- フッター（左下：応援 / 下中央：◀︎1/2▶︎＋ドット / 右下：閉じる） -->
+    <div class="introFooter">
+      <a class="supportBtn pulse" href="https://www.tiktok.com/@12agassi" target="_blank" rel="noopener">
+        あがっしを応援する
+      </a>
+
+      <div class="pager" aria-label="ページ切り替え">
+        <button class="pagerBtn" type="button" onclick="introPrev()">◀︎</button>
+
+        <div class="pagerCenter">
+          <div class="pagerText" id="pagerText">1/2</div>
+          <div class="dots" id="pagerDots" aria-hidden="true">
+            <span class="dot isOn"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+
+        <button class="pagerBtn" type="button" onclick="introNext()">▶︎</button>
+      </div>
+
+      <button class="introCloseBtn glassBtn" type="button" onclick="closeIntro()">閉じる</button>
     </div>
+
   </div>
 </div>
 
@@ -1227,6 +1439,62 @@ document.addEventListener("keydown", (e) => {
   const m = document.getElementById("introModal");
   if(m && m.classList.contains("show")) closeIntro();
 });
+
+/* ===== 追加：ポップアップ2ページ（⑤⑥⑦） ===== */
+let introPage = 1;
+
+function showIntroPage(n){
+  const pages = Array.from(document.querySelectorAll("#introBody .introPage"));
+  const max = pages.length || 2;
+  introPage = Math.max(1, Math.min(max, n));
+
+  pages.forEach(p=>{
+    const pn = parseInt(p.getAttribute("data-page"), 10);
+    p.classList.toggle("isActive", pn === introPage);
+  });
+
+  const pagerText = document.getElementById("pagerText");
+  if(pagerText) pagerText.textContent = `${introPage}/${max}`;
+
+  const dots = Array.from(document.querySelectorAll("#pagerDots .dot"));
+  dots.forEach((d, i)=> d.classList.toggle("isOn", (i+1) === introPage));
+}
+function introNext(){ showIntroPage(introPage + 1); }
+function introPrev(){ showIntroPage(introPage - 1); }
+
+/* ⑦スワイプでページ移動（iPhone向け） */
+(function enableIntroSwipe(){
+  const box = document.querySelector("#introModal .introBox");
+  if(!box) return;
+
+  let startX = 0;
+  let startY = 0;
+  let active = false;
+
+  box.addEventListener("touchstart", (e)=>{
+    if(!e.touches || e.touches.length !== 1) return;
+    active = true;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, {passive:true});
+
+  box.addEventListener("touchend", (e)=>{
+    if(!active) return;
+    active = false;
+
+    const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
+    if(!t) return;
+
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+
+    if(Math.abs(dy) > Math.abs(dx)) return;
+
+    const TH = 42;
+    if(dx <= -TH) introNext();
+    if(dx >=  TH) introPrev();
+  }, {passive:true});
+})();
 
 /* ===== 空き枠（手動） ===== */
 function loadFreeSlots(){
@@ -1715,6 +1983,7 @@ async function saveImage(){
 (function initAll(){
   // 毎回ポップアップ表示
   openIntro();
+  showIntroPage(1);
 
   // ★初期：保存してある色を反映
   const savedAccent = loadAccentColor();
