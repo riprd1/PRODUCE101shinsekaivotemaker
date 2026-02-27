@@ -154,32 +154,7 @@
     margin: 0 auto;
     position:relative;
     z-index: 1;
-
-    /* ★追加：枠タップ時の軽いアニメ */
-    transition: transform .14s ease, box-shadow .18s ease, filter .18s ease;
-    will-change: transform;
   }
-  .avatar:active{
-    transform: scale(0.97);
-    box-shadow: 0 14px 28px rgba(0,0,0,.16);
-    filter: saturate(1.06);
-  }
-  .avatar.flash::after{
-    content:"";
-    position:absolute;
-    inset:-6px;
-    border-radius:999px;
-    border: 3px solid rgba(255,255,255,.92);
-    opacity:0;
-    pointer-events:none;
-    animation: flashRing .45s ease-out forwards;
-  }
-  @keyframes flashRing{
-    0%   { opacity:.95; transform: scale(.90); }
-    55%  { opacity:.55; }
-    100% { opacity:0;   transform: scale(1.15); }
-  }
-
   .avatar img{
     width:100%;
     height:100%;
@@ -409,7 +384,7 @@
     overflow:hidden;
     background:#f7f7f7;
     border:1px solid #f0f0f0;
-    position: relative;
+    position: relative; /* ★辞退ラベル用 */
   }
   .memberCardThumb img{
     width:100%;
@@ -612,6 +587,7 @@
     padding: 18px 56px 0;
   }
 
+  /* ★「投票して欲しいメンバー」消したので、余白を詰める */
   .exportTop{
     height: var(--exTopH);
     display:flex;
@@ -688,6 +664,7 @@
     text-overflow: ellipsis;
   }
 
+  /* ★@表示（下段と被らないように必ず1行分の高さ確保） */
   .exportHandle{
     margin-top: 6px;
     font-size: var(--exHandle);
@@ -700,6 +677,7 @@
     height: calc(var(--exHandle) * 1.1);
   }
 
+  /* 下：空き枠エリア */
   .exportBottom{
     height: calc(1040px - 150px - var(--exTopH));
     display:flex;
@@ -738,6 +716,7 @@
     min-height: var(--exMissRowMinH);
   }
 
+  /* 未選択アイコン */
   .missingIcon{
     width: var(--exMissSize);
     height: var(--exMissSize);
@@ -757,6 +736,7 @@
     box-shadow: 0 10px 22px rgba(0,0,0,.12);
   }
 
+  /* ★下の文は「文字だけ」 */
   .exportSlotsSentence{
     margin-top: 12px;
     text-align:center;
@@ -1182,19 +1162,9 @@ let freeSlots = loadFreeSlots();
 
 /* ★辞退者ID */
 const WITHDRAWN_IDS = new Set([
-  "horieito",
-  "sakuraihikaru"
+  "horieito",      // 練習生：保里瑛都
+  "sakuraihikaru"  // 候補：櫻井輝
 ]);
-
-/* ★追加：枠タップ演出（光リング） */
-function tapAvatar(el){
-  if(!el) return;
-  el.classList.remove("flash");
-  // reflowで連続発火でも再生されるように
-  void el.offsetWidth;
-  el.classList.add("flash");
-  setTimeout(()=> el.classList.remove("flash"), 480);
-}
 
 /* ===== 色系 共通 ===== */
 function normalizeHexColor(c){
@@ -1248,7 +1218,7 @@ function saveSlotColors(){
 }
 function getColorForTraineeIndex(ti){
   const c = slotColors[String(ti)];
-  return c ? normalizeHexColor(c) : loadAccentColor();
+  return c ? normalizeHexColor(c) : loadAccentColor(); // 未設定なら全体色
 }
 function setColorForTraineeIndex(ti, color){
   slotColors[String(ti)] = normalizeHexColor(color);
@@ -1263,6 +1233,7 @@ function toggleColorMode(){
   const btn = document.getElementById("colorModeBtn");
   if(btn) btn.textContent = "色変更：" + (perSlotColorMode ? "枠別" : "全員");
 
+  // 枠別に入ったら、まずは全体色をパレットに表示
   updatePaletteUI(loadAccentColor());
   drawPicks();
 }
@@ -1274,35 +1245,25 @@ function setColorTarget(pos){
   colorTargetPos = pos;
 
   const ti = selected[pos];
-  updatePaletteUI(getColorForTraineeIndex(ti));
+  updatePaletteUI(getColorForTraineeIndex(ti)); // その枠の色をパレットに反映
   drawPicks();
-
-  // 選んだ枠に軽くリング（見失い防止）
-  requestAnimationFrame(() => {
-    const avatars = document.querySelectorAll("#picksRow .avatar");
-    if(avatars[pos]) tapAvatar(avatars[pos]);
-  });
 }
 
 /* ★カラー変更（枠別なら対象枠、全員なら共通色） */
 function setAccentColor(color){
   const c = normalizeHexColor(color);
 
+  // 枠別モードで対象枠があるなら、その枠だけ変える
   if(perSlotColorMode && colorTargetPos !== null && colorTargetPos < selected.length){
     const ti = selected[colorTargetPos];
     setColorForTraineeIndex(ti, c);
     updatePaletteUI(c);
     drawPicks();
     drawExportPicks();
-
-    // 変更した枠にリング
-    requestAnimationFrame(() => {
-      const avatars = document.querySelectorAll("#picksRow .avatar");
-      if(avatars[colorTargetPos]) tapAvatar(avatars[colorTargetPos]);
-    });
     return;
   }
 
+  // 通常（全員共通）
   saveAccentColor(c);
   applyAccentColor(c);
   drawPicks();
@@ -1338,7 +1299,6 @@ function loadHandles(){
 function saveHandles(){
   try{ localStorage.setItem(HANDLES_KEY, JSON.stringify(handles)); }catch(e){}
 }
-
 /* ★選択枠タップで @入力（枠別モード中は枠選択になる） */
 function editHandle(pos){
   if(pos < 0 || pos >= selected.length) return;
@@ -1373,7 +1333,7 @@ const traineesOnly = [
   {name:"加藤 大樹 (K.DAIKI)", img:"https://i.imgur.com/4fRk2EB.png", id:"katodaiki"},
   {name:"カク・ドンミン(DONGMIN)", img:"https://i.imgur.com/xZSQqMh.png", id:"kwakdongmin"},
   {name:"末川 瑛太(EITA)", img:"https://i.imgur.com/alEjKCP.png", id:"suekawaeita"},
-  {name:"保里 瑛都(H.EITO)", img:"https://i.imgur.com/IAhs4ZA.png", id:"horieito"},
+  {name:"保里 瑛都(H.EITO)", img:"https://i.imgur.com/IAhs4ZA.png", id:"horieito"}, /* ★辞退 */
   {name:"金田 栄都(K.EITO)", img:"https://i.imgur.com/tF7i1du.png", id:"kanedaeito"},
   {name:"櫻井 楓真(FUMA)", img:"https://i.imgur.com/WIWI8Sx.png", id:"sakuraifuma"},
   {name:"小笠原ジュゼッペ慧(GIUSEPPE)", img:"https://i.imgur.com/2oKn3Ma.jpeg", id:"ogasawaragiuseppekei"},
@@ -1457,7 +1417,7 @@ const candidates = [
   {name:"村松 遼空(HARUKU)", img:"https://i.imgur.com/3JEtKs6.png", id:"muramatsuharuku"},
   {name:"髙城 暖人(HARUTO)", img:"https://i.imgur.com/qdXIOpr.png", id:"takagiharuto"},
   {name:"平島 輝(H.HIKARU)", img:"https://i.imgur.com/P5gzRZh.png", id:"hirashimahikaru"},
-  {name:"櫻井 輝(S.HIKARU)", img:"https://i.imgur.com/h2fBMUv.png", id:"sakuraihikaru"},
+  {name:"櫻井 輝(S.HIKARU)", img:"https://i.imgur.com/h2fBMUv.png", id:"sakuraihikaru"}, /* ★辞退 */
   {name:"佐川 太一(HIROKAZU)", img:"https://i.imgur.com/h2fBMUv.png", id:"sagawahirokazu"},
   {name:"イ・ヒョンジェ(HYUNJAE)", img:"https://i.imgur.com/wOhvKDu.png", id:"leehyunjae"},
   {name:"阿部 樹(ITSUKI)", img:"https://i.imgur.com/TaTAc2L.png", id:"abeitsuki"},
@@ -1611,6 +1571,7 @@ function setFreeSlots(n){
   drawExportPicks();
 }
 
+/* ★空き枠表示（自動計算しない） */
 function renderFreeSlots(){
   const t = `空き ${freeSlots} 枠`;
   document.getElementById("slotBadge").textContent = t;
@@ -1633,14 +1594,10 @@ function drawPicks(){
       const c = getColorForTraineeIndex(ti);
       const isTarget = perSlotColorMode && (colorTargetPos === i);
 
-      const clickAction = perSlotColorMode
-        ? `setColorTarget(${i})`
-        : `editHandle(${i})`;
-
       slot.className = "slot" + (isTarget ? " colorTarget" : "");
       slot.innerHTML = `
         <div class="avatar" style="border-color:${c}"
-             onclick="tapAvatar(this); ${clickAction}">
+             onclick="${perSlotColorMode ? `setColorTarget(${i})` : `editHandle(${i})`}">
           <img src="${m.img || FALLBACK_IMG}" alt="">
           <div class="rank" style="background:${c}">${i + 1}</div>
         </div>
@@ -1733,6 +1690,7 @@ function undo(){
   withMembersScrollLock(() => {
     selected.pop();
     saveSelected();
+    // 枠別モードで、対象が消えたら解除
     if(colorTargetPos !== null && colorTargetPos >= selected.length) colorTargetPos = null;
     drawPicks();
     drawMembers();
@@ -1780,6 +1738,7 @@ function swap(a,b){
   withMembersScrollLock(() => {
     const t = selected[a]; selected[a]=selected[b]; selected[b]=t;
     saveSelected();
+    // 枠別モードのターゲット位置も追従
     if(colorTargetPos === a) colorTargetPos = b;
     else if(colorTargetPos === b) colorTargetPos = a;
 
@@ -1910,9 +1869,11 @@ function fitExportHandlesUniform(){
 
   for(let size = MAX; size >= MIN; size--){
     setExportHandleSize(size);
+
     const ok = targets.every(el => el.scrollWidth <= el.clientWidth);
     if(ok) return;
   }
+
   setExportHandleSize(MIN);
 }
 
@@ -2086,9 +2047,11 @@ async function saveImage(){
   openIntro();
   showIntroPage(1);
 
+  // 初期：保存してある全体色を反映（未設定枠はこれが使われる）
   const savedAccent = loadAccentColor();
   applyAccentColor(savedAccent);
 
+  // 色モードボタン初期
   const cm = document.getElementById("colorModeBtn");
   if(cm) cm.textContent = "色変更：全員";
 
