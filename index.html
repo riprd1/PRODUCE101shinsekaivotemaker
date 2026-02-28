@@ -1360,26 +1360,82 @@ function loadHandles(){
 function saveHandles(){
   try{ localStorage.setItem(HANDLES_KEY, JSON.stringify(handles)); }catch(e){}
 }
-/* ★選択枠タップで @入力（枠別モード中は枠選択になる） */
+/* ===== @入力：モーダル版（👑ボタン付き） ===== */
+let handleModalPos = null;
+
 function editHandle(pos){
   if(pos < 0 || pos >= selected.length) return;
+
+  handleModalPos = pos;
+
   const traineeIndex = selected[pos];
   const current = (handles[String(traineeIndex)] || "").trim();
 
-  let next = prompt("アカウント名を入力してね（例：@xxxx）", current || "@");
-  if(next === null) return;
-  next = String(next || "").trim();
+  const modal = document.getElementById("handleModal");
+  const input = document.getElementById("handleInput");
+  const crownBtn = document.getElementById("crownBtn");
 
-  if(!next){
+  if(!modal || !input || !crownBtn) return;
+
+  input.value = current ? current : "@";
+
+  crownBtn.classList.toggle("on", isCrowned(traineeIndex));
+
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden","false");
+
+  setTimeout(() => {
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+  }, 0);
+}
+
+function closeHandleModal(){
+  const modal = document.getElementById("handleModal");
+  if(!modal) return;
+  modal.classList.remove("show");
+  modal.setAttribute("aria-hidden","true");
+  handleModalPos = null;
+}
+
+function commitHandleFromModal(){
+  if(handleModalPos === null) return;
+  if(handleModalPos < 0 || handleModalPos >= selected.length) return;
+
+  const traineeIndex = selected[handleModalPos];
+  const input = document.getElementById("handleInput");
+  if(!input) return;
+
+  let next = String(input.value || "").trim();
+
+  if(!next || next === "@"){
     delete handles[String(traineeIndex)];
     saveHandles();
     drawExportPicks();
+    closeHandleModal();
     return;
   }
+
   if(next[0] !== "@") next = "@" + next;
 
   handles[String(traineeIndex)] = next;
   saveHandles();
+  drawExportPicks();
+  closeHandleModal();
+}
+
+function toggleCrownFromModal(){
+  if(handleModalPos === null) return;
+  if(handleModalPos < 0 || handleModalPos >= selected.length) return;
+
+  const traineeIndex = selected[handleModalPos];
+
+  toggleCrown(traineeIndex);
+
+  const crownBtn = document.getElementById("crownBtn");
+  if(crownBtn) crownBtn.classList.toggle("on", isCrowned(traineeIndex));
+
+  drawPicks();
   drawExportPicks();
 }
 
