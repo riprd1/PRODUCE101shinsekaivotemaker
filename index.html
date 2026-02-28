@@ -2113,5 +2113,23 @@ async function saveImage(){
   renderFreeSlots();
 })();
 </script>
+<!-- ===== @入力モーダル（👑つき）===== -->
+<div class="handleModal" id="handleModal" aria-hidden="true">
+  <div class="handleBox" role="dialog" aria-modal="true" aria-labelledby="handleTitle">
+    <div style="font-weight:1000;font-size:14px;margin-bottom:10px;" id="handleTitle">
+      アカウント名を入力してね（例：@xxxx）
+    </div>
+
+    <div class="handleRow">
+      <input class="handleInput" id="handleInput" type="text" inputmode="text" autocomplete="off" placeholder="@xxxx" />
+      <button class="crownBtn" id="crownBtn" type="button" title="王冠を付ける/外す">👑</button>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
+      <button class="mode" type="button" onclick="closeHandleModal()">キャンセル</button>
+      <button class="primary" type="button" onclick="saveHandleModal()">OK</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
