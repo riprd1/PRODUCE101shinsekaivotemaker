@@ -1713,17 +1713,18 @@ function drawPicks(){
 
       slot.className = "slot" + (isTarget ? " colorTarget" : "");
       slot.innerHTML = `
-        <div class="avatar" style="border-color:${c}"
-             onclick="${perSlotColorMode ? `setColorTarget(${i})` : `editHandle(${i})`}">
-          <img src="${m.img || FALLBACK_IMG}" alt="">
-          <div class="rank" style="background:${c}">${i + 1}</div>
-        </div>
-        <div class="name" onclick="editHandle(${i})">${displayName(m.name)}</div>
-        <div class="reorder">
-          <button type="button" onclick="event.stopPropagation(); moveLeft(${i})">←</button>
-          <button type="button" onclick="event.stopPropagation(); moveRight(${i})">→</button>
-        </div>
-      `;
+  <div class="avatar" style="border-color:${c}"
+       onclick="${perSlotColorMode ? `setColorTarget(${i})` : `editHandle(${i})`}">
+    <img src="${m.img || FALLBACK_IMG}" alt="">
+    ${isCrowned(ti) ? `<div class="crownBadge">👑</div>` : ``}
+    <div class="rank" style="background:${c}">${i + 1}</div>
+  </div>
+  <div class="name" onclick="editHandle(${i})">${displayName(m.name)}</div>
+  <div class="reorder">
+    <button type="button" onclick="event.stopPropagation(); moveLeft(${i})">←</button>
+    <button type="button" onclick="event.stopPropagation(); moveRight(${i})">→</button>
+  </div>
+`;
     }else{
       slot.className = "slot empty";
       slot.innerHTML = `<div class="avatar">+</div>`;
