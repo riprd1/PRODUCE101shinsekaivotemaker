@@ -1716,7 +1716,7 @@ function drawPicks(){
   <div class="avatar" style="border-color:${c}"
        onclick="${perSlotColorMode ? `setColorTarget(${i})` : `editHandle(${i})`}">
     <img src="${m.img || FALLBACK_IMG}" alt="">
-    ${isCrowned(ti) ? `<div class="crownBadge">👑</div>` : ``}
+    ${isCrowned(ti) ? '<div class="crownBadge">👑</div>' : ''}
     <div class="rank" style="background:${c}">${i + 1}</div>
   </div>
   <div class="name" onclick="editHandle(${i})">${displayName(m.name)}</div>
@@ -2085,7 +2085,7 @@ function makeExportSlot(m, orderIndex){
   d.innerHTML = `
     <div class="exportAvatar" style="border-color:${c}">
       <div class="exportPhoto" style="background-image:url('${(m && m.img) ? m.img : FALLBACK_IMG}')"></div>
-      ${isCrowned(traineeIndex) ? `<div class="exportCrownBadge">👑</div>` : ``}
+      ${isCrowned(traineeIndex) ? '<div class="exportCrownBadge">👑</div>' : ''}
       <div class="exportRank" style="background:${c}">${orderIndex + 1}</div>
     </div>
     <div class="exportName">${displayName(m && m.name ? m.name : "")}</div>
