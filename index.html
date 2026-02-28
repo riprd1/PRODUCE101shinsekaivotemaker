@@ -15,7 +15,7 @@
     --shadow: 0 4px 14px rgba(0,0,0,.06);
     --radius:14px;
 
-    /* ★追加：アクセントカラー（丸枠の色） */
+    /* ★アクセントカラー（全員共通のデフォルト色） */
     --accent:#0080ff;
 
     /* 既存互換：今まで --blue を使ってたので、ここで連動 */
@@ -38,15 +38,15 @@
     --exBottomPadBottom: 150px; /* 安全地帯 */
     --exMissTop: 18px;
 
-    /* ★追加：空き枠アイコンのサイズをJSで可変（被り防止） */
+    /* ★空き枠アイコンのサイズをJSで可変（被り防止） */
     --exMissSize: 120px;
     --exMissRowMinH: 130px;
     --exMissGapY: 12px;
 
-    /* ★追加：@文字サイズ（全員統一・JSで調整） */
+    /* ★@文字サイズ（全員統一・JSで調整） */
     --exHandle: 13px;
 
-    /* ★追加：下の「◯投票枠 空いています」文字サイズ（被り防止でJSが調整） */
+    /* ★下の「◯投票枠 空いています」文字サイズ（被り防止でJSが調整） */
     --exSentence: 20px;
   }
 
@@ -154,32 +154,7 @@
     margin: 0 auto;
     position:relative;
     z-index: 1;
-
-    /* ★追加：枠タップ時の軽いアニメ */
-    transition: transform .14s ease, box-shadow .18s ease, filter .18s ease;
-    will-change: transform;
   }
-  .avatar:active{
-    transform: scale(0.97);
-    box-shadow: 0 14px 28px rgba(0,0,0,.16);
-    filter: saturate(1.06);
-  }
-  .avatar.flash::after{
-    content:"";
-    position:absolute;
-    inset:-6px;
-    border-radius:999px;
-    border: 3px solid rgba(255,255,255,.92);
-    opacity:0;
-    pointer-events:none;
-    animation: flashRing .45s ease-out forwards;
-  }
-  @keyframes flashRing{
-    0%   { opacity:.95; transform: scale(.90); }
-    55%  { opacity:.55; }
-    100% { opacity:0;   transform: scale(1.15); }
-  }
-
   .avatar img{
     width:100%;
     height:100%;
@@ -229,6 +204,12 @@
   }
   .empty .rank{display:none;}
   .empty .name{display:none;}
+
+  /* ★枠別カラー：今選んでる枠を分かりやすく */
+  .slot.colorTarget .avatar{
+    outline: 4px solid rgba(0,0,0,.12);
+    outline-offset: 3px;
+  }
 
   .reorder{ display:none; gap:10px; justify-content:center; margin-top: 8px; }
   body.reorder-on .reorder{ display:flex; }
@@ -299,7 +280,7 @@
   }
   .freeBtnActive{ border-color:#cfe2ff; background:#eef6ff; font-weight: 1000; }
 
-  /* ★追加：丸枠カラー変更UI */
+  /* ★丸枠カラー変更UI */
   .colorControl{
     display:flex;
     flex-direction:column;
@@ -307,7 +288,6 @@
     gap:6px;
     padding: 2px 6px;
   }
-
   .palette{
     display:flex;
     gap:8px;
@@ -614,7 +594,7 @@
     flex-direction:column;
     justify-content:flex-start;
     align-items:center;
-    padding-top: 6px; /* ★18px→6px */
+    padding-top: 6px;
   }
   .exportRows{
     width: 100%;
@@ -622,7 +602,7 @@
     flex-direction:column;
     gap: var(--exGapY);
     align-items:center;
-    margin-top: 8px; /* ★12px→8px */
+    margin-top: 8px;
   }
   .exportRow{
     display:flex;
@@ -684,7 +664,7 @@
     text-overflow: ellipsis;
   }
 
-  /* ★追加：@表示（下段と被らないように必ず1行分の高さ確保） */
+  /* ★@表示（下段と被らないように必ず1行分の高さ確保） */
   .exportHandle{
     margin-top: 6px;
     font-size: var(--exHandle);
@@ -693,7 +673,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
     line-height: 1.1;
     height: calc(var(--exHandle) * 1.1);
   }
@@ -757,7 +736,7 @@
     box-shadow: 0 10px 22px rgba(0,0,0,.12);
   }
 
-  /* ★変更：下の文は「文字だけ」 */
+  /* ★下の文は「文字だけ」 */
   .exportSlotsSentence{
     margin-top: 12px;
     text-align:center;
@@ -784,52 +763,9 @@
   }
   .introModal.show{ display:flex; }
 
-  .introBox{
-    width: min(520px, 92vw);
-    background: #fff;
-    border-radius: 18px;
-    border: 1px solid rgba(0,0,0,.08);
-    box-shadow: 0 20px 50px rgba(0,0,0,.25);
-    overflow: hidden;
-    position: relative;
-  }
-  .introHead{
-    padding: 14px 16px 10px;
-    font-weight: 1000;
-    font-size: 16px;
-    border-bottom: 1px solid #f0f0f0;
-    background: rgba(248,248,248,.9);
-  }
-  .introBody{
-    padding: 16px;
-    font-size: 14px;
-    line-height: 1.7;
-    font-weight: 800;
-    color: #111;
-    white-space: pre-line;
-  }
-  .introActions{
-    padding: 12px 12px 14px;
-    display:flex;
-    justify-content: flex-end;
-    border-top: 1px solid #f0f0f0;
-    background: rgba(255,255,255,.92);
-  }
-  .introCloseBtn{
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid #d7e8ff;
-    background: #eef6ff;
-    color: #0066cc;
-    font-weight: 1000;
-    font-size: 14px;
-  }
-  .introCloseBtn:active{ transform: scale(.98); }
-
-  /* ===== ここから追加：ポップアップ2ページ＋ガラス風（お願い全部） ===== */
-
-  /* ガラス本体（①〜④） */
+  /* ===== ポップアップ2ページ＋ガラス風 ===== */
   .introBox.glass{
+    width: min(520px, 92vw);
     position: relative;
     background: linear-gradient(135deg, rgba(255,255,255,.82), rgba(255,255,255,.48));
     border-radius: 18px;
@@ -865,16 +801,17 @@
     pointer-events:none;
   }
 
-  /* ヘッダーもガラス寄せ */
-  .introBox.glass .introHead{
+  .introHead{
+    padding: 14px 16px 10px;
+    font-weight: 1000;
+    font-size: 16px;
     background: rgba(255,255,255,.55);
     border-bottom: 1px solid rgba(0,0,0,.06);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
 
-  /* ⑤スライド＋フェード（ページ） */
-  .introBox.glass .introBody{
+  .introBody{
     position: relative;
     padding: 0;
     overflow: hidden;
@@ -905,7 +842,6 @@
     pointer-events: auto;
   }
 
-  /* フッター：左下（応援）/ 真ん中（◀︎1/2▶︎＋ドット）/ 右下（閉じる） */
   .introFooter{
     display:flex;
     align-items:center;
@@ -938,7 +874,6 @@
   }
   .supportBtn:active{ transform: scale(.98); }
 
-  /* ⑪ゆっくり光る（やりすぎない） */
   @keyframes pulseGlow{
     0%   { box-shadow: 0 12px 26px rgba(0,0,0,.16), 0 0 0 0 rgba(0,128,255,.22), inset 0 1px 0 rgba(255,255,255,.70); }
     60%  { box-shadow: 0 12px 26px rgba(0,0,0,.16), 0 0 0 10px rgba(0,128,255,0), inset 0 1px 0 rgba(255,255,255,.70); }
@@ -990,7 +925,6 @@
   }
   .dot.isOn{ background: rgba(0,0,0,.55); }
 
-  /* 右下閉じるもガラス寄せ */
   .glassBtn{
     background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.40));
     border: 1px solid rgba(255,255,255,.45);
@@ -1000,8 +934,12 @@
     backdrop-filter: blur(12px) saturate(155%);
     -webkit-backdrop-filter: blur(12px) saturate(155%);
   }
-
-  /* ===== 追加ここまで ===== */
+  .introCloseBtn{
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: 1000;
+    font-size: 14px;
+  }
 </style>
 </head>
 
@@ -1029,8 +967,10 @@
       <button class="danger" type="button" onclick="resetAll()">リセット</button>
       <button class="mode" type="button" id="reorderBtn" onclick="toggleReorder()">並び替えモード：OFF</button>
 
-      <!-- ★追加：丸枠カラー変更 -->
+      <!-- ★丸枠カラー変更：全員/枠別切替 -->
       <div class="colorControl">
+        <button class="mode" id="colorModeBtn" type="button" onclick="toggleColorMode()">色変更：全員</button>
+
         <div class="palette" id="palette">
           <div class="colorSwatch" data-color="#0080ff" style="background:#0080ff" title="ブルー" onclick="setAccentColor('#0080ff')"></div>
           <div class="colorSwatch" data-color="#ff4fa3" style="background:#ff4fa3" title="ピンク" onclick="setAccentColor('#ff4fa3')"></div>
@@ -1093,9 +1033,6 @@
     </div>
 
     <div class="exportBody">
-      <!-- ★削除：投票して欲しいメンバー -->
-      <!-- <div class="exportSubtitle">投票して欲しいメンバー</div> -->
-
       <div class="exportTop">
         <div class="exportRows">
           <div class="exportRow" id="exportRow1"></div>
@@ -1115,7 +1052,6 @@
       </div>
     </div>
 
-    <!-- ★変更：左下 TikTok / 右下 #（ガラス枠） -->
     <div class="exportTikTok" id="exportTikTok">TikTok:12agassi</div>
     <div class="exportHashtag" id="exportHashtag">#日プ新世界投票枠交換メーカー</div>
   </div>
@@ -1128,23 +1064,22 @@
     <div class="introHead" id="introTitle">このメーカーについて</div>
 
     <div class="introBody" id="introBody">
-      <!-- Page 1 -->
       <div class="introPage isActive" data-page="1">
 このメーカーは、SNSにて投票枠を
 交換する際に使用する画像を作成できます。
+
+次のページも確認してね🙇🏻‍♀️
       </div>
 
-      <!-- Page 2 -->
       <div class="introPage" data-page="2">
 追加した練習生を押すと
 アカウント名を入れれるよ✨
-（既に枠を交換した人のアカウント入れてね）
+（既に枠を交換した人のアカウントを入れてね）
 
 【お願い】Tiktokもフォローして下さい🥺
       </div>
     </div>
 
-    <!-- フッター（左下：応援 / 下中央：◀︎1/2▶︎＋ドット / 右下：閉じる） -->
     <div class="introFooter">
       <a class="supportBtn pulse" href="https://www.tiktok.com/@12agassi" target="_blank" rel="noopener">
         あがっしを応援する
@@ -1182,10 +1117,18 @@ const MAX_SELECTED = 11;
 const STORAGE_KEY  = "oshivote_selected_v6";
 const FREE_SLOTS_KEY = "oshivote_free_slots_v1";
 
-/* ★追加：丸枠カラー保存 */
+/* ★全体（デフォルト）丸枠カラー保存 */
 const ACCENT_COLOR_KEY = "oshivote_accent_color_v1";
 
-/* ★追加：@アカウント保存 */
+/* ★追加：枠ごとの色保存 */
+const SLOT_COLORS_KEY = "oshivote_slot_colors_v1";
+let slotColors = loadSlotColors();   // { traineeIndex: "#rrggbb", ... }
+
+/* ★追加：色変更モード（全員/枠別） */
+let perSlotColorMode = false;
+let colorTargetPos = null; // selected配列上の位置（0..selected.length-1）
+
+/* ★@アカウント保存 */
 const HANDLES_KEY = "oshivote_handles_v1";
 let handles = loadHandles();
 
@@ -1200,26 +1143,18 @@ const WITHDRAWN_IDS = new Set([
   "sakuraihikaru"  // 候補：櫻井輝
 ]);
 
-/* ★追加：枠タップ演出（光リング） */
-function tapAvatar(el){
-  if(!el) return;
-  el.classList.remove("flash");
-  void el.offsetWidth;      // reflow（連打でも毎回光る）
-  el.classList.add("flash");
-  setTimeout(()=> el.classList.remove("flash"), 480);
-}
-
-/* ★追加：丸枠カラー 読み書き＆反映 */
+/* ===== 色系 共通 ===== */
 function normalizeHexColor(c){
   if(!c) return "#0080ff";
   c = String(c).trim();
   if(/^#[0-9a-fA-F]{3}$/.test(c)){
-    // #abc -> #aabbcc
     return "#" + c[1]+c[1] + c[2]+c[2] + c[3]+c[3];
   }
   if(/^#[0-9a-fA-F]{6}$/.test(c)) return c.toLowerCase();
   return "#0080ff";
 }
+
+/* 全員共通色（デフォルト） */
 function loadAccentColor(){
   try{
     const v = localStorage.getItem(ACCENT_COLOR_KEY);
@@ -1244,15 +1179,78 @@ function updatePaletteUI(color){
 function applyAccentColor(color){
   const c = normalizeHexColor(color);
   document.documentElement.style.setProperty("--accent", c);
-  // --blue は CSSで var(--accent) に連動してるので触らなくてOK
   updatePaletteUI(c);
 }
+
+/* 枠別色 */
+function loadSlotColors(){
+  try{
+    const raw = localStorage.getItem(SLOT_COLORS_KEY);
+    const obj = raw ? JSON.parse(raw) : {};
+    return (obj && typeof obj === "object") ? obj : {};
+  }catch(e){ return {}; }
+}
+function saveSlotColors(){
+  try{ localStorage.setItem(SLOT_COLORS_KEY, JSON.stringify(slotColors)); }catch(e){}
+}
+function getColorForTraineeIndex(ti){
+  const c = slotColors[String(ti)];
+  return c ? normalizeHexColor(c) : loadAccentColor(); // 未設定なら全体色
+}
+function setColorForTraineeIndex(ti, color){
+  slotColors[String(ti)] = normalizeHexColor(color);
+  saveSlotColors();
+}
+
+/* ★全員/枠別 切替 */
+function toggleColorMode(){
+  perSlotColorMode = !perSlotColorMode;
+  colorTargetPos = null;
+
+  const btn = document.getElementById("colorModeBtn");
+  if(btn) btn.textContent = "色変更：" + (perSlotColorMode ? "枠別" : "全員");
+
+  // 枠別に入ったら、まずは全体色をパレットに表示
+  updatePaletteUI(loadAccentColor());
+  drawPicks();
+}
+
+/* ★枠別モードで、色を付けたい枠を選ぶ */
+function setColorTarget(pos){
+  if(!perSlotColorMode) return;
+  if(pos < 0 || pos >= selected.length) return;
+  colorTargetPos = pos;
+
+  const ti = selected[pos];
+  updatePaletteUI(getColorForTraineeIndex(ti)); // その枠の色をパレットに反映
+  drawPicks();
+}
+
+/* ★カラー変更（枠別なら対象枠、全員なら共通色） */
 function setAccentColor(color){
   const c = normalizeHexColor(color);
+
+  // 枠別モードで対象枠があるなら、その枠だけ変える
+  if(perSlotColorMode && colorTargetPos !== null && colorTargetPos < selected.length){
+    const ti = selected[colorTargetPos];
+    setColorForTraineeIndex(ti, c);
+    updatePaletteUI(c);
+    drawPicks();
+    drawExportPicks();
+    return;
+  }
+
+  // ==========================
+  // ★ここが今回の修正ポイント
+  // 全員モードで色を変えたら、枠別色を全部クリアして「全員共通色」に統一する
+  // ==========================
+  slotColors = {};
+  saveSlotColors();
+  colorTargetPos = null;
+
+  // 通常（全員共通）
   saveAccentColor(c);
   applyAccentColor(c);
-
-  /* ★即反映 */
   drawPicks();
   drawExportPicks();
 }
@@ -1275,7 +1273,7 @@ function withMembersScrollLock(fn){
   requestAnimationFrame(() => { if(wrap) wrap.scrollTop = prev; });
 }
 
-/* ★追加：@読み書き */
+/* ★@読み書き */
 function loadHandles(){
   try{
     const raw = localStorage.getItem(HANDLES_KEY);
@@ -1286,24 +1284,22 @@ function loadHandles(){
 function saveHandles(){
   try{ localStorage.setItem(HANDLES_KEY, JSON.stringify(handles)); }catch(e){}
 }
-/* ★追加：選択枠タップで @入力 */
+/* ★選択枠タップで @入力（枠別モード中は枠選択になる） */
 function editHandle(pos){
   if(pos < 0 || pos >= selected.length) return;
   const traineeIndex = selected[pos];
   const current = (handles[String(traineeIndex)] || "").trim();
 
   let next = prompt("アカウント名を入力してね（例：@xxxx）", current || "@");
-  if(next === null) return; // キャンセル
+  if(next === null) return;
   next = String(next || "").trim();
 
-  // 空入力なら削除
   if(!next){
     delete handles[String(traineeIndex)];
     saveHandles();
     drawExportPicks();
     return;
   }
-  // 先頭が@じゃなければ付ける
   if(next[0] !== "@") next = "@" + next;
 
   handles[String(traineeIndex)] = next;
@@ -1479,9 +1475,8 @@ document.addEventListener("keydown", (e) => {
   if(m && m.classList.contains("show")) closeIntro();
 });
 
-/* ===== 追加：ポップアップ2ページ（⑤⑥⑦） ===== */
+/* ===== ポップアップ2ページ ===== */
 let introPage = 1;
-
 function showIntroPage(n){
   const pages = Array.from(document.querySelectorAll("#introBody .introPage"));
   const max = pages.length || 2;
@@ -1501,7 +1496,7 @@ function showIntroPage(n){
 function introNext(){ showIntroPage(introPage + 1); }
 function introPrev(){ showIntroPage(introPage - 1); }
 
-/* ⑦スワイプでページ移動（iPhone向け） */
+/* スワイプでページ移動 */
 (function enableIntroSwipe(){
   const box = document.querySelector("#introModal .introBox");
   if(!box) return;
@@ -1570,7 +1565,7 @@ function renderFreeSlots(){
   renderMissingSlots();
 }
 
-/* 画面：選択枠（＋表示あり） */
+/* ===== 画面：選択枠（＋表示あり） ===== */
 function drawPicks(){
   const row = document.getElementById("picksRow");
   row.innerHTML = "";
@@ -1579,12 +1574,17 @@ function drawPicks(){
     const slot = document.createElement("div");
 
     if(i < selected.length){
-      const m = trainees[selected[i]];
-      slot.className = "slot";
+      const ti = selected[i];
+      const m = trainees[ti];
+      const c = getColorForTraineeIndex(ti);
+      const isTarget = perSlotColorMode && (colorTargetPos === i);
+
+      slot.className = "slot" + (isTarget ? " colorTarget" : "");
       slot.innerHTML = `
-        <div class="avatar" onclick="tapAvatar(this); editHandle(${i})">
+        <div class="avatar" style="border-color:${c}"
+             onclick="${perSlotColorMode ? `setColorTarget(${i})` : `editHandle(${i})`}">
           <img src="${m.img || FALLBACK_IMG}" alt="">
-          <div class="rank">${i + 1}</div>
+          <div class="rank" style="background:${c}">${i + 1}</div>
         </div>
         <div class="name" onclick="editHandle(${i})">${displayName(m.name)}</div>
         <div class="reorder">
@@ -1600,7 +1600,7 @@ function drawPicks(){
   }
 }
 
-/* 一覧：2列カード＋profile（辞退は選択不可） */
+/* ===== 一覧：2列カード＋profile（辞退は選択不可） ===== */
 function drawMembers(){
   const q = (document.getElementById("search").value || "").trim().toLowerCase();
   const membersEl = document.getElementById("members");
@@ -1661,7 +1661,7 @@ function add(i){
   if(selected.indexOf(i) !== -1) return;
 
   const m = trainees[i];
-  if(m && WITHDRAWN_IDS.has(m.id)) return; // 念のため
+  if(m && WITHDRAWN_IDS.has(m.id)) return;
 
   withMembersScrollLock(() => {
     selected.push(i);
@@ -1675,6 +1675,8 @@ function undo(){
   withMembersScrollLock(() => {
     selected.pop();
     saveSelected();
+    // 枠別モードで、対象が消えたら解除
+    if(colorTargetPos !== null && colorTargetPos >= selected.length) colorTargetPos = null;
     drawPicks();
     drawMembers();
     drawExportPicks();
@@ -1685,13 +1687,20 @@ function resetAll(){
     selected = [];
     saveSelected();
 
-    freeSlots = 0;          // ★リセットで空き枠も0に
+    freeSlots = 0;
     saveFreeSlots();
 
-    handles = {};           // ★リセットで@も消す
+    handles = {};
     saveHandles();
 
-    /* ★リセットで色もデフォルトに戻す */
+    slotColors = {};
+    saveSlotColors();
+
+    perSlotColorMode = false;
+    colorTargetPos = null;
+    const cm = document.getElementById("colorModeBtn");
+    if(cm) cm.textContent = "色変更：全員";
+
     setAccentColor("#0080ff");
 
     drawPicks();
@@ -1714,6 +1723,10 @@ function swap(a,b){
   withMembersScrollLock(() => {
     const t = selected[a]; selected[a]=selected[b]; selected[b]=t;
     saveSelected();
+    // 枠別モードのターゲット位置も追従
+    if(colorTargetPos === a) colorTargetPos = b;
+    else if(colorTargetPos === b) colorTargetPos = a;
+
     drawPicks(); drawMembers(); drawExportPicks();
   });
 }
@@ -1809,16 +1822,14 @@ function adjustExportLayoutBase(count, r2){
   else missTop = 18;
   document.documentElement.style.setProperty("--exMissTop", missTop + "px");
 
-  /* 初期サイズ */
   document.documentElement.style.setProperty("--exMissSize", "120px");
   document.documentElement.style.setProperty("--exMissRowMinH", "130px");
   document.documentElement.style.setProperty("--exMissGapY", "12px");
 
-  /* ★初期 sentence サイズ */
   document.documentElement.style.setProperty("--exSentence", "20px");
 }
 
-/* ★追加：@の文字サイズを全員同じに揃える */
+/* ★@の文字サイズを全員同じに揃える */
 function setExportHandleSize(px){
   document.documentElement.style.setProperty("--exHandle", px + "px");
 }
@@ -1843,7 +1854,6 @@ function fitExportHandlesUniform(){
 
   for(let size = MAX; size >= MIN; size--){
     setExportHandleSize(size);
-
     const ok = targets.every(el => el.scrollWidth <= el.clientWidth);
     if(ok) return;
   }
@@ -1851,7 +1861,7 @@ function fitExportHandlesUniform(){
   setExportHandleSize(MIN);
 }
 
-/* ★変更：下の「◯投票枠 空いています」がガラス枠と絶対被らないように詰める */
+/* ★下の文がガラス枠と被らないように */
 function setExportSentenceSize(px){
   document.documentElement.style.setProperty("--exSentence", px + "px");
 }
@@ -1867,7 +1877,6 @@ function preventFooterOverlap(){
   let rowMinH = 130;
   let gapY = 12;
 
-  // まず空き枠アイコン側を詰める
   for(let k=0;k<12;k++){
     const sRect = sentence.getBoundingClientRect();
     if(sRect.bottom <= limitTop) break;
@@ -1881,7 +1890,6 @@ function preventFooterOverlap(){
     document.documentElement.style.setProperty("--exMissGapY", gapY + "px");
   }
 
-  // それでもダメなら sentence の文字だけ少し小さく（文字だけ条件は維持）
   for(let size=20; size>=16; size--){
     setExportSentenceSize(size);
     const sRect = sentence.getBoundingClientRect();
@@ -1889,7 +1897,7 @@ function preventFooterOverlap(){
   }
 }
 
-/* 保存：上に選択だけ／下に空き枠を2段で必ず出す */
+/* ===== 保存：上に選択だけ／下に空き枠を2段で必ず出す ===== */
 function drawExportPicks(){
   const row1 = document.getElementById("exportRow1");
   const row2 = document.getElementById("exportRow2");
@@ -1902,7 +1910,6 @@ function drawExportPicks(){
 
   fitExportAvatar(count);
 
-  // ★@が1つでも入っていて2段表示なら段間を少し広げる（被り防止）
   const hasAnyHandle = selected.some(idx => (handles[String(idx)] || "").trim());
   if(r2 > 0 && hasAnyHandle){
     document.documentElement.style.setProperty("--exGapY", "38px");
@@ -1926,7 +1933,6 @@ function drawExportPicks(){
 
   adjustExportLayoutBase(count, r2);
 
-  // レイアウト確定後に被り判定（2フレーム待つ）
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       fitExportHandlesUniform();
@@ -1935,16 +1941,18 @@ function drawExportPicks(){
   });
 }
 
+/* ★保存画像：枠別カラー反映 */
 function makeExportSlot(m, orderIndex){
   const traineeIndex = selected[orderIndex];
   const handle = (handles[String(traineeIndex)] || "").trim();
+  const c = getColorForTraineeIndex(traineeIndex);
 
   const d = document.createElement("div");
   d.className = "exportSlot";
   d.innerHTML = `
-    <div class="exportAvatar">
+    <div class="exportAvatar" style="border-color:${c}">
       <div class="exportPhoto" style="background-image:url('${(m && m.img) ? m.img : FALLBACK_IMG}')"></div>
-      <div class="exportRank">${orderIndex + 1}</div>
+      <div class="exportRank" style="background:${c}">${orderIndex + 1}</div>
     </div>
     <div class="exportName">${displayName(m && m.name ? m.name : "")}</div>
     <div class="exportHandle">${handle ? handle : "&nbsp;"}</div>
@@ -2020,13 +2028,16 @@ async function saveImage(){
 
 /* 初期描画 */
 (function initAll(){
-  // 毎回ポップアップ表示
   openIntro();
   showIntroPage(1);
 
-  // ★初期：保存してある色を反映
+  // 初期：保存してある全体色を反映（未設定枠はこれが使われる）
   const savedAccent = loadAccentColor();
   applyAccentColor(savedAccent);
+
+  // 色モードボタン初期
+  const cm = document.getElementById("colorModeBtn");
+  if(cm) cm.textContent = "色変更：全員";
 
   updateFreeButtons();
   drawPicks();
