@@ -940,6 +940,73 @@
     font-weight: 1000;
     font-size: 14px;
   }
+  /* ===== 👑王冠 ===== */
+.crownBadge{
+  position:absolute;
+  right:-8px;
+  top:-16px;
+  font-size:28px;
+  transform: rotate(12deg);
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.18));
+  pointer-events:none;
+}
+
+.exportCrownBadge{
+  position:absolute;
+  right:-12px;
+  top:-22px;
+  font-size:44px;
+  transform: rotate(12deg);
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,.18));
+  pointer-events:none;
+}
+
+/* ===== @入力モーダル ===== */
+.handleModal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:3000;
+}
+.handleModal.show{ display:flex; }
+
+.handleBox{
+  width:min(520px,92vw);
+  background:rgba(255,255,255,.92);
+  border-radius:18px;
+  padding:18px;
+}
+
+.handleRow{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.handleInput{
+  flex:1;
+  font-size:16px;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid #ddd;
+}
+
+.crownBtn{
+  width:54px;
+  height:46px;
+  font-size:22px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  background:#fff;
+}
+
+.crownBtn.on{
+  background:#fff6dc;
+  border-color:#ffd37a;
+}
 </style>
 </head>
 
