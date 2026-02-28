@@ -1263,6 +1263,17 @@ function setAccentColor(color){
     return;
   }
 
+  // ★全員共通にする時は「枠別の上書き」を全部解除
+  slotColors = {};
+  saveSlotColors();
+
+  // 全員共通色を保存
+  saveAccentColor(c);
+  applyAccentColor(c);
+  drawPicks();
+  drawExportPicks();
+}
+
   // 通常（全員共通）
   saveAccentColor(c);
   applyAccentColor(c);
