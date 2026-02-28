@@ -17,15 +17,14 @@
 
     /* ★アクセントカラー（全員共通のデフォルト色） */
     --accent:#0080ff;
-
-    /* 既存互換：今まで --blue を使ってたので、ここで連動 */
+    /* 既存互換：--blue */
     --blue: var(--accent);
 
     /* 画面側 */
     --slot: 86px;
     --gap:  14px;
 
-    /* 保存画像側：JSが“少しだけ”自動調整 */
+    /* 保存画像側 */
     --exAvatar: 112px;
     --exBorder: 8px;
     --exGapX: 56px;
@@ -35,10 +34,10 @@
     /* 保存レイアウト自動調整用 */
     --exTopH: 470px;
     --exBottomPadTop: 16px;
-    --exBottomPadBottom: 150px; /* 安全地帯 */
+    --exBottomPadBottom: 150px;
     --exMissTop: 18px;
 
-    /* ★空き枠アイコンのサイズをJSで可変（被り防止） */
+    /* ★空き枠アイコン */
     --exMissSize: 120px;
     --exMissRowMinH: 130px;
     --exMissGapY: 12px;
@@ -46,7 +45,7 @@
     /* ★@文字サイズ（全員統一・JSで調整） */
     --exHandle: 13px;
 
-    /* ★下の「◯投票枠 空いています」文字サイズ（被り防止でJSが調整） */
+    /* ★下の文 */
     --exSentence: 20px;
   }
 
@@ -384,7 +383,7 @@
     overflow:hidden;
     background:#f7f7f7;
     border:1px solid #f0f0f0;
-    position: relative; /* ★辞退ラベル用 */
+    position: relative;
   }
   .memberCardThumb img{
     width:100%;
@@ -517,7 +516,7 @@
     pointer-events:none;
   }
 
-  /* ★変更：下固定（左下 TikTok / 右下 #）を“高級ガラス”に */
+  /* ★変更：下固定 ガラス */
   .exportTikTok,
   .exportHashtag{
     position:absolute;
@@ -571,15 +570,8 @@
     mix-blend-mode: screen;
     opacity: .55;
   }
-  .exportTikTok{
-    left: 18px;
-    font-size: 14px;
-  }
-  .exportHashtag{
-    right: 18px;
-    font-size: 13px;
-    letter-spacing: .03em;
-  }
+  .exportTikTok{ left: 18px; font-size: 14px; }
+  .exportHashtag{ right: 18px; font-size: 13px; letter-spacing: .03em; }
 
   /* ボディ */
   .exportBody{
@@ -587,7 +579,6 @@
     padding: 18px 56px 0;
   }
 
-  /* ★「投票して欲しいメンバー」消したので、余白を詰める */
   .exportTop{
     height: var(--exTopH);
     display:flex;
@@ -614,6 +605,7 @@
   .exportSlot{
     width: calc(var(--exAvatar) + 90px);
     text-align:center;
+    position: relative;
   }
   .exportAvatar{
     width: var(--exAvatar);
@@ -663,8 +655,6 @@
     overflow:hidden;
     text-overflow: ellipsis;
   }
-
-  /* ★@表示（下段と被らないように必ず1行分の高さ確保） */
   .exportHandle{
     margin-top: 6px;
     font-size: var(--exHandle);
@@ -677,7 +667,7 @@
     height: calc(var(--exHandle) * 1.1);
   }
 
-  /* 下：空き枠エリア */
+  /* 下：空き枠 */
   .exportBottom{
     height: calc(1040px - 150px - var(--exTopH));
     display:flex;
@@ -716,7 +706,6 @@
     min-height: var(--exMissRowMinH);
   }
 
-  /* 未選択アイコン */
   .missingIcon{
     width: var(--exMissSize);
     height: var(--exMissSize);
@@ -736,7 +725,6 @@
     box-shadow: 0 10px 22px rgba(0,0,0,.12);
   }
 
-  /* ★下の文は「文字だけ」 */
   .exportSlotsSentence{
     margin-top: 12px;
     text-align:center;
@@ -763,7 +751,6 @@
   }
   .introModal.show{ display:flex; }
 
-  /* ===== ポップアップ2ページ＋ガラス風 ===== */
   .introBox.glass{
     width: min(520px, 92vw);
     position: relative;
@@ -800,17 +787,15 @@
     mix-blend-mode: overlay;
     pointer-events:none;
   }
-
   .introHead{
     padding: 14px 16px 10px;
     font-weight: 1000;
     font-size: 16px;
-    background: rgba(255,255,255,.55);
     border-bottom: 1px solid rgba(0,0,0,.06);
+    background: rgba(255,255,255,.55);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
-
   .introBody{
     position: relative;
     padding: 0;
@@ -925,88 +910,88 @@
   }
   .dot.isOn{ background: rgba(0,0,0,.55); }
 
-  .glassBtn{
-    background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.40));
+  .introCloseBtn{
+    padding: 10px 14px;
+    border-radius: 12px;
     border: 1px solid rgba(255,255,255,.45);
+    background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.40));
     box-shadow:
       0 10px 24px rgba(0,0,0,.16),
       inset 0 1px 0 rgba(255,255,255,.70);
     backdrop-filter: blur(12px) saturate(155%);
     -webkit-backdrop-filter: blur(12px) saturate(155%);
-  }
-  .introCloseBtn{
-    padding: 10px 14px;
-    border-radius: 12px;
     font-weight: 1000;
-    font-size: 14px;
   }
+  .introCloseBtn:active{ transform: scale(.98); }
+
   /* ===== 👑王冠 ===== */
-.crownBadge{
-  position:absolute;
-  right:-8px;
-  top:-16px;
-  font-size:28px;
-  transform: rotate(12deg);
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,.18));
-  pointer-events:none;
-}
+  .crownBadge{
+    position:absolute;
+    right:-8px;
+    top:-16px;
+    font-size:28px;
+    transform: rotate(12deg);
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,.18));
+    pointer-events:none;
+    z-index: 5;
+  }
+  .exportCrownBadge{
+    position:absolute;
+    right:-12px;
+    top:-22px;
+    font-size:44px;
+    transform: rotate(12deg);
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,.18));
+    pointer-events:none;
+    z-index: 5;
+  }
 
-.exportCrownBadge{
-  position:absolute;
-  right:-12px;
-  top:-22px;
-  font-size:44px;
-  transform: rotate(12deg);
-  filter: drop-shadow(0 10px 16px rgba(0,0,0,.18));
-  pointer-events:none;
-}
+  /* ===== @入力モーダル（👑付き） ===== */
+  .handleModal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:3000;
+    padding: 18px;
+  }
+  .handleModal.show{ display:flex; }
 
-/* ===== @入力モーダル ===== */
-.handleModal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:3000;
-}
-.handleModal.show{ display:flex; }
-
-.handleBox{
-  width:min(520px,92vw);
-  background:rgba(255,255,255,.92);
-  border-radius:18px;
-  padding:18px;
-}
-
-.handleRow{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-.handleInput{
-  flex:1;
-  font-size:16px;
-  padding:10px;
-  border-radius:12px;
-  border:1px solid #ddd;
-}
-
-.crownBtn{
-  width:54px;
-  height:46px;
-  font-size:22px;
-  border-radius:12px;
-  border:1px solid #ddd;
-  background:#fff;
-}
-
-.crownBtn.on{
-  background:#fff6dc;
-  border-color:#ffd37a;
-}
+  .handleBox{
+    width:min(520px,92vw);
+    background:rgba(255,255,255,.92);
+    border-radius:18px;
+    padding:18px;
+    border: 1px solid rgba(0,0,0,.08);
+    box-shadow: 0 18px 50px rgba(0,0,0,.25);
+  }
+  .handleRow{
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+  .handleInput{
+    flex:1;
+    font-size:16px;
+    padding:10px;
+    border-radius:12px;
+    border:1px solid #ddd;
+    background:#fff;
+  }
+  .crownBtn{
+    width:54px;
+    height:46px;
+    font-size:22px;
+    border-radius:12px;
+    border:1px solid #ddd;
+    background:#fff;
+  }
+  .crownBtn.on{
+    background:#fff6dc;
+    border-color:#ffd37a;
+  }
 </style>
 </head>
 
@@ -1127,7 +1112,6 @@
 <!-- ポップアップ（毎回表示・2ページ） -->
 <div class="introModal" id="introModal" aria-hidden="true">
   <div class="introBox glass" role="dialog" aria-modal="true" aria-labelledby="introTitle">
-
     <div class="introHead" id="introTitle">このメーカーについて</div>
 
     <div class="introBody" id="introBody">
@@ -1166,9 +1150,31 @@
         <button class="pagerBtn" type="button" onclick="introNext()">▶︎</button>
       </div>
 
-      <button class="introCloseBtn glassBtn" type="button" onclick="closeIntro()">閉じる</button>
+      <button class="introCloseBtn" type="button" onclick="closeIntro()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== @入力モーダル（👑つき） ===== -->
+<div class="handleModal" id="handleModal" aria-hidden="true">
+  <div class="handleBox" role="dialog" aria-modal="true" aria-label="アカウント入力">
+    <div style="font-weight:1000;font-size:14px;margin-bottom:10px;">
+      アカウント名を入力してね（例：@xxxx）
     </div>
 
+    <div class="handleRow">
+      <input class="handleInput" id="handleInput" type="text" inputmode="text" placeholder="@xxxx" />
+      <button class="crownBtn" id="crownBtn" type="button" title="王冠">👑</button>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
+      <button class="mode" type="button" onclick="closeHandleModal()">キャンセル</button>
+      <button class="primary" type="button" onclick="commitHandleFromModal()">OK</button>
+    </div>
+
+    <div style="margin-top:10px;font-size:12px;color:#666;font-weight:900;">
+      👑を押すと「推しマーク」になります（保存されます）
+    </div>
   </div>
 </div>
 
@@ -1201,13 +1207,9 @@ let handles = loadHandles();
 
 /* ===== 👑王冠 保存 ===== */
 const CROWNS_KEY = "oshivote_crowns_v1";
-let crowns = loadCrowns();
+let crowns = loadCrowns(); // { traineeIndex: true/false }
 
-function loadCrowns(){ ... }
-function saveCrowns(){ ... }
-function isCrowned(traineeIndex){ ... }
-function toggleCrown(traineeIndex){ ... }
-
+/* 表示切替 */
 let showingCandidates = false;
 
 /* ★空き枠は手動 */
@@ -1271,7 +1273,7 @@ function saveSlotColors(){
 }
 function getColorForTraineeIndex(ti){
   const c = slotColors[String(ti)];
-  return c ? normalizeHexColor(c) : loadAccentColor(); // 未設定なら全体色
+  return c ? normalizeHexColor(c) : loadAccentColor();
 }
 function setColorForTraineeIndex(ti, color){
   slotColors[String(ti)] = normalizeHexColor(color);
@@ -1286,7 +1288,6 @@ function toggleColorMode(){
   const btn = document.getElementById("colorModeBtn");
   if(btn) btn.textContent = "色変更：" + (perSlotColorMode ? "枠別" : "全員");
 
-  // 枠別に入ったら、まずは全体色をパレットに表示
   updatePaletteUI(loadAccentColor());
   drawPicks();
 }
@@ -1298,7 +1299,7 @@ function setColorTarget(pos){
   colorTargetPos = pos;
 
   const ti = selected[pos];
-  updatePaletteUI(getColorForTraineeIndex(ti)); // その枠の色をパレットに反映
+  updatePaletteUI(getColorForTraineeIndex(ti));
   drawPicks();
 }
 
@@ -1306,7 +1307,6 @@ function setColorTarget(pos){
 function setAccentColor(color){
   const c = normalizeHexColor(color);
 
-  // 枠別モードで対象枠があるなら、その枠だけ変える
   if(perSlotColorMode && colorTargetPos !== null && colorTargetPos < selected.length){
     const ti = selected[colorTargetPos];
     setColorForTraineeIndex(ti, c);
@@ -1316,19 +1316,34 @@ function setAccentColor(color){
     return;
   }
 
-  // ==========================
-  // ★ここが今回の修正ポイント
-  // 全員モードで色を変えたら、枠別色を全部クリアして「全員共通色」に統一する
-  // ==========================
   slotColors = {};
   saveSlotColors();
-  colorTargetPos = null;
 
-  // 通常（全員共通）
   saveAccentColor(c);
   applyAccentColor(c);
   drawPicks();
   drawExportPicks();
+}
+
+/* ===== 👑王冠 読み書き ===== */
+function loadCrowns(){
+  try{
+    const raw = localStorage.getItem(CROWNS_KEY);
+    const obj = raw ? JSON.parse(raw) : {};
+    return (obj && typeof obj === "object") ? obj : {};
+  }catch(e){ return {}; }
+}
+function saveCrowns(){
+  try{ localStorage.setItem(CROWNS_KEY, JSON.stringify(crowns)); }catch(e){}
+}
+function isCrowned(traineeIndex){
+  return !!crowns[String(traineeIndex)];
+}
+function toggleCrown(traineeIndex){
+  const k = String(traineeIndex);
+  if(crowns[k]) delete crowns[k];
+  else crowns[k] = true;
+  saveCrowns();
 }
 
 function profileUrlById(id){
@@ -1360,6 +1375,7 @@ function loadHandles(){
 function saveHandles(){
   try{ localStorage.setItem(HANDLES_KEY, JSON.stringify(handles)); }catch(e){}
 }
+
 /* ===== @入力：モーダル版（👑ボタン付き） ===== */
 let handleModalPos = null;
 
@@ -1374,11 +1390,9 @@ function editHandle(pos){
   const modal = document.getElementById("handleModal");
   const input = document.getElementById("handleInput");
   const crownBtn = document.getElementById("crownBtn");
-
   if(!modal || !input || !crownBtn) return;
 
   input.value = current ? current : "@";
-
   crownBtn.classList.toggle("on", isCrowned(traineeIndex));
 
   modal.classList.add("show");
@@ -1415,7 +1429,6 @@ function commitHandleFromModal(){
     closeHandleModal();
     return;
   }
-
   if(next[0] !== "@") next = "@" + next;
 
   handles[String(traineeIndex)] = next;
@@ -1429,7 +1442,6 @@ function toggleCrownFromModal(){
   if(handleModalPos < 0 || handleModalPos >= selected.length) return;
 
   const traineeIndex = selected[handleModalPos];
-
   toggleCrown(traineeIndex);
 
   const crownBtn = document.getElementById("crownBtn");
@@ -1439,7 +1451,39 @@ function toggleCrownFromModal(){
   drawExportPicks();
 }
 
+/* モーダルの👑ボタン / Enter / Esc */
+(function bindHandleModalEvents(){
+  document.addEventListener("click", (e)=>{
+    const modal = document.getElementById("handleModal");
+    if(!modal || !modal.classList.contains("show")) return;
+    if(e.target === modal) closeHandleModal();
+  });
+  document.addEventListener("keydown", (e)=>{
+    const modal = document.getElementById("handleModal");
+    if(!modal || !modal.classList.contains("show")) return;
+
+    if(e.key === "Escape"){
+      e.preventDefault();
+      closeHandleModal();
+    }
+    if(e.key === "Enter"){
+      e.preventDefault();
+      commitHandleFromModal();
+    }
+  });
+  const crownBtn = document.getElementById("crownBtn");
+  if(crownBtn){
+    crownBtn.addEventListener("click", (e)=>{
+      e.preventDefault();
+      toggleCrownFromModal();
+    });
+  }
+})();
+
 /* ====== 練習生データ（練習生＋候補） ====== */
+/* ※ここ以降は「あなたの完全版」をそのまま：長いので省略せず全部入れてOK
+   ↓↓↓ ここからあなたが貼った traineesOnly / candidates を “そのまま” 続けてください。
+   ただし、この完成版では既に下に全部入れてあります（あなたの貼ったやつと同じ）。 */
 const traineesOnly = [
   {name:"アダム・ナガイ(ADAM)", img:"https://i.imgur.com/6QGzvRx.png", id:"adamnagai"},
   {name:"中丸 晏寿(AJU)", img:"https://i.imgur.com/KiZCKos.png", id:"nakamaruaju"},
@@ -1450,7 +1494,7 @@ const traineesOnly = [
   {name:"加藤 大樹 (K.DAIKI)", img:"https://i.imgur.com/4fRk2EB.png", id:"katodaiki"},
   {name:"カク・ドンミン(DONGMIN)", img:"https://i.imgur.com/xZSQqMh.png", id:"kwakdongmin"},
   {name:"末川 瑛太(EITA)", img:"https://i.imgur.com/alEjKCP.png", id:"suekawaeita"},
-  {name:"保里 瑛都(H.EITO)", img:"https://i.imgur.com/IAhs4ZA.png", id:"horieito"}, /* ★辞退 */
+  {name:"保里 瑛都(H.EITO)", img:"https://i.imgur.com/IAhs4ZA.png", id:"horieito"},
   {name:"金田 栄都(K.EITO)", img:"https://i.imgur.com/tF7i1du.png", id:"kanedaeito"},
   {name:"櫻井 楓真(FUMA)", img:"https://i.imgur.com/WIWI8Sx.png", id:"sakuraifuma"},
   {name:"小笠原ジュゼッペ慧(GIUSEPPE)", img:"https://i.imgur.com/2oKn3Ma.jpeg", id:"ogasawaragiuseppekei"},
@@ -1534,7 +1578,7 @@ const candidates = [
   {name:"村松 遼空(HARUKU)", img:"https://i.imgur.com/3JEtKs6.png", id:"muramatsuharuku"},
   {name:"髙城 暖人(HARUTO)", img:"https://i.imgur.com/qdXIOpr.png", id:"takagiharuto"},
   {name:"平島 輝(H.HIKARU)", img:"https://i.imgur.com/P5gzRZh.png", id:"hirashimahikaru"},
-  {name:"櫻井 輝(S.HIKARU)", img:"https://i.imgur.com/h2fBMUv.png", id:"sakuraihikaru"}, /* ★辞退 */
+  {name:"櫻井 輝(S.HIKARU)", img:"https://i.imgur.com/h2fBMUv.png", id:"sakuraihikaru"},
   {name:"佐川 太一(HIROKAZU)", img:"https://i.imgur.com/h2fBMUv.png", id:"sagawahirokazu"},
   {name:"イ・ヒョンジェ(HYUNJAE)", img:"https://i.imgur.com/wOhvKDu.png", id:"leehyunjae"},
   {name:"阿部 樹(ITSUKI)", img:"https://i.imgur.com/TaTAc2L.png", id:"abeitsuki"},
@@ -1713,18 +1757,18 @@ function drawPicks(){
 
       slot.className = "slot" + (isTarget ? " colorTarget" : "");
       slot.innerHTML = `
-  <div class="avatar" style="border-color:${c}"
-       onclick="${perSlotColorMode ? `setColorTarget(${i})` : `editHandle(${i})`}">
-    <img src="${m.img || FALLBACK_IMG}" alt="">
-    ${isCrowned(ti) ? '<div class="crownBadge">👑</div>' : ''}
-    <div class="rank" style="background:${c}">${i + 1}</div>
-  </div>
-  <div class="name" onclick="editHandle(${i})">${displayName(m.name)}</div>
-  <div class="reorder">
-    <button type="button" onclick="event.stopPropagation(); moveLeft(${i})">←</button>
-    <button type="button" onclick="event.stopPropagation(); moveRight(${i})">→</button>
-  </div>
-`;
+        <div class="avatar" style="border-color:${c}"
+             onclick="${perSlotColorMode ? `setColorTarget(${i})` : `editHandle(${i})`}">
+          <img src="${m.img || FALLBACK_IMG}" alt="">
+          ${isCrowned(ti) ? `<div class="crownBadge">👑</div>` : ``}
+          <div class="rank" style="background:${c}">${i + 1}</div>
+        </div>
+        <div class="name" onclick="editHandle(${i})">${displayName(m.name)}</div>
+        <div class="reorder">
+          <button type="button" onclick="event.stopPropagation(); moveLeft(${i})">←</button>
+          <button type="button" onclick="event.stopPropagation(); moveRight(${i})">→</button>
+        </div>
+      `;
     }else{
       slot.className = "slot empty";
       slot.innerHTML = `<div class="avatar">+</div>`;
@@ -1808,7 +1852,6 @@ function undo(){
   withMembersScrollLock(() => {
     selected.pop();
     saveSelected();
-    // 枠別モードで、対象が消えたら解除
     if(colorTargetPos !== null && colorTargetPos >= selected.length) colorTargetPos = null;
     drawPicks();
     drawMembers();
@@ -1825,6 +1868,9 @@ function resetAll(){
 
     handles = {};
     saveHandles();
+
+    crowns = {};
+    saveCrowns();
 
     slotColors = {};
     saveSlotColors();
@@ -1856,7 +1902,6 @@ function swap(a,b){
   withMembersScrollLock(() => {
     const t = selected[a]; selected[a]=selected[b]; selected[b]=t;
     saveSelected();
-    // 枠別モードのターゲット位置も追従
     if(colorTargetPos === a) colorTargetPos = b;
     else if(colorTargetPos === b) colorTargetPos = a;
 
@@ -1990,11 +2035,10 @@ function fitExportHandlesUniform(){
     const ok = targets.every(el => el.scrollWidth <= el.clientWidth);
     if(ok) return;
   }
-
   setExportHandleSize(MIN);
 }
 
-/* ★下の文がガラス枠と被らないように */
+/* ★下の文がガラス枠と絶対被らないように */
 function setExportSentenceSize(px){
   document.documentElement.style.setProperty("--exSentence", px + "px");
 }
@@ -2074,7 +2118,7 @@ function drawExportPicks(){
   });
 }
 
-/* ★保存画像：枠別カラー反映（👑対応版） */
+/* ★保存画像：枠別カラー反映 + 👑表示 */
 function makeExportSlot(m, orderIndex){
   const traineeIndex = selected[orderIndex];
   const handle = (handles[String(traineeIndex)] || "").trim();
@@ -2085,7 +2129,7 @@ function makeExportSlot(m, orderIndex){
   d.innerHTML = `
     <div class="exportAvatar" style="border-color:${c}">
       <div class="exportPhoto" style="background-image:url('${(m && m.img) ? m.img : FALLBACK_IMG}')"></div>
-      ${isCrowned(traineeIndex) ? '<div class="exportCrownBadge">👑</div>' : ''}
+      ${isCrowned(traineeIndex) ? `<div class="exportCrownBadge">👑</div>` : ``}
       <div class="exportRank" style="background:${c}">${orderIndex + 1}</div>
     </div>
     <div class="exportName">${displayName(m && m.name ? m.name : "")}</div>
@@ -2165,11 +2209,9 @@ async function saveImage(){
   openIntro();
   showIntroPage(1);
 
-  // 初期：保存してある全体色を反映（未設定枠はこれが使われる）
   const savedAccent = loadAccentColor();
   applyAccentColor(savedAccent);
 
-  // 色モードボタン初期
   const cm = document.getElementById("colorModeBtn");
   if(cm) cm.textContent = "色変更：全員";
 
@@ -2180,23 +2222,5 @@ async function saveImage(){
   renderFreeSlots();
 })();
 </script>
-<!-- ===== @入力モーダル（👑つき）===== -->
-<div class="handleModal" id="handleModal" aria-hidden="true">
-  <div class="handleBox" role="dialog" aria-modal="true" aria-labelledby="handleTitle">
-    <div style="font-weight:1000;font-size:14px;margin-bottom:10px;" id="handleTitle">
-      アカウント名を入力してね（例：@xxxx）
-    </div>
-
-    <div class="handleRow">
-      <input class="handleInput" id="handleInput" type="text" inputmode="text" autocomplete="off" placeholder="@xxxx" />
-      <button class="crownBtn" id="crownBtn" type="button" title="王冠を付ける/外す">👑</button>
-    </div>
-
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
-      <button class="mode" type="button" onclick="closeHandleModal()">キャンセル</button>
-      <button class="primary" type="button" onclick="saveHandleModal()">OK</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
