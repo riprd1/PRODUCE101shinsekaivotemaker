@@ -2074,7 +2074,7 @@ function drawExportPicks(){
   });
 }
 
-/* ★保存画像：枠別カラー反映 */
+/* ★保存画像：枠別カラー反映（👑対応版） */
 function makeExportSlot(m, orderIndex){
   const traineeIndex = selected[orderIndex];
   const handle = (handles[String(traineeIndex)] || "").trim();
@@ -2085,6 +2085,7 @@ function makeExportSlot(m, orderIndex){
   d.innerHTML = `
     <div class="exportAvatar" style="border-color:${c}">
       <div class="exportPhoto" style="background-image:url('${(m && m.img) ? m.img : FALLBACK_IMG}')"></div>
+      ${isCrowned(traineeIndex) ? `<div class="exportCrownBadge">👑</div>` : ``}
       <div class="exportRank" style="background:${c}">${orderIndex + 1}</div>
     </div>
     <div class="exportName">${displayName(m && m.name ? m.name : "")}</div>
