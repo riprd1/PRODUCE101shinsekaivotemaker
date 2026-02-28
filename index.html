@@ -1199,6 +1199,15 @@ let colorTargetPos = null; // selected配列上の位置（0..selected.length-1�
 const HANDLES_KEY = "oshivote_handles_v1";
 let handles = loadHandles();
 
+/* ===== 👑王冠 保存 ===== */
+const CROWNS_KEY = "oshivote_crowns_v1";
+let crowns = loadCrowns();
+
+function loadCrowns(){ ... }
+function saveCrowns(){ ... }
+function isCrowned(traineeIndex){ ... }
+function toggleCrown(traineeIndex){ ... }
+
 let showingCandidates = false;
 
 /* ★空き枠は手動 */
