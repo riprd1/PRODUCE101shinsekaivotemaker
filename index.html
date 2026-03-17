@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>日プ新世界 投票枠交換メーカー</title>
+<title>日プ新世界メーカー</title>
 
 <style>
   :root{
@@ -15,38 +15,19 @@
     --shadow: 0 4px 14px rgba(0,0,0,.06);
     --radius:14px;
 
-    /* ★アクセントカラー（全員共通のデフォルト色） */
     --accent:#0080ff;
-    /* 既存互換：--blue */
     --blue: var(--accent);
 
-    /* 画面側 */
     --slot: 86px;
     --gap:  14px;
 
-    /* 保存画像側 */
     --exAvatar: 112px;
     --exBorder: 8px;
     --exGapX: 56px;
     --exGapY: 30px;
     --exName: 15px;
 
-    /* 保存レイアウト自動調整用 */
-    --exTopH: 470px;
-    --exBottomPadTop: 16px;
-    --exBottomPadBottom: 150px;
-    --exMissTop: 18px;
-
-    /* ★空き枠アイコン */
-    --exMissSize: 120px;
-    --exMissRowMinH: 130px;
-    --exMissGapY: 12px;
-
-    /* ★@文字サイズ（全員統一・JSで調整） */
     --exHandle: 13px;
-
-    /* ★下の文 */
-    --exSentence: 20px;
   }
 
   *{ box-sizing:border-box; }
@@ -77,7 +58,6 @@
     overflow: hidden;
   }
 
-  /* ===== 画面表示バナー ===== */
   .banner{
     height: 110px;
     position: relative;
@@ -108,23 +88,7 @@
     z-index: 2;
     white-space: nowrap;
   }
-  .slotBadge{
-    position:absolute;
-    right: 12px;
-    bottom: 12px;
-    background: rgba(0,128,255,.92);
-    color: #fff;
-    font-weight: 900;
-    padding: 10px 12px;
-    border-radius: 999px;
-    font-size: 14px;
-    box-shadow: 0 8px 18px rgba(0,0,0,.14);
-    z-index: 5;
-    white-space: nowrap;
-    pointer-events:none;
-  }
 
-  /* ===== 上：選択枠 ===== */
   .picksWrap{
     padding: 12px 14px 8px;
     background-image: url("https://i.imgur.com/lFGbXfI.png");
@@ -204,7 +168,6 @@
   .empty .rank{display:none;}
   .empty .name{display:none;}
 
-  /* ★枠別カラー：今選んでる枠を分かりやすく */
   .slot.colorTarget .avatar{
     outline: 4px solid rgba(0,0,0,.12);
     outline-offset: 3px;
@@ -242,7 +205,6 @@
   .danger{border-color:#ffd6d6;}
   .mode{border-color:#e7e7e7;}
 
-  /* TikTok誘導（サイト上） */
   .tiktokBtn{
     display:inline-flex;
     align-items:center;
@@ -268,18 +230,16 @@
   }
   .tiktokWrap{ display:flex; flex-direction:column; align-items:center; }
 
-  /* ★空き枠ボタン */
-  .freeControl{ display:flex; flex-direction:column; align-items:center; gap:6px; }
-  .freeLabel{ font-size:12px; font-weight:900; color:#666; }
-  .freeBtns{
+  .limitControl{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .limitLabel{ font-size:12px; font-weight:900; color:#666; }
+  .limitBtns{
     display: grid;
-    grid-template-columns: repeat(5, 44px);
+    grid-template-columns: repeat(4, 44px);
     gap: 8px;
     justify-content: center;
   }
-  .freeBtnActive{ border-color:#cfe2ff; background:#eef6ff; font-weight: 1000; }
+  .limitBtnActive{ border-color:#cfe2ff; background:#eef6ff; font-weight: 1000; }
 
-  /* ★丸枠カラー変更UI */
   .colorControl{
     display:flex;
     flex-direction:column;
@@ -317,7 +277,6 @@
     background:#fff;
   }
 
-  /* ===== 一覧：2列ボタン ===== */
   .listCard{
     margin-top: 12px;
     padding: 10px;
@@ -413,7 +372,6 @@
     line-height:1;
   }
 
-  /* ★辞退：グレーアウト＋選択不可＋写真上に表示 */
   .memberCard.withdrawn{
     opacity: .45;
     filter: grayscale(1);
@@ -449,7 +407,6 @@
     z-index:999;
   }
 
-  /* ===== 保存専用（1004×1040） ===== */
   #exportArea{
     position: fixed;
     left: -10000px;
@@ -471,7 +428,6 @@
     background-repeat: no-repeat;
   }
 
-  /* バナー */
   .exportBanner{
     height: 150px;
     background-size: cover;
@@ -516,7 +472,6 @@
     pointer-events:none;
   }
 
-  /* ★変更：下固定 ガラス */
   .exportTikTok,
   .exportHashtag{
     position:absolute;
@@ -573,19 +528,21 @@
   .exportTikTok{ left: 18px; font-size: 14px; }
   .exportHashtag{ right: 18px; font-size: 13px; letter-spacing: .03em; }
 
-  /* ボディ */
   .exportBody{
     height: calc(1040px - 150px);
     padding: 18px 56px 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
   }
 
   .exportTop{
-    height: var(--exTopH);
+    width:100%;
+    height:100%;
     display:flex;
     flex-direction:column;
-    justify-content:flex-start;
+    justify-content:center;
     align-items:center;
-    padding-top: 6px;
   }
   .exportRows{
     width: 100%;
@@ -593,7 +550,7 @@
     flex-direction:column;
     gap: var(--exGapY);
     align-items:center;
-    margin-top: 8px;
+    justify-content:center;
   }
   .exportRow{
     display:flex;
@@ -667,78 +624,6 @@
     height: calc(var(--exHandle) * 1.1);
   }
 
-  /* 下：空き枠 */
-  .exportBottom{
-    height: calc(1040px - 150px - var(--exTopH));
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    padding-top: var(--exBottomPadTop);
-    padding-bottom: var(--exBottomPadBottom);
-  }
-
-  .exportSlotsText{
-    text-align:center;
-    font-size: 26px;
-    font-weight: 1000;
-    color: var(--blue);
-    background: rgba(255,255,255,.95);
-    border: 4px solid var(--blue);
-    border-radius: 999px;
-    padding: 10px 22px;
-    letter-spacing: .04em;
-    white-space: nowrap;
-    box-shadow: 0 8px 18px rgba(0,128,255,.25);
-  }
-
-  .exportMissingRows{
-    margin-top: var(--exMissTop);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap: var(--exMissGapY);
-  }
-  .exportMissingRow{
-    display:flex;
-    justify-content:center;
-    gap: 28px;
-    min-height: var(--exMissRowMinH);
-  }
-
-  .missingIcon{
-    width: var(--exMissSize);
-    height: var(--exMissSize);
-    background: #82cded;
-
-    -webkit-mask-image: url("https://i.imgur.com/nAiYU1V.png");
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: center;
-    -webkit-mask-size: contain;
-
-    mask-image: url("https://i.imgur.com/nAiYU1V.png");
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-size: contain;
-
-    border-radius: 12px;
-    box-shadow: 0 10px 22px rgba(0,0,0,.12);
-  }
-
-  .exportSlotsSentence{
-    margin-top: 12px;
-    text-align:center;
-    font-size: var(--exSentence);
-    font-weight: 900;
-    color: rgba(10,10,10,.86);
-    letter-spacing: .04em;
-    white-space: nowrap;
-    text-shadow:
-      0 1px 0 rgba(255,255,255,.65),
-      0 0 6px rgba(255,255,255,.18);
-  }
-
-  /* ===== ポップアップ（毎回表示） ===== */
   .introModal{
     position: fixed;
     inset: 0;
@@ -924,7 +809,6 @@
   }
   .introCloseBtn:active{ transform: scale(.98); }
 
-  /* ===== 👑王冠 ===== */
   .crownBadge{
     position:absolute;
     right:-8px;
@@ -946,7 +830,6 @@
     z-index: 5;
   }
 
-  /* ===== @入力モーダル（👑付き） ===== */
   .handleModal{
     position:fixed;
     inset:0;
@@ -998,15 +881,14 @@
 <body>
 <header>
   <div class="topbar">
-    <h1>日プ新世界 投票枠交換メーカー</h1>
+    <h1>日プ新世界メーカー</h1>
   </div>
 </header>
 
 <main>
   <div class="card" id="picksCard">
     <div id="banner" class="banner">
-      <div class="bannerTitle">日プ新世界 投票枠交換メーカー</div>
-      <div class="slotBadge" id="slotBadge">空き 0 枠</div>
+      <div class="bannerTitle">日プ新世界メーカー</div>
     </div>
 
     <div class="picksWrap" id="picksWrap">
@@ -1019,7 +901,6 @@
       <button class="danger" type="button" onclick="resetAll()">リセット</button>
       <button class="mode" type="button" id="reorderBtn" onclick="toggleReorder()">並び替えモード：OFF</button>
 
-      <!-- ★丸枠カラー変更：全員/枠別切替 -->
       <div class="colorControl">
         <button class="mode" id="colorModeBtn" type="button" onclick="toggleColorMode()">色変更：全員</button>
 
@@ -1039,20 +920,17 @@
         <div class="tiktokHint">↑ここをクリック</div>
       </div>
 
-      <!-- ★空き枠ボタン（1〜10） -->
-      <div class="freeControl">
-        <div class="freeLabel">空き枠</div>
-        <div class="freeBtns" id="freeBtns">
-          <button type="button" class="mode freeBtn" data-n="1" onclick="setFreeSlots(1)">1</button>
-          <button type="button" class="mode freeBtn" data-n="2" onclick="setFreeSlots(2)">2</button>
-          <button type="button" class="mode freeBtn" data-n="3" onclick="setFreeSlots(3)">3</button>
-          <button type="button" class="mode freeBtn" data-n="4" onclick="setFreeSlots(4)">4</button>
-          <button type="button" class="mode freeBtn" data-n="5" onclick="setFreeSlots(5)">5</button>
-          <button type="button" class="mode freeBtn" data-n="6" onclick="setFreeSlots(6)">6</button>
-          <button type="button" class="mode freeBtn" data-n="7" onclick="setFreeSlots(7)">7</button>
-          <button type="button" class="mode freeBtn" data-n="8" onclick="setFreeSlots(8)">8</button>
-          <button type="button" class="mode freeBtn" data-n="9" onclick="setFreeSlots(9)">9</button>
-          <button type="button" class="mode freeBtn" data-n="10" onclick="setFreeSlots(10)">10</button>
+      <div class="limitControl">
+        <div class="limitLabel">人数</div>
+        <div class="limitBtns" id="limitBtns">
+          <button type="button" class="mode limitBtn" data-n="1" onclick="setSelectedLimit(1)">1</button>
+          <button type="button" class="mode limitBtn" data-n="2" onclick="setSelectedLimit(2)">2</button>
+          <button type="button" class="mode limitBtn" data-n="3" onclick="setSelectedLimit(3)">3</button>
+          <button type="button" class="mode limitBtn" data-n="4" onclick="setSelectedLimit(4)">4</button>
+          <button type="button" class="mode limitBtn" data-n="5" onclick="setSelectedLimit(5)">5</button>
+          <button type="button" class="mode limitBtn" data-n="6" onclick="setSelectedLimit(6)">6</button>
+          <button type="button" class="mode limitBtn" data-n="7" onclick="setSelectedLimit(7)">7</button>
+          <button type="button" class="mode limitBtn" data-n="8" onclick="setSelectedLimit(8)">8</button>
         </div>
       </div>
     </div>
@@ -1075,13 +953,12 @@
 
 <div class="toast" id="toast">画像を生成中…</div>
 
-<!-- 保存専用 -->
 <div id="exportArea" aria-hidden="true">
   <div id="exportInner">
     <div class="exportCredit">created by @12agassi</div>
 
     <div id="exportBanner" class="exportBanner">
-      <div class="exportTitlePill">日プ新世界 投票枠交換メーカー</div>
+      <div class="exportTitlePill">日プ新世界メーカー</div>
     </div>
 
     <div class="exportBody">
@@ -1091,33 +968,21 @@
           <div class="exportRow" id="exportRow2"></div>
         </div>
       </div>
-
-      <div class="exportBottom" id="exportBottom">
-        <div class="exportSlotsText" id="exportSlotsText">空き 0 枠</div>
-
-        <div class="exportMissingRows" id="exportMissingRows">
-          <div class="exportMissingRow" id="exportMissingRow1"></div>
-          <div class="exportMissingRow" id="exportMissingRow2"></div>
-        </div>
-
-        <div class="exportSlotsSentence" id="exportSlotsSentence">0 投票枠 空いています</div>
-      </div>
     </div>
 
     <div class="exportTikTok" id="exportTikTok">TikTok:12agassi</div>
-    <div class="exportHashtag" id="exportHashtag">#日プ新世界投票枠交換メーカー</div>
+    <div class="exportHashtag" id="exportHashtag">#日プ新世界メーカー</div>
   </div>
 </div>
 
-<!-- ポップアップ（毎回表示・2ページ） -->
 <div class="introModal" id="introModal" aria-hidden="true">
   <div class="introBox glass" role="dialog" aria-modal="true" aria-labelledby="introTitle">
     <div class="introHead" id="introTitle">このメーカーについて</div>
 
     <div class="introBody" id="introBody">
       <div class="introPage isActive" data-page="1">
-このメーカーは、SNSにて投票枠を
-交換する際に使用する画像を作成できます。
+このメーカーは、SNSにて使用する
+画像を作成できます。
 
 次のページも確認してね🙇🏻‍♀️
       </div>
@@ -1125,7 +990,6 @@
       <div class="introPage" data-page="2">
 追加した練習生を押すと
 アカウント名を入れれるよ✨
-（既に枠を交換した人のアカウントを入れてね）
 
 【お願い】Tiktokもフォローして下さい🥺
       </div>
@@ -1155,7 +1019,6 @@
   </div>
 </div>
 
-<!-- ===== @入力モーダル（👑つき） ===== -->
 <div class="handleModal" id="handleModal" aria-hidden="true">
   <div class="handleBox" role="dialog" aria-modal="true" aria-label="アカウント入力">
     <div style="font-weight:1000;font-size:14px;margin-bottom:10px;">
@@ -1184,44 +1047,27 @@
 const HEADER_IMAGE_URL = "https://i.imgur.com/nYBRUdd.png";
 const FALLBACK_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 
-/* ★選択できる上限（表示の＋枠用） */
-const MAX_SELECTED = 11;
-
+const HARD_MAX_SELECTED = 8;
 const STORAGE_KEY  = "oshivote_selected_v6";
-const FREE_SLOTS_KEY = "oshivote_free_slots_v1";
-
-/* ★全体（デフォルト）丸枠カラー保存 */
+const SELECT_LIMIT_KEY = "oshivote_select_limit_v1";
 const ACCENT_COLOR_KEY = "oshivote_accent_color_v1";
-
-/* ★追加：枠ごとの色保存 */
 const SLOT_COLORS_KEY = "oshivote_slot_colors_v1";
-let slotColors = loadSlotColors();   // { traineeIndex: "#rrggbb", ... }
-
-/* ★追加：色変更モード（全員/枠別） */
-let perSlotColorMode = false;
-let colorTargetPos = null; // selected配列上の位置（0..selected.length-1）
-
-/* ★@アカウント保存 */
 const HANDLES_KEY = "oshivote_handles_v1";
-let handles = loadHandles();
-
-/* ===== 👑王冠 保存 ===== */
 const CROWNS_KEY = "oshivote_crowns_v1";
-let crowns = loadCrowns(); // { traineeIndex: true/false }
 
-/* 表示切替 */
+let slotColors = loadSlotColors();
+let perSlotColorMode = false;
+let colorTargetPos = null;
+let handles = loadHandles();
+let crowns = loadCrowns();
 let showingCandidates = false;
+let selectedLimit = loadSelectedLimit();
 
-/* ★空き枠は手動 */
-let freeSlots = loadFreeSlots();
-
-/* ★辞退者ID */
 const WITHDRAWN_IDS = new Set([
-  "horieito",      // 練習生：保里瑛都
-  "sakuraihikaru"  // 候補：櫻井輝
+  "horieito",
+  "sakuraihikaru"
 ]);
 
-/* ===== 色系 共通 ===== */
 function normalizeHexColor(c){
   if(!c) return "#0080ff";
   c = String(c).trim();
@@ -1232,7 +1078,6 @@ function normalizeHexColor(c){
   return "#0080ff";
 }
 
-/* 全員共通色（デフォルト） */
 function loadAccentColor(){
   try{
     const v = localStorage.getItem(ACCENT_COLOR_KEY);
@@ -1260,7 +1105,6 @@ function applyAccentColor(color){
   updatePaletteUI(c);
 }
 
-/* 枠別色 */
 function loadSlotColors(){
   try{
     const raw = localStorage.getItem(SLOT_COLORS_KEY);
@@ -1280,7 +1124,6 @@ function setColorForTraineeIndex(ti, color){
   saveSlotColors();
 }
 
-/* ★全員/枠別 切替 */
 function toggleColorMode(){
   perSlotColorMode = !perSlotColorMode;
   colorTargetPos = null;
@@ -1291,8 +1134,6 @@ function toggleColorMode(){
   updatePaletteUI(loadAccentColor());
   drawPicks();
 }
-
-/* ★枠別モードで、色を付けたい枠を選ぶ */
 function setColorTarget(pos){
   if(!perSlotColorMode) return;
   if(pos < 0 || pos >= selected.length) return;
@@ -1302,8 +1143,6 @@ function setColorTarget(pos){
   updatePaletteUI(getColorForTraineeIndex(ti));
   drawPicks();
 }
-
-/* ★カラー変更（枠別なら対象枠、全員なら共通色） */
 function setAccentColor(color){
   const c = normalizeHexColor(color);
 
@@ -1325,7 +1164,6 @@ function setAccentColor(color){
   drawExportPicks();
 }
 
-/* ===== 👑王冠 読み書き ===== */
 function loadCrowns(){
   try{
     const raw = localStorage.getItem(CROWNS_KEY);
@@ -1346,6 +1184,50 @@ function toggleCrown(traineeIndex){
   saveCrowns();
 }
 
+function loadHandles(){
+  try{
+    const raw = localStorage.getItem(HANDLES_KEY);
+    const obj = raw ? JSON.parse(raw) : {};
+    return (obj && typeof obj === "object") ? obj : {};
+  }catch(e){ return {}; }
+}
+function saveHandles(){
+  try{ localStorage.setItem(HANDLES_KEY, JSON.stringify(handles)); }catch(e){}
+}
+
+function loadSelectedLimit(){
+  try{
+    const v = parseInt(localStorage.getItem(SELECT_LIMIT_KEY), 10);
+    if(Number.isInteger(v) && v >= 1 && v <= 8) return v;
+  }catch(e){}
+  return 4;
+}
+function saveSelectedLimit(){
+  try{ localStorage.setItem(SELECT_LIMIT_KEY, String(selectedLimit)); }catch(e){}
+}
+function updateLimitButtons(){
+  document.querySelectorAll(".limitBtn").forEach(b=>{
+    const n = parseInt(b.getAttribute("data-n"), 10);
+    b.classList.toggle("limitBtnActive", n === selectedLimit);
+  });
+}
+function setSelectedLimit(n){
+  if(!Number.isInteger(n) || n < 1 || n > 8) return;
+  selectedLimit = n;
+  saveSelectedLimit();
+
+  if(selected.length > selectedLimit){
+    selected = selected.slice(0, selectedLimit);
+    saveSelected();
+    if(colorTargetPos !== null && colorTargetPos >= selected.length) colorTargetPos = null;
+  }
+
+  updateLimitButtons();
+  drawPicks();
+  drawMembers();
+  drawExportPicks();
+}
+
 function profileUrlById(id){
   if(!id) return "https://produce101.jp/profile/detail/?lang=ja";
   return "https://produce101.jp/profile/detail/?id=" + encodeURIComponent(id) + "&lang=ja";
@@ -1364,19 +1246,6 @@ function withMembersScrollLock(fn){
   requestAnimationFrame(() => { if(wrap) wrap.scrollTop = prev; });
 }
 
-/* ★@読み書き */
-function loadHandles(){
-  try{
-    const raw = localStorage.getItem(HANDLES_KEY);
-    const obj = raw ? JSON.parse(raw) : {};
-    return (obj && typeof obj === "object") ? obj : {};
-  }catch(e){ return {}; }
-}
-function saveHandles(){
-  try{ localStorage.setItem(HANDLES_KEY, JSON.stringify(handles)); }catch(e){}
-}
-
-/* ===== @入力：モーダル版（👑ボタン付き） ===== */
 let handleModalPos = null;
 
 function editHandle(pos){
@@ -1403,7 +1272,6 @@ function editHandle(pos){
     input.setSelectionRange(input.value.length, input.value.length);
   }, 0);
 }
-
 function closeHandleModal(){
   const modal = document.getElementById("handleModal");
   if(!modal) return;
@@ -1411,7 +1279,6 @@ function closeHandleModal(){
   modal.setAttribute("aria-hidden","true");
   handleModalPos = null;
 }
-
 function commitHandleFromModal(){
   if(handleModalPos === null) return;
   if(handleModalPos < 0 || handleModalPos >= selected.length) return;
@@ -1436,7 +1303,6 @@ function commitHandleFromModal(){
   drawExportPicks();
   closeHandleModal();
 }
-
 function toggleCrownFromModal(){
   if(handleModalPos === null) return;
   if(handleModalPos < 0 || handleModalPos >= selected.length) return;
@@ -1451,7 +1317,6 @@ function toggleCrownFromModal(){
   drawExportPicks();
 }
 
-/* モーダルの👑ボタン / Enter / Esc */
 (function bindHandleModalEvents(){
   document.addEventListener("click", (e)=>{
     const modal = document.getElementById("handleModal");
@@ -1480,10 +1345,6 @@ function toggleCrownFromModal(){
   }
 })();
 
-/* ====== 練習生データ（練習生＋候補） ====== */
-/* ※ここ以降は「あなたの完全版」をそのまま：長いので省略せず全部入れてOK
-   ↓↓↓ ここからあなたが貼った traineesOnly / candidates を “そのまま” 続けてください。
-   ただし、この完成版では既に下に全部入れてあります（あなたの貼ったやつと同じ）。 */
 const traineesOnly = [
   {name:"アダム・ナガイ(ADAM)", img:"https://i.imgur.com/6QGzvRx.png", id:"adamnagai"},
   {name:"中丸 晏寿(AJU)", img:"https://i.imgur.com/KiZCKos.png", id:"nakamaruaju"},
@@ -1616,7 +1477,6 @@ const TRAINEES_COUNT = traineesOnly.length;
 
 let selected = loadSelected();
 
-/* バナー画像反映 */
 (function setupBanners(){
   const banner = document.getElementById("banner");
   const exportBanner = document.getElementById("exportBanner");
@@ -1627,7 +1487,6 @@ let selected = loadSelected();
   }
 })();
 
-/* ===== ポップアップ（毎回表示） ===== */
 function openIntro(){
   const m = document.getElementById("introModal");
   if(!m) return;
@@ -1651,7 +1510,6 @@ document.addEventListener("keydown", (e) => {
   if(m && m.classList.contains("show")) closeIntro();
 });
 
-/* ===== ポップアップ2ページ ===== */
 let introPage = 1;
 function showIntroPage(n){
   const pages = Array.from(document.querySelectorAll("#introBody .introPage"));
@@ -1672,7 +1530,6 @@ function showIntroPage(n){
 function introNext(){ showIntroPage(introPage + 1); }
 function introPrev(){ showIntroPage(introPage - 1); }
 
-/* スワイプでページ移動 */
 (function enableIntroSwipe(){
   const box = document.querySelector("#introModal .introBox");
   if(!box) return;
@@ -1706,47 +1563,11 @@ function introPrev(){ showIntroPage(introPage - 1); }
   }, {passive:true});
 })();
 
-/* ===== 空き枠（手動） ===== */
-function loadFreeSlots(){
-  try{
-    const v = parseInt(localStorage.getItem(FREE_SLOTS_KEY), 10);
-    if(Number.isFinite(v) && v >= 0 && v <= 10) return v;
-  }catch(e){}
-  return 0;
-}
-function saveFreeSlots(){
-  try{ localStorage.setItem(FREE_SLOTS_KEY, String(freeSlots)); }catch(e){}
-}
-function updateFreeButtons(){
-  document.querySelectorAll(".freeBtn").forEach(b=>{
-    const n = parseInt(b.getAttribute("data-n"), 10);
-    b.classList.toggle("freeBtnActive", n === freeSlots);
-  });
-}
-function setFreeSlots(n){
-  if(!Number.isInteger(n) || n < 1 || n > 10) return;
-  freeSlots = n;
-  saveFreeSlots();
-  updateFreeButtons();
-  renderFreeSlots();
-  drawExportPicks();
-}
-
-/* ★空き枠表示（自動計算しない） */
-function renderFreeSlots(){
-  const t = `空き ${freeSlots} 枠`;
-  document.getElementById("slotBadge").textContent = t;
-  document.getElementById("exportSlotsText").textContent = t;
-  document.getElementById("exportSlotsSentence").textContent = `${freeSlots} 投票枠 空いています`;
-  renderMissingSlots();
-}
-
-/* ===== 画面：選択枠（＋表示あり） ===== */
 function drawPicks(){
   const row = document.getElementById("picksRow");
   row.innerHTML = "";
 
-  for(let i=0; i<MAX_SELECTED; i++){
+  for(let i=0; i<selectedLimit; i++){
     const slot = document.createElement("div");
 
     if(i < selected.length){
@@ -1777,7 +1598,6 @@ function drawPicks(){
   }
 }
 
-/* ===== 一覧：2列カード＋profile（辞退は選択不可） ===== */
 function drawMembers(){
   const q = (document.getElementById("search").value || "").trim().toLowerCase();
   const membersEl = document.getElementById("members");
@@ -1815,7 +1635,6 @@ function drawMembers(){
   }
 }
 
-/* 練習生/候補切替（スクロール維持） */
 function toggleCandidates(e){
   if(e && e.preventDefault) e.preventDefault();
   const wrap = document.getElementById("membersWrap");
@@ -1834,7 +1653,7 @@ function toggleCandidates(e){
 }
 
 function add(i){
-  if(selected.length >= MAX_SELECTED){ alert(MAX_SELECTED + "人まで！"); return; }
+  if(selected.length >= selectedLimit){ alert(selectedLimit + "人まで！"); return; }
   if(selected.indexOf(i) !== -1) return;
 
   const m = trainees[i];
@@ -1863,9 +1682,6 @@ function resetAll(){
     selected = [];
     saveSelected();
 
-    freeSlots = 0;
-    saveFreeSlots();
-
     handles = {};
     saveHandles();
 
@@ -1884,13 +1700,11 @@ function resetAll(){
 
     drawPicks();
     drawMembers();
-    updateFreeButtons();
+    updateLimitButtons();
     drawExportPicks();
-    renderFreeSlots();
   });
 }
 
-/* 並び替え */
 let reorderMode = false;
 function toggleReorder(){
   reorderMode = !reorderMode;
@@ -1918,11 +1732,10 @@ function loadSelected(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     const arr = raw ? JSON.parse(raw) : [];
-    return Array.isArray(arr) ? arr.filter(n => Number.isInteger(n)) : [];
+    return Array.isArray(arr) ? arr.filter(n => Number.isInteger(n)).slice(0, HARD_MAX_SELECTED) : [];
   }catch(e){ return []; }
 }
 
-/* ======= 保存画像の並びルール（選択人数基準） ======= */
 function exportPlanBySelectedCount(count){
   if(count <= 0) return [0,0];
   if(count <= 4) return [count, 0];
@@ -1930,13 +1743,9 @@ function exportPlanBySelectedCount(count){
   if(count === 6) return [3,3];
   if(count === 7) return [3,4];
   if(count === 8) return [4,4];
-  if(count === 9) return [4,5];
-  if(count === 10) return [5,5];
-  if(count === 11) return [5,6];
-  return [Math.min(5,count), Math.max(0,count-5)];
+  return [Math.min(4,count), Math.max(0,count-4)];
 }
 
-/* “少し小さく” 自動調整 */
 function fitExportAvatar(count){
   const plan = exportPlanBySelectedCount(count);
   const maxCols = Math.max(plan[0], plan[1]);
@@ -1972,42 +1781,6 @@ function setExportVars(avatar, gapX, gapY, nameSize){
   document.documentElement.style.setProperty("--exName", nameSize + "px");
 }
 
-/* 余白調整（基本） */
-function adjustExportLayoutBase(count, r2){
-  let topH = 470;
-  if(r2 === 0){
-    if(count <= 2) topH = 320;
-    else if(count <= 4) topH = 360;
-    else topH = 400;
-  }else{
-    if(count <= 7) topH = 440;
-    else topH = 470;
-  }
-  document.documentElement.style.setProperty("--exTopH", topH + "px");
-
-  let padTop = 16;
-  if(count <= 2) padTop = 0;
-  else if(count <= 4) padTop = 6;
-  else if(count <= 7) padTop = 12;
-  else padTop = 16;
-  document.documentElement.style.setProperty("--exBottomPadTop", padTop + "px");
-
-  document.documentElement.style.setProperty("--exBottomPadBottom", "150px");
-
-  let missTop = 18;
-  if(count <= 2) missTop = 8;
-  else if(count <= 4) missTop = 12;
-  else missTop = 18;
-  document.documentElement.style.setProperty("--exMissTop", missTop + "px");
-
-  document.documentElement.style.setProperty("--exMissSize", "120px");
-  document.documentElement.style.setProperty("--exMissRowMinH", "130px");
-  document.documentElement.style.setProperty("--exMissGapY", "12px");
-
-  document.documentElement.style.setProperty("--exSentence", "20px");
-}
-
-/* ★@の文字サイズを全員同じに揃える */
 function setExportHandleSize(px){
   document.documentElement.style.setProperty("--exHandle", px + "px");
 }
@@ -2038,43 +1811,6 @@ function fitExportHandlesUniform(){
   setExportHandleSize(MIN);
 }
 
-/* ★下の文がガラス枠と絶対被らないように */
-function setExportSentenceSize(px){
-  document.documentElement.style.setProperty("--exSentence", px + "px");
-}
-function preventFooterOverlap(){
-  const sentence = document.getElementById("exportSlotsSentence");
-  const tiktok = document.getElementById("exportTikTok");
-  const hashtag = document.getElementById("exportHashtag");
-  if(!sentence || !tiktok || !hashtag) return;
-
-  const limitTop = Math.min(tiktok.getBoundingClientRect().top, hashtag.getBoundingClientRect().top) - 10;
-
-  let missSize = 120;
-  let rowMinH = 130;
-  let gapY = 12;
-
-  for(let k=0;k<12;k++){
-    const sRect = sentence.getBoundingClientRect();
-    if(sRect.bottom <= limitTop) break;
-
-    missSize = Math.max(82, missSize - 4);
-    rowMinH = Math.max(92, rowMinH - 4);
-    gapY = Math.max(6, gapY - 1);
-
-    document.documentElement.style.setProperty("--exMissSize", missSize + "px");
-    document.documentElement.style.setProperty("--exMissRowMinH", rowMinH + "px");
-    document.documentElement.style.setProperty("--exMissGapY", gapY + "px");
-  }
-
-  for(let size=20; size>=16; size--){
-    setExportSentenceSize(size);
-    const sRect = sentence.getBoundingClientRect();
-    if(sRect.bottom <= limitTop) break;
-  }
-}
-
-/* ===== 保存：上に選択だけ／下に空き枠を2段で必ず出す ===== */
 function drawExportPicks(){
   const row1 = document.getElementById("exportRow1");
   const row2 = document.getElementById("exportRow2");
@@ -2087,14 +1823,15 @@ function drawExportPicks(){
 
   fitExportAvatar(count);
 
+  let gapY = 30;
   const hasAnyHandle = selected.some(idx => (handles[String(idx)] || "").trim());
-  if(r2 > 0 && hasAnyHandle){
-    document.documentElement.style.setProperty("--exGapY", "38px");
-  }
+  if(r2 > 0 && hasAnyHandle) gapY = 38;
+  document.documentElement.style.setProperty("--exGapY", gapY + "px");
 
   for(let i=0;i<r1;i++){
     row1.appendChild(makeExportSlot(trainees[selected[i]], i));
   }
+
   if(r2 > 0){
     row2.style.display = "flex";
     for(let j=0;j<r2;j++){
@@ -2105,20 +1842,13 @@ function drawExportPicks(){
     row2.style.display = "none";
   }
 
-  renderFreeSlots();
-  renderMissingSlots();
-
-  adjustExportLayoutBase(count, r2);
-
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       fitExportHandlesUniform();
-      preventFooterOverlap();
     });
   });
 }
 
-/* ★保存画像：枠別カラー反映 + 👑表示 */
 function makeExportSlot(m, orderIndex){
   const traineeIndex = selected[orderIndex];
   const handle = (handles[String(traineeIndex)] || "").trim();
@@ -2138,42 +1868,6 @@ function makeExportSlot(m, orderIndex){
   return d;
 }
 
-/* 空き枠（freeSlots）を2段に割って描画 */
-function planMissingRows(n){
-  if(n <= 0) return [0,0];
-  const first = Math.floor(n / 2);
-  const second = n - first;
-  return [first, second];
-}
-
-function renderMissingSlots(){
-  const row1 = document.getElementById("exportMissingRow1");
-  const row2 = document.getElementById("exportMissingRow2");
-  if(!row1) return;
-
-  row1.innerHTML = "";
-  if(row2) row2.innerHTML = "";
-
-  const n = Math.max(0, freeSlots);
-  const [a,b] = planMissingRows(n);
-
-  for(let i=0;i<a;i++){
-    const d = document.createElement("div");
-    d.className = "missingIcon";
-    row1.appendChild(d);
-  }
-
-  if(row2){
-    row2.style.display = (b > 0) ? "flex" : "none";
-    for(let i=0;i<b;i++){
-      const d = document.createElement("div");
-      d.className = "missingIcon";
-      row2.appendChild(d);
-    }
-  }
-}
-
-/* 保存 */
 async function saveImage(){
   if(typeof html2canvas === "undefined"){
     alert("画像保存ライブラリの読み込みに失敗しました。");
@@ -2204,7 +1898,6 @@ async function saveImage(){
   }
 }
 
-/* 初期描画 */
 (function initAll(){
   openIntro();
   showIntroPage(1);
@@ -2215,11 +1908,15 @@ async function saveImage(){
   const cm = document.getElementById("colorModeBtn");
   if(cm) cm.textContent = "色変更：全員";
 
-  updateFreeButtons();
+  if(selected.length > selectedLimit){
+    selected = selected.slice(0, selectedLimit);
+    saveSelected();
+  }
+
+  updateLimitButtons();
   drawPicks();
   drawMembers();
   drawExportPicks();
-  renderFreeSlots();
 })();
 </script>
 </body>
