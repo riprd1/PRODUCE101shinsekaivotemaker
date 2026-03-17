@@ -19,15 +19,14 @@
     --blue: var(--accent);
 
     --slot: 86px;
-    --gap:  14px;
+    --gap: 14px;
 
-    --exAvatar: 112px;
-    --exBorder: 8px;
-    --exGapX: 56px;
-    --exGapY: 30px;
-    --exName: 15px;
-
-    --exHandle: 13px;
+    /* 保存画像側：画像を大きめに */
+    --exAvatar: 148px;
+    --exBorder: 9px;
+    --exGapX: 52px;
+    --exGapY: 40px;
+    --exName: 17px;
   }
 
   *{ box-sizing:border-box; }
@@ -46,8 +45,13 @@
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
-  .topbar{ padding: 12px 12px 10px; max-width: 980px; margin: 0 auto; }
-  h1{margin:0;font-size:20px;line-height:1.2}
+  .topbar{
+    padding: 8px 12px;
+    max-width: 980px;
+    margin: 0 auto;
+    min-height: 12px;
+  }
+  h1{ display:none; }
 
   main{max-width:980px;margin:0 auto;padding:12px;}
   .card{
@@ -58,6 +62,7 @@
     overflow: hidden;
   }
 
+  /* ===== 画面表示バナー ===== */
   .banner{
     height: 110px;
     position: relative;
@@ -76,19 +81,25 @@
     background: linear-gradient(to bottom, rgba(255,255,255,.0), rgba(255,255,255,.35));
     pointer-events:none;
   }
-  .bannerTitle{
-    position:relative;
+  .bannerTitle{ display:none; }
+
+  .countBadge{
+    position:absolute;
+    right: 12px;
+    bottom: 12px;
+    background: rgba(0,128,255,.92);
+    color: #fff;
     font-weight: 900;
-    letter-spacing: .06em;
-    padding: 10px 14px;
+    padding: 10px 12px;
     border-radius: 999px;
-    background: rgba(255,255,255,.78);
-    border: 1px solid rgba(255,255,255,.9);
     font-size: 14px;
-    z-index: 2;
+    box-shadow: 0 8px 18px rgba(0,0,0,.14);
+    z-index: 5;
     white-space: nowrap;
+    pointer-events:none;
   }
 
+  /* ===== 上：選択枠 ===== */
   .picksWrap{
     padding: 12px 14px 8px;
     background-image: url("https://i.imgur.com/lFGbXfI.png");
@@ -117,6 +128,7 @@
     margin: 0 auto;
     position:relative;
     z-index: 1;
+    cursor:pointer;
   }
   .avatar img{
     width:100%;
@@ -141,7 +153,7 @@
     font-size: 9px;
     padding: 6px 8px;
     line-height:1;
-    min-width: 2.0em;
+    min-width: 2em;
     text-align:center;
     z-index: 2;
     box-shadow: 0 6px 14px rgba(0,0,0,.18);
@@ -155,6 +167,7 @@
     white-space: nowrap;
     overflow:hidden;
     text-overflow: ellipsis;
+    cursor:pointer;
   }
   .empty .avatar{
     opacity:.16;
@@ -164,6 +177,7 @@
     font-size: 34px;
     font-weight: 900;
     color:#555;
+    cursor:default;
   }
   .empty .rank{display:none;}
   .empty .name{display:none;}
@@ -230,16 +244,23 @@
   }
   .tiktokWrap{ display:flex; flex-direction:column; align-items:center; }
 
-  .limitControl{ display:flex; flex-direction:column; align-items:center; gap:6px; }
-  .limitLabel{ font-size:12px; font-weight:900; color:#666; }
-  .limitBtns{
-    display: grid;
-    grid-template-columns: repeat(4, 44px);
-    gap: 8px;
-    justify-content: center;
+  /* ★人数ボタン */
+  .countControl{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
   }
-  .limitBtnActive{ border-color:#cfe2ff; background:#eef6ff; font-weight: 1000; }
+  .countLabel{ font-size:12px; font-weight:900; color:#666; }
+  .countBtns{
+    display:grid;
+    grid-template-columns: repeat(4, 44px);
+    gap:8px;
+    justify-content:center;
+  }
+  .countBtnActive{ border-color:#cfe2ff; background:#eef6ff; font-weight:1000; }
 
+  /* ★丸枠カラー変更UI */
   .colorControl{
     display:flex;
     flex-direction:column;
@@ -277,6 +298,7 @@
     background:#fff;
   }
 
+  /* ===== 一覧 ===== */
   .listCard{
     margin-top: 12px;
     padding: 10px;
@@ -308,6 +330,7 @@
     background:#fff;
   }
   .search input{ border:none; outline:none; width:100%; font-size: 15px; background:transparent; }
+
   #membersWrap{
     max-height: 52vh;
     overflow:auto;
@@ -407,6 +430,7 @@
     z-index:999;
   }
 
+  /* ===== 保存専用 ===== */
   #exportArea{
     position: fixed;
     left: -10000px;
@@ -440,22 +464,8 @@
     background: linear-gradient(to bottom, rgba(255,255,255,.0), rgba(255,255,255,.35));
     pointer-events:none;
   }
-  .exportTitlePill{
-    position:absolute;
-    left:50%;
-    top: 50%;
-    transform: translate(-50%,-50%);
-    font-weight: 900;
-    letter-spacing: .06em;
-    padding: 12px 20px;
-    border-radius: 999px;
-    background: rgba(255,255,255,.78);
-    border: 1px solid rgba(255,255,255,.92);
-    font-size: 20px;
-    color:#111;
-    white-space: nowrap;
-    z-index: 2;
-  }
+  .exportTitlePill{ display:none; }
+
   .exportCredit{
     position:absolute;
     top: 18px;
@@ -479,32 +489,23 @@
     z-index: 120;
     pointer-events:none;
     white-space: nowrap;
-
-    background: linear-gradient(135deg,
-      rgba(255,255,255,.72),
-      rgba(255,255,255,.42)
-    );
+    background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.42));
     border: 1px solid rgba(255,255,255,.55);
     border-bottom-color: rgba(255,255,255,.32);
     border-right-color: rgba(255,255,255,.32);
-
     backdrop-filter: blur(12px) saturate(155%);
     -webkit-backdrop-filter: blur(12px) saturate(155%);
-
     box-shadow:
       0 14px 30px rgba(0,0,0,.14),
       inset 0 1px 0 rgba(255,255,255,.75),
       inset 0 -1px 0 rgba(255,255,255,.18);
-
     border-radius: 999px;
     padding: 8px 12px;
-
     color: rgba(10,10,10,.88);
     font-weight: 1000;
     text-shadow:
       0 1px 0 rgba(255,255,255,.70),
       0 0 6px rgba(255,255,255,.22);
-
     display:inline-flex;
     align-items:center;
     justify-content:center;
@@ -516,11 +517,7 @@
     position:absolute;
     inset: 1px;
     border-radius: 999px;
-    background: linear-gradient(
-      135deg,
-      rgba(255,255,255,.55),
-      rgba(255,255,255,0) 55%
-    );
+    background: linear-gradient(135deg, rgba(255,255,255,.55), rgba(255,255,255,0) 55%);
     pointer-events:none;
     mix-blend-mode: screen;
     opacity: .55;
@@ -530,20 +527,12 @@
 
   .exportBody{
     height: calc(1040px - 150px);
-    padding: 18px 56px 0;
+    padding: 18px 56px 120px;
     display:flex;
     align-items:center;
     justify-content:center;
   }
 
-  .exportTop{
-    width:100%;
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-  }
   .exportRows{
     width: 100%;
     display:flex;
@@ -560,7 +549,7 @@
   }
 
   .exportSlot{
-    width: calc(var(--exAvatar) + 90px);
+    width: calc(var(--exAvatar) + 100px);
     text-align:center;
     position: relative;
   }
@@ -604,7 +593,7 @@
     pointer-events:none;
   }
   .exportName{
-    margin-top: 16px;
+    margin-top: 18px;
     font-size: var(--exName);
     font-weight: 900;
     line-height: 1.15;
@@ -612,202 +601,6 @@
     overflow:hidden;
     text-overflow: ellipsis;
   }
-  .exportHandle{
-    margin-top: 6px;
-    font-size: var(--exHandle);
-    font-weight: 900;
-    color: rgba(0,0,0,.55);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.1;
-    height: calc(var(--exHandle) * 1.1);
-  }
-
-  .introModal{
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.55);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-    padding: 18px;
-  }
-  .introModal.show{ display:flex; }
-
-  .introBox.glass{
-    width: min(520px, 92vw);
-    position: relative;
-    background: linear-gradient(135deg, rgba(255,255,255,.82), rgba(255,255,255,.48));
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow:
-      0 22px 60px rgba(0,0,0,.28),
-      inset 0 1px 0 rgba(255,255,255,.75),
-      inset 0 -1px 0 rgba(255,255,255,.18);
-    border: 1px solid rgba(255,255,255,.38);
-    backdrop-filter: blur(12px) saturate(155%);
-    -webkit-backdrop-filter: blur(12px) saturate(155%);
-  }
-  .introBox.glass::before{
-    content:"";
-    position:absolute;
-    left:-20%;
-    top:-30%;
-    width:140%;
-    height:60%;
-    background: linear-gradient(135deg, rgba(255,255,255,.65), rgba(255,255,255,0) 55%);
-    transform: rotate(-6deg);
-    pointer-events:none;
-    opacity:.55;
-  }
-  .introBox.glass::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background-image: radial-gradient(rgba(0,0,0,.06) 1px, transparent 1px);
-    background-size: 3px 3px;
-    opacity:.12;
-    mix-blend-mode: overlay;
-    pointer-events:none;
-  }
-  .introHead{
-    padding: 14px 16px 10px;
-    font-weight: 1000;
-    font-size: 16px;
-    border-bottom: 1px solid rgba(0,0,0,.06);
-    background: rgba(255,255,255,.55);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-  }
-  .introBody{
-    position: relative;
-    padding: 0;
-    overflow: hidden;
-    min-height: 190px;
-    white-space: normal;
-  }
-  .introPage{
-    white-space: pre-line;
-    font-size: 14px;
-    line-height: 1.7;
-    font-weight: 800;
-    color: #111;
-
-    position: absolute;
-    left: 16px;
-    right: 16px;
-    top: 16px;
-    bottom: 16px;
-
-    opacity: 0;
-    transform: translateX(14px);
-    transition: opacity .28s ease, transform .32s cubic-bezier(.2,.8,.2,1);
-    pointer-events: none;
-  }
-  .introPage.isActive{
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
-  }
-
-  .introFooter{
-    display:flex;
-    align-items:center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 12px 12px 14px;
-    border-top: 1px solid rgba(0,0,0,.06);
-    background: rgba(255,255,255,.55);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    position: relative;
-    z-index: 3;
-  }
-
-  .supportBtn{
-    text-decoration:none;
-    font-weight:1000;
-    font-size: 13px;
-    padding: 10px 12px;
-    border-radius: 999px;
-    color: rgba(10,10,10,.88);
-    background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.40));
-    border: 1px solid rgba(255,255,255,.45);
-    box-shadow:
-      0 12px 26px rgba(0,0,0,.16),
-      inset 0 1px 0 rgba(255,255,255,.70);
-    backdrop-filter: blur(12px) saturate(155%);
-    -webkit-backdrop-filter: blur(12px) saturate(155%);
-    white-space: nowrap;
-  }
-  .supportBtn:active{ transform: scale(.98); }
-
-  @keyframes pulseGlow{
-    0%   { box-shadow: 0 12px 26px rgba(0,0,0,.16), 0 0 0 0 rgba(0,128,255,.22), inset 0 1px 0 rgba(255,255,255,.70); }
-    60%  { box-shadow: 0 12px 26px rgba(0,0,0,.16), 0 0 0 10px rgba(0,128,255,0), inset 0 1px 0 rgba(255,255,255,.70); }
-    100% { box-shadow: 0 12px 26px rgba(0,0,0,.16), 0 0 0 0 rgba(0,128,255,0), inset 0 1px 0 rgba(255,255,255,.70); }
-  }
-  .pulse{ animation: pulseGlow 2.2s ease-in-out infinite; }
-
-  .pager{
-    display:flex;
-    align-items:center;
-    gap: 10px;
-    user-select:none;
-  }
-  .pagerBtn{
-    padding: 8px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.45);
-    background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.40));
-    box-shadow: 0 10px 22px rgba(0,0,0,.12);
-    backdrop-filter: blur(12px) saturate(155%);
-    -webkit-backdrop-filter: blur(12px) saturate(155%);
-    font-weight: 1000;
-  }
-  .pagerBtn:active{ transform: scale(.98); }
-
-  .pagerCenter{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    min-width: 56px;
-  }
-  .pagerText{
-    font-weight: 1000;
-    font-size: 12px;
-    color: rgba(0,0,0,.70);
-    line-height: 1.1;
-  }
-  .dots{
-    margin-top: 4px;
-    display:flex;
-    gap: 6px;
-  }
-  .dot{
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    background: rgba(0,0,0,.22);
-  }
-  .dot.isOn{ background: rgba(0,0,0,.55); }
-
-  .introCloseBtn{
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,.45);
-    background: linear-gradient(135deg, rgba(255,255,255,.72), rgba(255,255,255,.40));
-    box-shadow:
-      0 10px 24px rgba(0,0,0,.16),
-      inset 0 1px 0 rgba(255,255,255,.70);
-    backdrop-filter: blur(12px) saturate(155%);
-    -webkit-backdrop-filter: blur(12px) saturate(155%);
-    font-weight: 1000;
-  }
-  .introCloseBtn:active{ transform: scale(.98); }
 
   .crownBadge{
     position:absolute;
@@ -823,72 +616,24 @@
     position:absolute;
     right:-12px;
     top:-22px;
-    font-size:44px;
+    font-size:46px;
     transform: rotate(12deg);
     filter: drop-shadow(0 10px 16px rgba(0,0,0,.18));
     pointer-events:none;
     z-index: 5;
-  }
-
-  .handleModal{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.55);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:3000;
-    padding: 18px;
-  }
-  .handleModal.show{ display:flex; }
-
-  .handleBox{
-    width:min(520px,92vw);
-    background:rgba(255,255,255,.92);
-    border-radius:18px;
-    padding:18px;
-    border: 1px solid rgba(0,0,0,.08);
-    box-shadow: 0 18px 50px rgba(0,0,0,.25);
-  }
-  .handleRow{
-    display:flex;
-    gap:10px;
-    align-items:center;
-  }
-  .handleInput{
-    flex:1;
-    font-size:16px;
-    padding:10px;
-    border-radius:12px;
-    border:1px solid #ddd;
-    background:#fff;
-  }
-  .crownBtn{
-    width:54px;
-    height:46px;
-    font-size:22px;
-    border-radius:12px;
-    border:1px solid #ddd;
-    background:#fff;
-  }
-  .crownBtn.on{
-    background:#fff6dc;
-    border-color:#ffd37a;
   }
 </style>
 </head>
 
 <body>
 <header>
-  <div class="topbar">
-    <h1>日プ新世界メーカー</h1>
-  </div>
+  <div class="topbar"></div>
 </header>
 
 <main>
   <div class="card" id="picksCard">
     <div id="banner" class="banner">
-      <div class="bannerTitle">日プ新世界メーカー</div>
+      <div class="countBadge" id="countBadge">1人選択</div>
     </div>
 
     <div class="picksWrap" id="picksWrap">
@@ -900,6 +645,20 @@
       <button type="button" onclick="undo()">1人戻す</button>
       <button class="danger" type="button" onclick="resetAll()">リセット</button>
       <button class="mode" type="button" id="reorderBtn" onclick="toggleReorder()">並び替えモード：OFF</button>
+
+      <div class="countControl">
+        <div class="countLabel">人数</div>
+        <div class="countBtns" id="countBtns">
+          <button type="button" class="mode countBtn" data-n="1" onclick="setTargetCount(1)">1</button>
+          <button type="button" class="mode countBtn" data-n="2" onclick="setTargetCount(2)">2</button>
+          <button type="button" class="mode countBtn" data-n="3" onclick="setTargetCount(3)">3</button>
+          <button type="button" class="mode countBtn" data-n="4" onclick="setTargetCount(4)">4</button>
+          <button type="button" class="mode countBtn" data-n="5" onclick="setTargetCount(5)">5</button>
+          <button type="button" class="mode countBtn" data-n="6" onclick="setTargetCount(6)">6</button>
+          <button type="button" class="mode countBtn" data-n="7" onclick="setTargetCount(7)">7</button>
+          <button type="button" class="mode countBtn" data-n="8" onclick="setTargetCount(8)">8</button>
+        </div>
+      </div>
 
       <div class="colorControl">
         <button class="mode" id="colorModeBtn" type="button" onclick="toggleColorMode()">色変更：全員</button>
@@ -918,20 +677,6 @@
       <div class="tiktokWrap">
         <a class="tiktokBtn" href="https://www.tiktok.com/@12agassi" target="_blank" rel="noopener">TikTokフォローお願い🥹</a>
         <div class="tiktokHint">↑ここをクリック</div>
-      </div>
-
-      <div class="limitControl">
-        <div class="limitLabel">人数</div>
-        <div class="limitBtns" id="limitBtns">
-          <button type="button" class="mode limitBtn" data-n="1" onclick="setSelectedLimit(1)">1</button>
-          <button type="button" class="mode limitBtn" data-n="2" onclick="setSelectedLimit(2)">2</button>
-          <button type="button" class="mode limitBtn" data-n="3" onclick="setSelectedLimit(3)">3</button>
-          <button type="button" class="mode limitBtn" data-n="4" onclick="setSelectedLimit(4)">4</button>
-          <button type="button" class="mode limitBtn" data-n="5" onclick="setSelectedLimit(5)">5</button>
-          <button type="button" class="mode limitBtn" data-n="6" onclick="setSelectedLimit(6)">6</button>
-          <button type="button" class="mode limitBtn" data-n="7" onclick="setSelectedLimit(7)">7</button>
-          <button type="button" class="mode limitBtn" data-n="8" onclick="setSelectedLimit(8)">8</button>
-        </div>
       </div>
     </div>
   </div>
@@ -957,87 +702,17 @@
   <div id="exportInner">
     <div class="exportCredit">created by @12agassi</div>
 
-    <div id="exportBanner" class="exportBanner">
-      <div class="exportTitlePill">日プ新世界メーカー</div>
-    </div>
+    <div id="exportBanner" class="exportBanner"></div>
 
     <div class="exportBody">
-      <div class="exportTop">
-        <div class="exportRows">
-          <div class="exportRow" id="exportRow1"></div>
-          <div class="exportRow" id="exportRow2"></div>
-        </div>
+      <div class="exportRows">
+        <div class="exportRow" id="exportRow1"></div>
+        <div class="exportRow" id="exportRow2"></div>
       </div>
     </div>
 
     <div class="exportTikTok" id="exportTikTok">TikTok:12agassi</div>
     <div class="exportHashtag" id="exportHashtag">#日プ新世界メーカー</div>
-  </div>
-</div>
-
-<div class="introModal" id="introModal" aria-hidden="true">
-  <div class="introBox glass" role="dialog" aria-modal="true" aria-labelledby="introTitle">
-    <div class="introHead" id="introTitle">このメーカーについて</div>
-
-    <div class="introBody" id="introBody">
-      <div class="introPage isActive" data-page="1">
-このメーカーは、SNSにて使用する
-画像を作成できます。
-
-次のページも確認してね🙇🏻‍♀️
-      </div>
-
-      <div class="introPage" data-page="2">
-追加した練習生を押すと
-アカウント名を入れれるよ✨
-
-【お願い】Tiktokもフォローして下さい🥺
-      </div>
-    </div>
-
-    <div class="introFooter">
-      <a class="supportBtn pulse" href="https://www.tiktok.com/@12agassi" target="_blank" rel="noopener">
-        あがっしを応援する
-      </a>
-
-      <div class="pager" aria-label="ページ切り替え">
-        <button class="pagerBtn" type="button" onclick="introPrev()">◀︎</button>
-
-        <div class="pagerCenter">
-          <div class="pagerText" id="pagerText">1/2</div>
-          <div class="dots" id="pagerDots" aria-hidden="true">
-            <span class="dot isOn"></span>
-            <span class="dot"></span>
-          </div>
-        </div>
-
-        <button class="pagerBtn" type="button" onclick="introNext()">▶︎</button>
-      </div>
-
-      <button class="introCloseBtn" type="button" onclick="closeIntro()">閉じる</button>
-    </div>
-  </div>
-</div>
-
-<div class="handleModal" id="handleModal" aria-hidden="true">
-  <div class="handleBox" role="dialog" aria-modal="true" aria-label="アカウント入力">
-    <div style="font-weight:1000;font-size:14px;margin-bottom:10px;">
-      アカウント名を入力してね（例：@xxxx）
-    </div>
-
-    <div class="handleRow">
-      <input class="handleInput" id="handleInput" type="text" inputmode="text" placeholder="@xxxx" />
-      <button class="crownBtn" id="crownBtn" type="button" title="王冠">👑</button>
-    </div>
-
-    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
-      <button class="mode" type="button" onclick="closeHandleModal()">キャンセル</button>
-      <button class="primary" type="button" onclick="commitHandleFromModal()">OK</button>
-    </div>
-
-    <div style="margin-top:10px;font-size:12px;color:#666;font-weight:900;">
-      貴方の最推しには👑ボタンを押してね💘
-    </div>
   </div>
 </div>
 
@@ -1047,21 +722,19 @@
 const HEADER_IMAGE_URL = "https://i.imgur.com/nYBRUdd.png";
 const FALLBACK_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 
-const HARD_MAX_SELECTED = 8;
-const STORAGE_KEY  = "oshivote_selected_v6";
-const SELECT_LIMIT_KEY = "oshivote_select_limit_v1";
+const MAX_TARGET = 8;
+const TARGET_COUNT_KEY = "oshivote_target_count_v1";
+const STORAGE_KEY  = "oshivote_selected_v7";
 const ACCENT_COLOR_KEY = "oshivote_accent_color_v1";
 const SLOT_COLORS_KEY = "oshivote_slot_colors_v1";
-const HANDLES_KEY = "oshivote_handles_v1";
 const CROWNS_KEY = "oshivote_crowns_v1";
 
 let slotColors = loadSlotColors();
 let perSlotColorMode = false;
 let colorTargetPos = null;
-let handles = loadHandles();
 let crowns = loadCrowns();
 let showingCandidates = false;
-let selectedLimit = loadSelectedLimit();
+let targetCount = loadTargetCount();
 
 const WITHDRAWN_IDS = new Set([
   "horieito",
@@ -1091,8 +764,7 @@ function saveAccentColor(color){
 }
 function updatePaletteUI(color){
   const c = normalizeHexColor(color);
-  const swatches = document.querySelectorAll(".colorSwatch");
-  swatches.forEach(el=>{
+  document.querySelectorAll(".colorSwatch").forEach(el=>{
     const d = normalizeHexColor(el.getAttribute("data-color"));
     el.classList.toggle("active", d === c);
   });
@@ -1127,10 +799,8 @@ function setColorForTraineeIndex(ti, color){
 function toggleColorMode(){
   perSlotColorMode = !perSlotColorMode;
   colorTargetPos = null;
-
   const btn = document.getElementById("colorModeBtn");
   if(btn) btn.textContent = "色変更：" + (perSlotColorMode ? "枠別" : "全員");
-
   updatePaletteUI(loadAccentColor());
   drawPicks();
 }
@@ -1138,7 +808,6 @@ function setColorTarget(pos){
   if(!perSlotColorMode) return;
   if(pos < 0 || pos >= selected.length) return;
   colorTargetPos = pos;
-
   const ti = selected[pos];
   updatePaletteUI(getColorForTraineeIndex(ti));
   drawPicks();
@@ -1184,50 +853,6 @@ function toggleCrown(traineeIndex){
   saveCrowns();
 }
 
-function loadHandles(){
-  try{
-    const raw = localStorage.getItem(HANDLES_KEY);
-    const obj = raw ? JSON.parse(raw) : {};
-    return (obj && typeof obj === "object") ? obj : {};
-  }catch(e){ return {}; }
-}
-function saveHandles(){
-  try{ localStorage.setItem(HANDLES_KEY, JSON.stringify(handles)); }catch(e){}
-}
-
-function loadSelectedLimit(){
-  try{
-    const v = parseInt(localStorage.getItem(SELECT_LIMIT_KEY), 10);
-    if(Number.isInteger(v) && v >= 1 && v <= 8) return v;
-  }catch(e){}
-  return 4;
-}
-function saveSelectedLimit(){
-  try{ localStorage.setItem(SELECT_LIMIT_KEY, String(selectedLimit)); }catch(e){}
-}
-function updateLimitButtons(){
-  document.querySelectorAll(".limitBtn").forEach(b=>{
-    const n = parseInt(b.getAttribute("data-n"), 10);
-    b.classList.toggle("limitBtnActive", n === selectedLimit);
-  });
-}
-function setSelectedLimit(n){
-  if(!Number.isInteger(n) || n < 1 || n > 8) return;
-  selectedLimit = n;
-  saveSelectedLimit();
-
-  if(selected.length > selectedLimit){
-    selected = selected.slice(0, selectedLimit);
-    saveSelected();
-    if(colorTargetPos !== null && colorTargetPos >= selected.length) colorTargetPos = null;
-  }
-
-  updateLimitButtons();
-  drawPicks();
-  drawMembers();
-  drawExportPicks();
-}
-
 function profileUrlById(id){
   if(!id) return "https://produce101.jp/profile/detail/?lang=ja";
   return "https://produce101.jp/profile/detail/?id=" + encodeURIComponent(id) + "&lang=ja";
@@ -1246,105 +871,40 @@ function withMembersScrollLock(fn){
   requestAnimationFrame(() => { if(wrap) wrap.scrollTop = prev; });
 }
 
-let handleModalPos = null;
-
-function editHandle(pos){
-  if(pos < 0 || pos >= selected.length) return;
-
-  handleModalPos = pos;
-
-  const traineeIndex = selected[pos];
-  const current = (handles[String(traineeIndex)] || "").trim();
-
-  const modal = document.getElementById("handleModal");
-  const input = document.getElementById("handleInput");
-  const crownBtn = document.getElementById("crownBtn");
-  if(!modal || !input || !crownBtn) return;
-
-  input.value = current ? current : "@";
-  crownBtn.classList.toggle("on", isCrowned(traineeIndex));
-
-  modal.classList.add("show");
-  modal.setAttribute("aria-hidden","false");
-
-  setTimeout(() => {
-    input.focus();
-    input.setSelectionRange(input.value.length, input.value.length);
-  }, 0);
+function loadTargetCount(){
+  try{
+    const v = parseInt(localStorage.getItem(TARGET_COUNT_KEY), 10);
+    if(Number.isFinite(v) && v >= 1 && v <= 8) return v;
+  }catch(e){}
+  return 1;
 }
-function closeHandleModal(){
-  const modal = document.getElementById("handleModal");
-  if(!modal) return;
-  modal.classList.remove("show");
-  modal.setAttribute("aria-hidden","true");
-  handleModalPos = null;
+function saveTargetCount(){
+  try{ localStorage.setItem(TARGET_COUNT_KEY, String(targetCount)); }catch(e){}
 }
-function commitHandleFromModal(){
-  if(handleModalPos === null) return;
-  if(handleModalPos < 0 || handleModalPos >= selected.length) return;
-
-  const traineeIndex = selected[handleModalPos];
-  const input = document.getElementById("handleInput");
-  if(!input) return;
-
-  let next = String(input.value || "").trim();
-
-  if(!next || next === "@"){
-    delete handles[String(traineeIndex)];
-    saveHandles();
-    drawExportPicks();
-    closeHandleModal();
-    return;
+function updateCountButtons(){
+  document.querySelectorAll(".countBtn").forEach(b=>{
+    const n = parseInt(b.getAttribute("data-n"), 10);
+    b.classList.toggle("countBtnActive", n === targetCount);
+  });
+  const badge = document.getElementById("countBadge");
+  if(badge) badge.textContent = `${targetCount}人選択`;
+}
+function setTargetCount(n){
+  if(!Number.isInteger(n) || n < 1 || n > 8) return;
+  targetCount = n;
+  saveTargetCount();
+  if(selected.length > targetCount){
+    selected = selected.slice(0, targetCount);
+    saveSelected();
   }
-  if(next[0] !== "@") next = "@" + next;
-
-  handles[String(traineeIndex)] = next;
-  saveHandles();
-  drawExportPicks();
-  closeHandleModal();
-}
-function toggleCrownFromModal(){
-  if(handleModalPos === null) return;
-  if(handleModalPos < 0 || handleModalPos >= selected.length) return;
-
-  const traineeIndex = selected[handleModalPos];
-  toggleCrown(traineeIndex);
-
-  const crownBtn = document.getElementById("crownBtn");
-  if(crownBtn) crownBtn.classList.toggle("on", isCrowned(traineeIndex));
-
+  if(colorTargetPos !== null && colorTargetPos >= selected.length) colorTargetPos = null;
+  updateCountButtons();
   drawPicks();
+  drawMembers();
   drawExportPicks();
 }
 
-(function bindHandleModalEvents(){
-  document.addEventListener("click", (e)=>{
-    const modal = document.getElementById("handleModal");
-    if(!modal || !modal.classList.contains("show")) return;
-    if(e.target === modal) closeHandleModal();
-  });
-  document.addEventListener("keydown", (e)=>{
-    const modal = document.getElementById("handleModal");
-    if(!modal || !modal.classList.contains("show")) return;
-
-    if(e.key === "Escape"){
-      e.preventDefault();
-      closeHandleModal();
-    }
-    if(e.key === "Enter"){
-      e.preventDefault();
-      commitHandleFromModal();
-    }
-  });
-  const crownBtn = document.getElementById("crownBtn");
-  if(crownBtn){
-    crownBtn.addEventListener("click", (e)=>{
-      e.preventDefault();
-      toggleCrownFromModal();
-    });
-  }
-})();
-
+/* ===== 練習生データ ===== */
 const traineesOnly = [
   {name:"アダム・ナガイ(ADAM)", img:"https://i.imgur.com/6QGzvRx.png", id:"adamnagai"},
   {name:"中丸 晏寿(AJU)", img:"https://i.imgur.com/KiZCKos.png", id:"nakamaruaju"},
@@ -1477,6 +1037,7 @@ const TRAINEES_COUNT = traineesOnly.length;
 
 let selected = loadSelected();
 
+/* バナー画像反映 */
 (function setupBanners(){
   const banner = document.getElementById("banner");
   const exportBanner = document.getElementById("exportBanner");
@@ -1487,87 +1048,20 @@ let selected = loadSelected();
   }
 })();
 
-function openIntro(){
-  const m = document.getElementById("introModal");
-  if(!m) return;
-  m.classList.add("show");
-  m.setAttribute("aria-hidden","false");
+/* ===== 画面：選択枠 ===== */
+function toggleCrownFromPick(pos){
+  if(pos < 0 || pos >= selected.length) return;
+  const traineeIndex = selected[pos];
+  toggleCrown(traineeIndex);
+  drawPicks();
+  drawExportPicks();
 }
-function closeIntro(){
-  const m = document.getElementById("introModal");
-  if(!m) return;
-  m.classList.remove("show");
-  m.setAttribute("aria-hidden","true");
-}
-document.addEventListener("click", (e) => {
-  const m = document.getElementById("introModal");
-  if(!m || !m.classList.contains("show")) return;
-  if(e.target === m) closeIntro();
-});
-document.addEventListener("keydown", (e) => {
-  if(e.key !== "Escape") return;
-  const m = document.getElementById("introModal");
-  if(m && m.classList.contains("show")) closeIntro();
-});
-
-let introPage = 1;
-function showIntroPage(n){
-  const pages = Array.from(document.querySelectorAll("#introBody .introPage"));
-  const max = pages.length || 2;
-  introPage = Math.max(1, Math.min(max, n));
-
-  pages.forEach(p=>{
-    const pn = parseInt(p.getAttribute("data-page"), 10);
-    p.classList.toggle("isActive", pn === introPage);
-  });
-
-  const pagerText = document.getElementById("pagerText");
-  if(pagerText) pagerText.textContent = `${introPage}/${max}`;
-
-  const dots = Array.from(document.querySelectorAll("#pagerDots .dot"));
-  dots.forEach((d, i)=> d.classList.toggle("isOn", (i+1) === introPage));
-}
-function introNext(){ showIntroPage(introPage + 1); }
-function introPrev(){ showIntroPage(introPage - 1); }
-
-(function enableIntroSwipe(){
-  const box = document.querySelector("#introModal .introBox");
-  if(!box) return;
-
-  let startX = 0;
-  let startY = 0;
-  let active = false;
-
-  box.addEventListener("touchstart", (e)=>{
-    if(!e.touches || e.touches.length !== 1) return;
-    active = true;
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-  }, {passive:true});
-
-  box.addEventListener("touchend", (e)=>{
-    if(!active) return;
-    active = false;
-
-    const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
-    if(!t) return;
-
-    const dx = t.clientX - startX;
-    const dy = t.clientY - startY;
-
-    if(Math.abs(dy) > Math.abs(dx)) return;
-
-    const TH = 42;
-    if(dx <= -TH) introNext();
-    if(dx >=  TH) introPrev();
-  }, {passive:true});
-})();
 
 function drawPicks(){
   const row = document.getElementById("picksRow");
   row.innerHTML = "";
 
-  for(let i=0; i<selectedLimit; i++){
+  for(let i=0; i<targetCount; i++){
     const slot = document.createElement("div");
 
     if(i < selected.length){
@@ -1579,12 +1073,12 @@ function drawPicks(){
       slot.className = "slot" + (isTarget ? " colorTarget" : "");
       slot.innerHTML = `
         <div class="avatar" style="border-color:${c}"
-             onclick="${perSlotColorMode ? `setColorTarget(${i})` : `editHandle(${i})`}">
+             onclick="${perSlotColorMode ? `setColorTarget(${i})` : `toggleCrownFromPick(${i})`}">
           <img src="${m.img || FALLBACK_IMG}" alt="">
           ${isCrowned(ti) ? `<div class="crownBadge">👑</div>` : ``}
           <div class="rank" style="background:${c}">${i + 1}</div>
         </div>
-        <div class="name" onclick="editHandle(${i})">${displayName(m.name)}</div>
+        <div class="name" onclick="${perSlotColorMode ? `setColorTarget(${i})` : `toggleCrownFromPick(${i})`}">${displayName(m.name)}</div>
         <div class="reorder">
           <button type="button" onclick="event.stopPropagation(); moveLeft(${i})">←</button>
           <button type="button" onclick="event.stopPropagation(); moveRight(${i})">→</button>
@@ -1598,6 +1092,7 @@ function drawPicks(){
   }
 }
 
+/* ===== 一覧 ===== */
 function drawMembers(){
   const q = (document.getElementById("search").value || "").trim().toLowerCase();
   const membersEl = document.getElementById("members");
@@ -1653,7 +1148,7 @@ function toggleCandidates(e){
 }
 
 function add(i){
-  if(selected.length >= selectedLimit){ alert(selectedLimit + "人まで！"); return; }
+  if(selected.length >= targetCount){ alert(targetCount + "人まで！"); return; }
   if(selected.indexOf(i) !== -1) return;
 
   const m = trainees[i];
@@ -1682,9 +1177,6 @@ function resetAll(){
     selected = [];
     saveSelected();
 
-    handles = {};
-    saveHandles();
-
     crowns = {};
     saveCrowns();
 
@@ -1700,11 +1192,11 @@ function resetAll(){
 
     drawPicks();
     drawMembers();
-    updateLimitButtons();
     drawExportPicks();
   });
 }
 
+/* 並び替え */
 let reorderMode = false;
 function toggleReorder(){
   reorderMode = !reorderMode;
@@ -1718,7 +1210,6 @@ function swap(a,b){
     saveSelected();
     if(colorTargetPos === a) colorTargetPos = b;
     else if(colorTargetPos === b) colorTargetPos = a;
-
     drawPicks(); drawMembers(); drawExportPicks();
   });
 }
@@ -1732,10 +1223,11 @@ function loadSelected(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     const arr = raw ? JSON.parse(raw) : [];
-    return Array.isArray(arr) ? arr.filter(n => Number.isInteger(n)).slice(0, HARD_MAX_SELECTED) : [];
+    return Array.isArray(arr) ? arr.filter(n => Number.isInteger(n)) : [];
   }catch(e){ return []; }
 }
 
+/* ===== 保存画像並び ===== */
 function exportPlanBySelectedCount(count){
   if(count <= 0) return [0,0];
   if(count <= 4) return [count, 0];
@@ -1749,14 +1241,14 @@ function exportPlanBySelectedCount(count){
 function fitExportAvatar(count){
   const plan = exportPlanBySelectedCount(count);
   const maxCols = Math.max(plan[0], plan[1]);
-
   const availableW = 1004 - 56*2;
-  const minAvatar = 96;
-  let avatar = 112;
-  let gapX = 56;
+
+  let avatar = 148;
+  let gapX = 52;
+  const minAvatar = 124;
 
   if(maxCols <= 1){
-    setExportVars(avatar, gapX, 30, 15);
+    setExportVars(avatar, gapX, 42, 17);
     return;
   }
 
@@ -1765,50 +1257,20 @@ function fitExportAvatar(count){
     if(needW <= availableW) break;
     if(avatar <= minAvatar) break;
     avatar -= 2;
-    gapX = Math.max(32, gapX - 2);
+    gapX = Math.max(28, gapX - 2);
   }
 
-  const border = Math.max(6, Math.round(avatar/14));
+  const border = Math.max(7, Math.round(avatar/16));
   document.documentElement.style.setProperty("--exBorder", border + "px");
 
-  const name = Math.max(13, Math.min(15, Math.round(avatar/7.5)));
-  setExportVars(avatar, gapX, 28, name);
+  const name = Math.max(14, Math.min(17, Math.round(avatar/8)));
+  setExportVars(avatar, gapX, 40, name);
 }
 function setExportVars(avatar, gapX, gapY, nameSize){
   document.documentElement.style.setProperty("--exAvatar", avatar + "px");
   document.documentElement.style.setProperty("--exGapX", gapX + "px");
   document.documentElement.style.setProperty("--exGapY", gapY + "px");
   document.documentElement.style.setProperty("--exName", nameSize + "px");
-}
-
-function setExportHandleSize(px){
-  document.documentElement.style.setProperty("--exHandle", px + "px");
-}
-function fitExportHandlesUniform(){
-  const els = Array.from(document.querySelectorAll("#exportInner .exportHandle"));
-  if(!els.length) return;
-
-  const MAX = 13;
-  const MIN = 10;
-
-  setExportHandleSize(MAX);
-
-  const targets = els.filter(el => {
-    const t = (el.textContent || "").trim();
-    return t && t !== "";
-  });
-
-  if(!targets.length){
-    setExportHandleSize(MAX);
-    return;
-  }
-
-  for(let size = MAX; size >= MIN; size--){
-    setExportHandleSize(size);
-    const ok = targets.every(el => el.scrollWidth <= el.clientWidth);
-    if(ok) return;
-  }
-  setExportHandleSize(MIN);
 }
 
 function drawExportPicks(){
@@ -1821,12 +1283,7 @@ function drawExportPicks(){
   const plan = exportPlanBySelectedCount(count);
   const r1 = plan[0], r2 = plan[1];
 
-  fitExportAvatar(count);
-
-  let gapY = 30;
-  const hasAnyHandle = selected.some(idx => (handles[String(idx)] || "").trim());
-  if(r2 > 0 && hasAnyHandle) gapY = 38;
-  document.documentElement.style.setProperty("--exGapY", gapY + "px");
+  fitExportAvatar(Math.max(count, 1));
 
   for(let i=0;i<r1;i++){
     row1.appendChild(makeExportSlot(trainees[selected[i]], i));
@@ -1841,17 +1298,10 @@ function drawExportPicks(){
   }else{
     row2.style.display = "none";
   }
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      fitExportHandlesUniform();
-    });
-  });
 }
 
 function makeExportSlot(m, orderIndex){
   const traineeIndex = selected[orderIndex];
-  const handle = (handles[String(traineeIndex)] || "").trim();
   const c = getColorForTraineeIndex(traineeIndex);
 
   const d = document.createElement("div");
@@ -1863,7 +1313,6 @@ function makeExportSlot(m, orderIndex){
       <div class="exportRank" style="background:${c}">${orderIndex + 1}</div>
     </div>
     <div class="exportName">${displayName(m && m.name ? m.name : "")}</div>
-    <div class="exportHandle">${handle ? handle : "&nbsp;"}</div>
   `;
   return d;
 }
@@ -1871,6 +1320,11 @@ function makeExportSlot(m, orderIndex){
 async function saveImage(){
   if(typeof html2canvas === "undefined"){
     alert("画像保存ライブラリの読み込みに失敗しました。");
+    return;
+  }
+
+  if(selected.length === 0){
+    alert("先に練習生を選んでね！");
     return;
   }
 
@@ -1888,7 +1342,7 @@ async function saveImage(){
       scale: 5
     });
     const link = document.createElement("a");
-    link.download = "oshivote_1004x1040.png";
+    link.download = "nipu_maker_1004x1040.png";
     link.href = canvas.toDataURL("image/png");
     link.click();
   }catch(e){
@@ -1898,22 +1352,15 @@ async function saveImage(){
   }
 }
 
+/* 初期描画 */
 (function initAll(){
-  openIntro();
-  showIntroPage(1);
-
   const savedAccent = loadAccentColor();
   applyAccentColor(savedAccent);
 
   const cm = document.getElementById("colorModeBtn");
   if(cm) cm.textContent = "色変更：全員";
 
-  if(selected.length > selectedLimit){
-    selected = selected.slice(0, selectedLimit);
-    saveSelected();
-  }
-
-  updateLimitButtons();
+  updateCountButtons();
   drawPicks();
   drawMembers();
   drawExportPicks();
