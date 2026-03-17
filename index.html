@@ -21,7 +21,7 @@
     --slot: 86px;
     --gap: 14px;
 
-    --exAvatar: 138px;
+    --exAvatar: 148px;
     --exBorder: 8px;
     --exGapX: 56px;
     --exGapY: 34px;
@@ -35,6 +35,22 @@
     background:var(--bg);
     color:var(--text);
   }
+
+  header{
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar{
+    padding: 8px 12px;
+    max-width: 980px;
+    margin: 0 auto;
+    min-height: 16px;
+  }
+  h1{ display:none; }
 
   main{max-width:980px;margin:0 auto;padding:12px;}
   .card{
@@ -64,6 +80,8 @@
     background: linear-gradient(to bottom, rgba(255,255,255,.0), rgba(255,255,255,.35));
     pointer-events:none;
   }
+  .bannerTitle{ display:none; }
+
   .countBadge{
     position:absolute;
     right: 12px;
@@ -104,12 +122,11 @@
     border-radius:999px;
     border: 5px solid var(--blue);
     background:#fff;
-    overflow: visible;
+    overflow: hidden;
     box-shadow: 0 8px 18px rgba(0,0,0,.10);
     margin: 0 auto;
     position:relative;
     z-index: 1;
-    cursor:pointer;
   }
   .avatar img{
     width:100%;
@@ -157,7 +174,6 @@
     font-size: 34px;
     font-weight: 900;
     color:#555;
-    cursor:default;
   }
   .empty .rank{display:none;}
   .empty .name{display:none;}
@@ -444,6 +460,8 @@
     background: linear-gradient(to bottom, rgba(255,255,255,.0), rgba(255,255,255,.35));
     pointer-events:none;
   }
+  .exportTitlePill{ display:none; }
+
   .exportCredit{
     position:absolute;
     top: 18px;
@@ -527,32 +545,42 @@
   }
 
   .exportSlot{
-    width: calc(var(--exAvatar) + 100px);
+    width: calc(var(--exAvatar) + 92px);
     text-align:center;
     position: relative;
   }
+
   .exportAvatar{
     width: var(--exAvatar);
     height: var(--exAvatar);
-    border-radius:999px;
-    border: var(--exBorder) solid var(--blue);
-    overflow: visible;
-    background:#fff;
     margin: 0 auto;
-    box-shadow: 0 10px 22px rgba(0,0,0,.10);
     position:relative;
+    overflow: visible;
   }
+
+  .exportAvatarClip{
+    width: 100%;
+    height: 100%;
+    border-radius: 999px;
+    border: var(--exBorder) solid var(--blue);
+    background:#fff;
+    box-shadow: 0 10px 22px rgba(0,0,0,.10);
+    overflow: hidden;
+    position: relative;
+  }
+
   .exportPhoto{
     width:100%;
     height:100%;
-    border-radius:999px;
+    display:block;
     object-fit: cover;
     object-position: 50% 35%;
-    display:block;
-    image-rendering: auto;
+    border-radius:999px;
+    image-rendering:auto;
     transform: translateZ(0);
     backface-visibility: hidden;
   }
+
   .exportRank{
     position:absolute;
     left:50%;
@@ -569,7 +597,9 @@
     text-align:center;
     box-shadow: 0 8px 16px rgba(0,0,0,.18);
     pointer-events:none;
+    z-index: 3;
   }
+
   .exportName{
     margin-top: 16px;
     font-size: var(--exName);
@@ -604,9 +634,16 @@
 </head>
 
 <body>
+<header>
+  <div class="topbar">
+    <h1>日プ新世界メーカー</h1>
+  </div>
+</header>
+
 <main>
   <div class="card" id="picksCard">
     <div id="banner" class="banner">
+      <div class="bannerTitle">日プ新世界メーカー</div>
       <div class="countBadge" id="countBadge">1人選択</div>
     </div>
 
@@ -676,7 +713,9 @@
   <div id="exportInner">
     <div class="exportCredit">created by @12agassi</div>
 
-    <div id="exportBanner" class="exportBanner"></div>
+    <div id="exportBanner" class="exportBanner">
+      <div class="exportTitlePill">日プ新世界メーカー</div>
+    </div>
 
     <div class="exportBody">
       <div class="exportRows">
@@ -698,7 +737,7 @@ const FALLBACK_IMG = "data:image/gif;base64,R0lGODlhAQABAAAAACw=";
 
 const MAX_TARGET = 8;
 const TARGET_COUNT_KEY = "oshivote_target_count_v1";
-const STORAGE_KEY  = "oshivote_selected_v8";
+const STORAGE_KEY  = "oshivote_selected_v7";
 const ACCENT_COLOR_KEY = "oshivote_accent_color_v1";
 const SLOT_COLORS_KEY = "oshivote_slot_colors_v1";
 const CROWNS_KEY = "oshivote_crowns_v1";
@@ -820,11 +859,23 @@ function saveCrowns(){
 function isCrowned(traineeIndex){
   return !!crowns[String(traineeIndex)];
 }
-function toggleCrown(traineeIndex){
-  const k = String(traineeIndex);
-  if(crowns[k]) delete crowns[k];
-  else crowns[k] = true;
-  saveCrowns();
+
+function profileUrlById(id){
+  if(!id) return "https://produce101.jp/profile/detail/?lang=ja";
+  return "https://produce101.jp/profile/detail/?id=" + encodeURIComponent(id) + "&lang=ja";
+}
+function displayName(full){
+  return (full || "").replace(/\s*\([^)]*\)\s*/g, "").trim();
+}
+function alphaPart(full){
+  const m = (full||"").match(/\(([^)]*)\)/);
+  return m ? "(" + m[1] + ")" : "";
+}
+function withMembersScrollLock(fn){
+  const wrap = document.getElementById("membersWrap");
+  const prev = wrap ? wrap.scrollTop : 0;
+  fn();
+  requestAnimationFrame(() => { if(wrap) wrap.scrollTop = prev; });
 }
 
 function loadTargetCount(){
@@ -845,25 +896,22 @@ function updateCountButtons(){
   const badge = document.getElementById("countBadge");
   if(badge) badge.textContent = `${targetCount}人選択`;
 }
-
-function profileUrlById(id){
-  if(!id) return "https://produce101.jp/profile/detail/?lang=ja";
-  return "https://produce101.jp/profile/detail/?id=" + encodeURIComponent(id) + "&lang=ja";
-}
-function displayName(full){
-  return (full || "").replace(/\s*\([^)]*\)\s*/g, "").trim();
-}
-function alphaPart(full){
-  const m = (full||"").match(/\(([^)]*)\)/);
-  return m ? "(" + m[1] + ")" : "";
-}
-function withMembersScrollLock(fn){
-  const wrap = document.getElementById("membersWrap");
-  const prev = wrap ? wrap.scrollTop : 0;
-  fn();
-  requestAnimationFrame(() => { if(wrap) wrap.scrollTop = prev; });
+function setTargetCount(n){
+  if(!Number.isInteger(n) || n < 1 || n > 8) return;
+  targetCount = n;
+  saveTargetCount();
+  if(selected.length > targetCount){
+    selected = selected.slice(0, targetCount);
+    saveSelected();
+  }
+  if(colorTargetPos !== null && colorTargetPos >= selected.length) colorTargetPos = null;
+  updateCountButtons();
+  drawPicks();
+  drawMembers();
+  drawExportPicks();
 }
 
+/* ===== 練習生データ ===== */
 const traineesOnly = [
   {name:"アダム・ナガイ(ADAM)", img:"https://i.imgur.com/6QGzvRx.png", id:"adamnagai"},
   {name:"中丸 晏寿(AJU)", img:"https://i.imgur.com/KiZCKos.png", id:"nakamaruaju"},
@@ -996,6 +1044,7 @@ const TRAINEES_COUNT = traineesOnly.length;
 
 let selected = loadSelected();
 
+/* バナー画像反映 */
 (function setupBanners(){
   const banner = document.getElementById("banner");
   const exportBanner = document.getElementById("exportBanner");
@@ -1006,6 +1055,7 @@ let selected = loadSelected();
   }
 })();
 
+/* ===== 画面：選択枠 ===== */
 function drawPicks(){
   const row = document.getElementById("picksRow");
   row.innerHTML = "";
@@ -1021,10 +1071,8 @@ function drawPicks(){
 
       slot.className = "slot" + (isTarget ? " colorTarget" : "");
       slot.innerHTML = `
-        <div class="avatar" style="border-color:${c}"
-             onclick="${perSlotColorMode ? `setColorTarget(${i})` : `toggleCrownAt(${i})`}">
+        <div class="avatar" style="border-color:${c}" onclick="${perSlotColorMode ? `setColorTarget(${i})` : ``}">
           <img src="${m.img || FALLBACK_IMG}" alt="">
-          ${isCrowned(ti) ? `<div class="crownBadge">👑</div>` : ``}
           <div class="rank" style="background:${c}">${i + 1}</div>
         </div>
         <div class="name">${displayName(m.name)}</div>
@@ -1041,14 +1089,7 @@ function drawPicks(){
   }
 }
 
-function toggleCrownAt(pos){
-  if(pos < 0 || pos >= selected.length) return;
-  const traineeIndex = selected[pos];
-  toggleCrown(traineeIndex);
-  drawPicks();
-  drawExportPicks();
-}
-
+/* ===== 一覧 ===== */
 function drawMembers(){
   const q = (document.getElementById("search").value || "").trim().toLowerCase();
   const membersEl = document.getElementById("members");
@@ -1152,21 +1193,6 @@ function resetAll(){
   });
 }
 
-function setTargetCount(n){
-  if(!Number.isInteger(n) || n < 1 || n > 8) return;
-  targetCount = n;
-  saveTargetCount();
-  if(selected.length > targetCount){
-    selected = selected.slice(0, targetCount);
-    saveSelected();
-  }
-  if(colorTargetPos !== null && colorTargetPos >= selected.length) colorTargetPos = null;
-  updateCountButtons();
-  drawPicks();
-  drawMembers();
-  drawExportPicks();
-}
-
 /* 並び替え */
 let reorderMode = false;
 function toggleReorder(){
@@ -1214,8 +1240,8 @@ function fitExportAvatar(count){
   const maxCols = Math.max(plan[0], plan[1]);
 
   const availableW = 1004 - 56*2;
-  const minAvatar = 118;
-  let avatar = 138;
+  const minAvatar = 124;
+  let avatar = 148;
   let gapX = 56;
 
   if(maxCols <= 1){
@@ -1228,10 +1254,10 @@ function fitExportAvatar(count){
     if(needW <= availableW) break;
     if(avatar <= minAvatar) break;
     avatar -= 2;
-    gapX = Math.max(26, gapX - 2);
+    gapX = Math.max(28, gapX - 2);
   }
 
-  const border = Math.max(6, Math.round(avatar/15));
+  const border = Math.max(6, Math.round(avatar/16));
   document.documentElement.style.setProperty("--exBorder", border + "px");
 
   const name = Math.max(13, Math.min(16, Math.round(avatar/7.4)));
@@ -1279,8 +1305,14 @@ function makeExportSlot(m, orderIndex){
   const d = document.createElement("div");
   d.className = "exportSlot";
   d.innerHTML = `
-    <div class="exportAvatar" style="border-color:${c}">
-      <img class="exportPhoto" src="${(m && m.img) ? m.img : FALLBACK_IMG}" alt="">
+    <div class="exportAvatar">
+      <div class="exportAvatarClip" style="border-color:${c}">
+        <img class="exportPhoto"
+             src="${(m && m.img) ? m.img : FALLBACK_IMG}"
+             alt=""
+             crossorigin="anonymous"
+             referrerpolicy="no-referrer">
+      </div>
       ${isCrowned(traineeIndex) ? `<div class="exportCrownBadge">👑</div>` : ``}
       <div class="exportRank" style="background:${c}">${orderIndex + 1}</div>
     </div>
@@ -1289,16 +1321,20 @@ function makeExportSlot(m, orderIndex){
   return d;
 }
 
-async function waitForExportImages(){
-  const imgs = Array.from(document.querySelectorAll("#exportInner img"));
-  await Promise.all(imgs.map(img => {
-    if(img.complete && img.naturalWidth > 0) return Promise.resolve();
-    return new Promise(resolve => {
-      const done = () => resolve();
-      img.onload = done;
-      img.onerror = done;
-    });
-  }));
+function preloadExportImages(){
+  const urls = selected.map(idx => {
+    const m = trainees[idx];
+    return (m && m.img) ? m.img : FALLBACK_IMG;
+  });
+
+  return Promise.all(urls.map(src => new Promise(resolve => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.referrerPolicy = "no-referrer";
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = src;
+  })));
 }
 
 async function saveImage(){
@@ -1318,23 +1354,26 @@ async function saveImage(){
   toast.style.display = "block";
 
   try{
-    await waitForExportImages();
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    await preloadExportImages();
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
     const target = document.getElementById("exportInner");
     const canvas = await html2canvas(target, {
       backgroundColor:"#ffffff",
       useCORS:true,
       allowTaint:false,
-      scale: 7
+      scale: window.devicePixelRatio > 2 ? 4 : 5,
+      imageTimeout: 15000,
+      logging: false
     });
 
     const link = document.createElement("a");
     link.download = "nipu_maker_1004x1040.png";
-    link.href = canvas.toDataURL("image/png");
+    link.href = canvas.toDataURL("image/png", 1.0);
     link.click();
   }catch(e){
     alert("画像生成に失敗しました。画像URL側の制限の可能性があります。");
+    console.error(e);
   }finally{
     toast.style.display = "none";
   }
