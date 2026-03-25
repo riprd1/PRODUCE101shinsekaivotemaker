@@ -412,6 +412,27 @@
   }
   .memberCard.withdrawn .memberCardProfile{ opacity:.65; }
 
+  .memberCard.eliminated{
+    opacity: .45;
+    filter: grayscale(1);
+    cursor: default;
+  }
+  .memberCard.eliminated:active{ transform:none; }
+  .eliminatedBadge{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.9);
+    border: 1px solid rgba(0,0,0,.08);
+    font-weight: 1000;
+    font-size: 12px;
+    color: #111;
+    box-shadow: 0 8px 18px rgba(0,0,0,.10);
+  }
+  .memberCard.eliminated .memberCardProfile{ opacity:.65; }
+
   .toast{
     position: fixed;
     left: 50%;
@@ -698,7 +719,7 @@
       <div class="search">
         <input id="search" type="text" placeholder="Search" oninput="drawMembers()" />
       </div>
-      <button class="mode" id="toggleListBtn" type="button" onclick="toggleCandidates(event)">練習生候補</button>
+      <button class="mode" id="toggleListBtn" type="button" onclick="toggleCandidates(event)">練習生昇格生</button>
     </div>
 
     <div id="membersWrap">
@@ -752,6 +773,27 @@ let targetCount = loadTargetCount();
 const WITHDRAWN_IDS = new Set([
   "horieito",
   "sakuraihikaru"
+]);
+
+const ELIMINATED_IDS = new Set([
+  "kawamurahakuto",
+  "sagawahirokazu",
+  "abeitsuki",
+  "leejoonghoon",
+  "ozawakoshin",
+  "kobayashikou",
+  "michaelminhmccaffrey",
+  "patrickphanle",
+  "kasahararen",
+  "eguchirento",
+  "ochiairio",
+  "koyauchiruka",
+  "saitosei",
+  "fujimotoshinsei",
+  "iidashuma",
+  "osawayugo",
+  "fujiiyusei",
+  "okamotoyuto"
 ]);
 
 function normalizeHexColor(c){
@@ -1103,10 +1145,13 @@ function drawMembers(){
     if(q && (m.name||"").toLowerCase().indexOf(q) === -1) continue;
 
     const isWithdrawn = WITHDRAWN_IDS.has(m.id);
+    const isEliminated = ELIMINATED_IDS.has(m.id);
+
     const card = document.createElement("div");
     card.className = "memberCard"
       + (selected.indexOf(i) !== -1 ? " selected" : "")
-      + (isWithdrawn ? " withdrawn" : "");
+      + (isWithdrawn ? " withdrawn" : "")
+      + (isEliminated ? " eliminated" : "");
 
     const purl = profileUrlById(m.id);
 
@@ -1114,13 +1159,14 @@ function drawMembers(){
       <div class="memberCardThumb">
         <img src="${m.img || FALLBACK_IMG}" alt="">
         ${isWithdrawn ? `<div class="withdrawnBadge">※辞退</div>` : ``}
+        ${isEliminated ? `<div class="eliminatedBadge">※脱落</div>` : ``}
       </div>
       <div class="memberCardName">${displayName(m.name)}</div>
       <div class="memberCardSub">${alphaPart(m.name)}</div>
       <a class="memberCardProfile" href="${purl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">profile</a>
     `;
 
-    if(!isWithdrawn){
+    if(!isWithdrawn && !isEliminated){
       card.addEventListener("click", () => add(i));
     }
     membersEl.appendChild(card);
@@ -1134,7 +1180,7 @@ function toggleCandidates(e){
   const winY = window.scrollY;
 
   showingCandidates = !showingCandidates;
-  document.getElementById("toggleListBtn").textContent = showingCandidates ? "練習生" : "練習生候補";
+  document.getElementById("toggleListBtn").textContent = showingCandidates ? "練習生" : "練習生昇格生";
 
   drawMembers();
 
@@ -1149,7 +1195,7 @@ function add(i){
   if(selected.indexOf(i) !== -1) return;
 
   const m = trainees[i];
-  if(m && WITHDRAWN_IDS.has(m.id)) return;
+  if(m && (WITHDRAWN_IDS.has(m.id) || ELIMINATED_IDS.has(m.id))) return;
 
   withMembersScrollLock(() => {
     selected.push(i);
